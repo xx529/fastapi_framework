@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from app.apiserver.middleware import MiddleWare
 from app.router import all_routers
 from contextlib import asynccontextmanager
+from app.config import AppServerConf, DirConf
 
 
 class FastApiServer:
 
     @classmethod
     def create_app(cls) -> FastAPI:
-        app = FastAPI(version='1.0.0',
+        app = FastAPI(version=AppServerConf.version,
                       lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
@@ -37,7 +38,12 @@ class FastApiServer:
 
     @staticmethod
     def on_start(app: FastAPI) -> None:
-        print(f'start {app.version}')
+        print(f'startup {app.version}')
+
+        dir_ls = [DirConf.data, DirConf.log]
+        for d in dir_ls:
+            if not d.exists():
+                d.mkdir(parents=True)
 
     @staticmethod
     def on_shutdown(app: FastAPI) -> None:

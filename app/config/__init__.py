@@ -1,1 +1,4 @@
-from app.config.setting import *
+from app.config.config import (
+    AppServerConf,
+    DirConf,
+)
