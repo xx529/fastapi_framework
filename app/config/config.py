@@ -28,7 +28,24 @@ class DirConf:
     app: Path = base / 'app'
     data: Path = base / 'data'
     log: Path = data / 'log'
+    request_log: Path = log / 'request'
+    service_log: Path = log / 'service'
+    lifespan_log: Path = log / 'lifespan'
     resource: Path = app / 'resource'
+
+
+class LogConf:
+    request_name: str = 'request'
+    request_format: str = '{time:YYYY-MM-DD HH:mm:ss} | {thread.name} | {level} | {message}'
+    request_file: Path = DirConf.request_log / 'request.log'
+
+    service_name: str = 'service'
+    service_format: str = '{time:YYYY-MM-DD HH:mm:ss} | {thread.name} | {level} | {message}'
+    service_file: Path = DirConf.service_log / 'service.log'
+
+    lifespan_name: str = 'lifespan'
+    lifespan_format: str = '{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}'
+    lifespan_file: Path = DirConf.lifespan_log / 'lifespan.log'
 
 
 class SystemInfo:

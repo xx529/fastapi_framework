@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.schema.base import StrResponse, HtmlResponse, DictResponse
-import pandas as pd
+from app.service.system import LogService
 
 router = APIRouter(prefix='/system', tags=['system'])
 
@@ -10,9 +10,10 @@ async def health():
     return StrResponse(data='ok')
 
 
-@router.get(path='/log', summary='服务请求日志')
-async def log():
-    return HtmlResponse(content=pd.DataFrame([1, 2, 3, 4]).to_html())
+@router.get(path='/log/lifespan', summary='启停日志')
+async def log_lifespan():
+    data = LogService.life_log_records()
+    return HtmlResponse(content=data)
 
 
 @router.get(path='/config', response_model=DictResponse, summary='系统配置')

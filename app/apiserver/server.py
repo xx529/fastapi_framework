@@ -3,6 +3,7 @@ from app.apiserver.middleware import MiddleWare
 from app.router import all_routers
 from contextlib import asynccontextmanager
 from app.config import AppServerConf, DirConf
+from app.apiserver.logger import lifespan_logger
 
 
 class FastApiServer:
@@ -38,13 +39,22 @@ class FastApiServer:
 
     @staticmethod
     def on_start(app: FastAPI) -> None:
-        print(f'startup {app.version}')
+        lifespan_logger.info(f'startup version: {app.version}')
 
-        dir_ls = [DirConf.data, DirConf.log]
+        dir_ls = [DirConf.data,
+                  DirConf.log,
+                  DirConf.request_log,
+                  DirConf.service_log,
+                  DirConf.lifespan_log]
+
+        lifespan_logger.info('check dirs')
         for d in dir_ls:
             if not d.exists():
+                lifespan_logger.info(f'create {d}')
                 d.mkdir(parents=True)
+            else:
+                lifespan_logger.info(f'exists {d}')
 
     @staticmethod
     def on_shutdown(app: FastAPI) -> None:
-        print(f'shutdown {app.version}')
+        lifespan_logger.info(f'shutdown version: {app.version}')
