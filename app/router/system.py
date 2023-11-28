@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.schema.base import StrResponse, HtmlResponse, DictResponse
+from app.schema.base import StrResponse, HtmlResponse
 from app.service.system import LogService
 
 router = APIRouter(prefix='/system', tags=['system'])
@@ -16,7 +16,3 @@ async def log_lifespan():
     return HtmlResponse(content=data)
 
 
-@router.get(path='/config', response_model=DictResponse, summary='系统配置')
-async def setting():
-    data = {}
-    return DictResponse(data=data)
