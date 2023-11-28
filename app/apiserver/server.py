@@ -41,14 +41,8 @@ class FastApiServer:
     def on_start(app: FastAPI) -> None:
         lifespan_logger.info(f'startup version: {app.version}')
 
-        dir_ls = [DirConf.data,
-                  DirConf.log,
-                  DirConf.request_log,
-                  DirConf.service_log,
-                  DirConf.lifespan_log]
-
         lifespan_logger.info('check dirs')
-        for d in dir_ls:
+        for d in DirConf.check_create_ls():
             if not d.exists():
                 lifespan_logger.info(f'create {d}')
                 d.mkdir(parents=True)

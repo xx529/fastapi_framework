@@ -33,6 +33,10 @@ class DirConf:
     lifespan_log: Path = log / 'lifespan'
     resource: Path = app / 'resource'
 
+    @classmethod
+    def check_create_ls(cls):
+        return [cls.request_log, cls.service_log, cls.lifespan_log]
+
 
 class LogConf:
     request_name: str = 'request'
