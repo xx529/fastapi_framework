@@ -18,5 +18,9 @@ class StrResponse(BaseResponse):
     data: str
 
 
+class OkResponse(BaseResponse):
+    data: str = 'OK'
+
+
 class HtmlResponse(HTMLResponse):
     status_code = 200

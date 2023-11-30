@@ -3,20 +3,28 @@ from app.schema.base import DictResponse
 
 
 class UserInfo(BaseModel):
-    id: int
+    user_id: int
     name: str
     city: str
     age: int
 
 
 class UserInfoForList(BaseModel):
-    id: int
+    user_id: int
     name: str
+
+
+class UserInfoForCreate(BaseModel):
+    user_id: int
 
 
 class UserListResponse(DictResponse):
     data: list[UserInfoForList]
 
 
-class UserResponse(DictResponse):
+class UserDetailResponse(DictResponse):
     data: UserInfo
+
+
+class CreateUserResponse(DictResponse):
+    data: UserInfoForCreate

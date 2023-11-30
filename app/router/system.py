@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from app.schema.base import StrResponse, HtmlResponse
 from app.service.system import LogService
 
-router = APIRouter(prefix='/system', tags=['system'])
+router = APIRouter(prefix='/system', tags=['系统信息模块'])
 
 
 @router.get(path='/health', response_model=StrResponse, summary='健康检查')
