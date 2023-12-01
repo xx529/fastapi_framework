@@ -4,7 +4,7 @@ from app.schema.user import (
     UserDetailResponse,
     UserInfo,
     CreateUserResponse,
-    UserInfoForCreate
+    UserInfoForCreate,
 )
 from app.schema.base import OkResponse
 from app.service.user import UserService
@@ -27,6 +27,19 @@ def user_list(
     return UserListResponse(data=data)
 
 
+@router.get(
+    path='',
+    summary='用户信息',
+    description='根据用户ID获取用户信息通用接口',
+    response_model=UserDetailResponse
+)
+def user_detail(
+        user_id: Annotated[int, Query(description='用户ID', ge=0)]
+):
+    data = UserService.detail(user_id=user_id)
+    return UserDetailResponse(data=UserInfo(**data))
+
+
 @router.post(
     path='',
     summary='创建用户',
@@ -42,6 +55,22 @@ def add_user(
     return CreateUserResponse(data=UserInfoForCreate(**data))
 
 
+@router.patch(
+    path='',
+    summary='更新用户',
+    description='更新用户通用接口',
+    response_model=OkResponse
+)
+def update_user(
+        user_id: Annotated[int, Body(description='用户ID', ge=0)],
+        name: Annotated[str, Body(description='用户名')],
+        city: Annotated[str, Body(description='城市')],
+        age: Annotated[int, Body(description='年龄', ge=0)],
+):
+    UserService.update(user_id=user_id, name=name, city=city, age=age)
+    return OkResponse()
+
+
 @router.delete(
     path='',
     summary='删除用户',
@@ -53,25 +82,3 @@ def delete_user(
 ):
     UserService.delete(user_id=user_id)
     return OkResponse()
-
-
-@router.patch(
-    path='',
-    summary='更新用户',
-    description='更新用户通用接口'
-)
-def update_user():
-    return 1
-
-
-@router.get(
-    path='',
-    summary='获取用户信息',
-    description='根据用户ID获取用户信息通用接口',
-    response_model=UserDetailResponse
-)
-def user_detail(
-        user_id: Annotated[int, Query(description='用户ID', ge=0)]
-):
-    data = UserService.detail(user_id=user_id)
-    return UserDetailResponse(data=UserInfo(**data))

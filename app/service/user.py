@@ -26,3 +26,7 @@ class UserService:
     @staticmethod
     def delete(user_id):
         return None
+
+    @staticmethod
+    def update(user_id, name, city, age):
+        return None
