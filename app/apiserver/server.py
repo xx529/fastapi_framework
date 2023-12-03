@@ -1,9 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from app.apiserver.middleware import MiddleWare
 from app.router import all_routers
 from contextlib import asynccontextmanager
 from app.config import AppServerConf, DirConf
 from app.apiserver.logger import lifespan_logger
+from app.apiserver.exception import ServerException
+from app.schema.base import BaseResponse
 
 
 class FastApiServer:
@@ -14,6 +17,7 @@ class FastApiServer:
                       lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
+        cls.init_exception(app)
         return app
 
     @staticmethod
@@ -25,6 +29,14 @@ class FastApiServer:
     def init_routers(app: FastAPI) -> None:
         for r in all_routers:
             app.include_router(r)
+
+    @staticmethod
+    def init_exception(app: FastAPI) -> None:
+        @app.exception_handler(ServerException)
+        async def server_exception_handler(request: Request, exc: ServerException):
+            res = BaseResponse(errcode=exc.errcode, errmsg=exc.errmsg, detail=exc.detail, data='')
+            return JSONResponse(status_code=exc.status_code,
+                                content=res.model_dump())
 
     @classmethod
     def lifespan(cls):

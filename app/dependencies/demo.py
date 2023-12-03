@@ -9,7 +9,6 @@ class MyException:
         return HTTPException(status_code=400, detail='my exception')
 
 
-
 class Depd:
 
     @staticmethod
