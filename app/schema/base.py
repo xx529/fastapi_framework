@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Annotated
 from pydantic import BaseModel
 from fastapi.responses import HTMLResponse
+from fastapi import Header
 
 
 class ExceptionMsg(BaseModel):
@@ -29,3 +30,8 @@ class OkResponse(BaseResponse):
 
 class HtmlResponse(HTMLResponse):
     status_code = 200
+
+
+class Headers:
+    task: Annotated[int, Header()]
+    phone: Annotated[str, Header()]

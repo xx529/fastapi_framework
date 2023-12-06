@@ -6,7 +6,7 @@ from app.schema.user import (
     CreateUserResponse,
     UserInfoForCreate,
 )
-from app.schema.base import OkResponse
+from app.schema.base import OkResponse, Headers
 from app.service.user import UserService
 from typing import Annotated
 
@@ -34,8 +34,10 @@ def user_list(
     response_model=UserDetailResponse
 )
 def user_detail(
+        # headers: Headers,
         user_id: Annotated[int, Query(description='用户ID', ge=0)]
 ):
+    # print(headers.task)
     data = UserService.detail(user_id=user_id)
     return UserDetailResponse(data=UserInfo(**data))
 
