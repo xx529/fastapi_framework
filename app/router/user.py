@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Body
+from fastapi import APIRouter, Query, Body, Header, Depends
 from app.schema.user import (
     UserListResponse,
     UserDetailResponse,
@@ -10,7 +10,14 @@ from app.schema.base import OkResponse, Headers
 from app.service.user import UserService
 from typing import Annotated
 
-router = APIRouter(prefix='/user', tags=['用户管理模块'])
+
+def common_headers(
+        authorization: str = Header(description="用户认证信息", example="kdshfkasdhfasd-asdhjflasd"),
+):
+    return {"Authorization": authorization}
+
+
+router = APIRouter(prefix='/user', tags=['用户管理模块'], dependencies=[Depends(common_headers)])
 
 
 @router.get(
@@ -20,8 +27,8 @@ router = APIRouter(prefix='/user', tags=['用户管理模块'])
     response_model=UserListResponse
 )
 def user_list(
-        page: Annotated[int, Query(description='页码', ge=1)] = 1,
-        limit: Annotated[int, Query(description='每页数量', ge=1)] = 10
+        page: int = Query(default=1, description='页码', ge=1),
+        limit: int = Query(default=10, description='每页数量', ge=1)
 ):
     data = UserService.list(page=page, limit=limit)
     return UserListResponse(data=data)
@@ -34,7 +41,6 @@ def user_list(
     response_model=UserDetailResponse
 )
 def user_detail(
-        # headers: Headers,
         user_id: Annotated[int, Query(description='用户ID', ge=0)]
 ):
     # print(headers.task)

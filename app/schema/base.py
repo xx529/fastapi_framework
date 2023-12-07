@@ -33,5 +33,5 @@ class HtmlResponse(HTMLResponse):
 
 
 class Headers:
-    task: Annotated[int, Header()]
-    phone: Annotated[str, Header()]
+    task: Annotated[int, Header(description="任务ID")]
+    phone: Annotated[str, Header(description="手机号")]
