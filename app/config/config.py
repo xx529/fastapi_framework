@@ -52,6 +52,16 @@ class LogConf:
     lifespan_file: Path = DirConf.lifespan_log / 'lifespan.log'
 
 
+class DataBaseConf:
+    host: str = 'localhost'
+    port: int = '5432'
+    user: str = 'postgres'
+    password: str = '123456'
+    database: str = 'postgres'
+    schema: str = 'myapp'
+    jdbcurl: str = f'postgresql://{host}:{port}/{database}?user={user}&password={password}'
+
+
 class SystemInfo:
     python: str = sys.version
     operation: str = sys.platform

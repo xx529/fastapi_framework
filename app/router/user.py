@@ -27,11 +27,9 @@ router = APIRouter(prefix='/user', tags=['用户管理模块'])
     response_model=UserListResponse
 )
 def user_list(
-        authorization: str = Header(description="用户认证信息", example="kdshfkasdhfasd-asdhjflasd"),
         page: int = Query(default=1, description='页码', ge=1),
         limit: int = Query(default=10, description='每页数量', ge=1)
 ):
-    print(authorization)
     data = UserService.list(page=page, limit=limit)
     return UserListResponse(data=data)
 

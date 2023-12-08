@@ -7,18 +7,24 @@ from app.config import AppServerConf, DirConf
 from app.apiserver.logger import lifespan_logger
 from app.apiserver.exception import ServerException
 from app.schema.base import BaseResponse
+from app.apiserver.database import Base, engine
 
 
 class FastApiServer:
 
     @classmethod
     def create_app(cls) -> FastAPI:
+        cls.init_database()
         app = FastAPI(version=AppServerConf.version,
                       lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
         cls.init_exception(app)
         return app
+
+    @staticmethod
+    def init_database() -> None:
+        Base.metadata.create_all(bind=engine)
 
     @staticmethod
     def init_middlewares(app: FastAPI) -> None:
