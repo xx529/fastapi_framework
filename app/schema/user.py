@@ -1,25 +1,31 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Annotated
 from app.schema.base import DictResponse
+
+UserId = Annotated[int, Field(description="用户ID", example=1)]
+UserName = Annotated[str, Field(description="用户名", example="张三")]
+UserCity = Annotated[str, Field(description="用户城市")]
+UserAge = Annotated[int, Field(description="用户年龄")]
 
 
 class UserInfo(BaseModel):
-    user_id: int
-    name: str
-    city: str
-    age: int
+    user_id: UserId
+    name: UserName
+    city: UserCity
+    age: UserAge
 
 
 class UserInfoForList(BaseModel):
-    user_id: int
-    name: str
+    user_id: UserId
+    name: UserName
 
 
 class UserInfoForCreate(BaseModel):
-    user_id: int
+    user_id: UserId
 
 
 class UserListResponse(DictResponse):
-    data: list[UserInfoForList]
+    data: list[UserInfoForList] = Field(description="用户列表")
 
 
 class UserDetailResponse(DictResponse):

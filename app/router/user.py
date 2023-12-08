@@ -17,7 +17,7 @@ def common_headers(
     return {"Authorization": authorization}
 
 
-router = APIRouter(prefix='/user', tags=['用户管理模块'], dependencies=[Depends(common_headers)])
+router = APIRouter(prefix='/user', tags=['用户管理模块'])
 
 
 @router.get(
@@ -27,9 +27,11 @@ router = APIRouter(prefix='/user', tags=['用户管理模块'], dependencies=[De
     response_model=UserListResponse
 )
 def user_list(
+        authorization: str = Header(description="用户认证信息", example="kdshfkasdhfasd-asdhjflasd"),
         page: int = Query(default=1, description='页码', ge=1),
         limit: int = Query(default=10, description='每页数量', ge=1)
 ):
+    print(authorization)
     data = UserService.list(page=page, limit=limit)
     return UserListResponse(data=data)
 
@@ -41,7 +43,7 @@ def user_list(
     response_model=UserDetailResponse
 )
 def user_detail(
-        user_id: Annotated[int, Query(description='用户ID', ge=0)]
+        user_id: int = Query(description='用户ID', ge=0)
 ):
     # print(headers.task)
     data = UserService.detail(user_id=user_id)
