@@ -2,7 +2,7 @@ import random
 
 from fastapi import APIRouter, Depends
 from app.schema.base import StrResponse, HtmlResponse
-from app.service.system import LogService
+from app.service.system_service import LogService
 from app.dependencies import Depd
 from app.apiserver.exception import ServerException
 

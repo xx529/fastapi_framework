@@ -1,8 +1,8 @@
-from app.router import system
-from app.router import user
+from app.router import system_router
+from app.router import user_router
 
 
 all_routers = [
-    system.router,
-    user.router,
+    system_router.router,
+    user_router.router,
 ]

@@ -1,8 +1,8 @@
-from app.apiserver.database import BaseTable
+from app.apiserver.database import SingletonTable
 from sqlalchemy import Column, String
 
 
-class ItemInfo(BaseTable):
+class ItemInfo(SingletonTable):
     __tablename__ = 'item_info'
 
     name = Column(String(255), nullable=False, comment='商品名称')

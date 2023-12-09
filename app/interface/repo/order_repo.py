@@ -1,8 +1,8 @@
-from app.apiserver.database import BaseTable, db_session
+from app.apiserver.database import SingletonTable, db_session
 from sqlalchemy import Column, Integer, Float, TIMESTAMP
 
 
-class OrderInfo(BaseTable):
+class OrderInfo(SingletonTable):
     __tablename__ = 'order_info'
 
     user_id = Column(Integer, nullable=False, comment='购买者ID')

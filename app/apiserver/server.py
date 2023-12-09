@@ -14,7 +14,7 @@ class FastApiServer:
 
     @classmethod
     def create_app(cls) -> FastAPI:
-        cls.init_database()
+        # cls.init_database()
         app = FastAPI(version=AppServerConf.version,
                       lifespan=cls.lifespan())
         cls.init_middlewares(app)

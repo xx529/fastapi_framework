@@ -4,6 +4,7 @@ import random
 from app.interface import UserInfoRepo
 from app.interface import ItemInfo
 from app.interface import OrderInfoRepo
+from app.interface import TaskRecordRepo
 
 
 class UserService:
@@ -17,6 +18,10 @@ class UserService:
         data = user_ls[offset: offset + limit].to_dict(orient='records')
         UserInfoRepo().get_user_info(1)
         OrderInfoRepo().get_order_info(1)
+
+        TaskRecordRepo(task_id=11).create_tabel()
+        TaskRecordRepo(task_id=11)
+
         return data
 
     @staticmethod

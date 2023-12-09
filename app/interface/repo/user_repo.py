@@ -1,8 +1,8 @@
-from app.apiserver.database import BaseTable, db_session
+from app.apiserver.database import SingletonTable, db_session
 from sqlalchemy import Column, String, Integer
 
 
-class UserInfo(BaseTable):
+class UserInfo(SingletonTable):
     __tablename__ = 'user_info'
 
     name = Column(String(255), nullable=False, comment='用户名')

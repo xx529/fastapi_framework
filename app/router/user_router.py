@@ -7,7 +7,7 @@ from app.schema.user import (
     UserInfoForCreate,
 )
 from app.schema.base import OkResponse, Headers
-from app.service.user import UserService
+from app.service.user_service import UserService
 from typing import Annotated
 
 
