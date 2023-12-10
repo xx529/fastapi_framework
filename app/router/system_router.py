@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from app.schema.base import StrResponse, HtmlResponse
 from app.service.system_service import LogService
 from app.dependencies import Depd
-from app.apiserver.exception import ServerException
+from app.apiserver.exception import CommonException
 
 router = APIRouter(prefix='/system', tags=['系统信息模块'])
 
@@ -29,7 +29,7 @@ async def log_lifespan():
 async def error_demo():
     num = random.random()
     if num > 0.8:
-        raise ServerException.demo(detail='this is demo')
+        raise CommonException.Demo(detail='this is demo')
     if num > 0.4:
-        raise ServerException.random(detail='this is random')
+        raise CommonException.Random(detail='this is random')
     return StrResponse(data='ok')

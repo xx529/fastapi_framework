@@ -1,21 +1,26 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import BIGINT, DateTime, Column, String, func, Boolean, create_engine
+from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
-from app.config import DataBaseConf
+from app.config import PgDataBaseConf
 from typing import Dict, Any, Union
 
 
+engine = PgDataBaseConf.engine
+
+inspector = Inspector.from_engine(engine)
 Base = declarative_base()
 
-engine = create_engine(url=DataBaseConf.jdbcurl,
-                       connect_args={},
-                       pool_pre_ping=True,
-                       pool_recycle=1200)
 
+class BaseTableAttr(Base):
+    TABLE_NAME: str = None
+    SCHEMA: str = None
+    ENGINE: Engine = None
 
-class BaseTableAttr:
+    __abstract__ = True
     __allow_unmapped__ = True
-    __table_args__ = {'schema': DataBaseConf.schema}
+    __table_args__ = {'schema': PgDataBaseConf.schema}
 
     id = Column(BIGINT, primary_key=True, autoincrement=True, comment="唯一ID值")
     create_at = Column(DateTime, default=func.now(), nullable=False, comment="创建时间")
@@ -24,13 +29,22 @@ class BaseTableAttr:
     update_by = Column(String(64), index=False, comment="最后更新者")
     del_flag = Column(Boolean, index=False, default=False, nullable=False, comment="安全删除标记")
 
+    @classmethod
+    def create(cls):
+        cls.__table__.create(bind=cls.engine)
 
-class SingletonTable(Base, BaseTableAttr):
+    @classmethod
+    def is_exists(cls):
+        return Inspector.from_engine(cls.engine).has_table(cls.__tablename__)
+
+
+class SingletonTable(BaseTableAttr):
     __abstract__ = True
     __tablename__: str
 
 
 class MultipleTable(BaseTableAttr):
+    __abstract__ = True
     __tablename__: str
     __basename__: str
     instances: Dict[str, Base] = {}
@@ -50,10 +64,6 @@ class MultipleTable(BaseTableAttr):
         else:
             print(f'exist instance class: {table_name}')
         return cls.instances[table_name]
-
-    @classmethod
-    def create(cls):
-        getattr(cls, '__table__').create(bind=engine)
 
 
 SessionLocal = sessionmaker(autocommit=False,

@@ -4,11 +4,6 @@ from fastapi.responses import HTMLResponse
 from fastapi import Header
 
 
-class ExceptionMsg(BaseModel):
-    errcode: int
-    errmsg: str
-
-
 class BaseResponse(BaseModel):
     errcode: int = 0
     errmsg: str = ''

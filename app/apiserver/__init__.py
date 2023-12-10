@@ -1,6 +1,6 @@
 from app.apiserver.server import FastApiServer
 from app.apiserver.logger import service_logger, request_logger
-from app.apiserver.exception import ServerException
+from app.apiserver.exception import CommonException
 
 myapp = FastApiServer.create_app()
 

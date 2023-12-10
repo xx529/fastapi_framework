@@ -1,28 +1,37 @@
 from enum import Enum
-from app.schema.base import ExceptionMsg
+from pydantic import BaseModel
 
 
-class ExceptionType(Enum):
-    Demo = ExceptionMsg(errcode=9999, errmsg='demo问题')
-    Random = ExceptionMsg(errcode=9998, errmsg='随机报错')
+class ErrorMsg(BaseModel):
+    errcode: int
+    errmsg: str
+    status_code: int = 400
 
 
-class ServerException(Exception):
+class ExceptionClass(Exception):
 
-    def __init__(self, detail: str, errmsg: str, errcode: int, status_code: int = 400):
+    def __init__(self, detail: str, errmsg: str, errcode: int, status_code: int):
         self.detail = detail
         self.errmsg = errmsg
         self.errcode = errcode
         self.status_code = status_code
 
-    @classmethod
-    def demo(cls, detail: str):
-        return cls(detail=detail,
-                   errmsg=ExceptionType.Demo.value.errmsg,
-                   errcode=ExceptionType.Demo.value.errcode)
 
-    @classmethod
-    def random(cls, detail: str):
-        return cls(detail=detail,
-                   errmsg=ExceptionType.Random.value.errmsg,
-                   errcode=ExceptionType.Random.value.errcode)
+class CommonException(Enum):
+    Demo = ErrorMsg(errcode=9999, errmsg='demo问题')
+    Random = ErrorMsg(errcode=9998, errmsg='随机报错')
+    InvalidPathParameter = ErrorMsg(errcode=9997, errmsg='路由参数错误')
+    InvalidHeaderParameter = ErrorMsg(errcode=9997, errmsg='请求头参数错误')
+    InvalidBodyParameter = ErrorMsg(errcode=9997, errmsg='请求体错误')
+
+    def __call__(self, detail) -> ExceptionClass:
+        return ExceptionClass(detail=detail,
+                              errmsg=self.value.errmsg,
+                              errcode=self.value.errcode,
+                              status_code=self.value.status_code)
+
+
+
+
+
+

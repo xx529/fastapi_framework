@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 import os
 import platform
+from sqlalchemy import create_engine
 
 current_dir = Path(__file__).parent
 
@@ -52,14 +53,15 @@ class LogConf:
     lifespan_file: Path = DirConf.lifespan_log / 'lifespan.log'
 
 
-class DataBaseConf:
-    host: str = 'localhost'
-    port: int = '5432'
-    user: str = 'postgres'
-    password: str = '123456'
-    database: str = 'postgres'
-    schema: str = 'myapp'
+class PgDataBaseConf:
+    host: str = settings.pg.host
+    port: int = settings.pg.port
+    user: str = settings.pg.user
+    password: str = settings.pg.password
+    database: str = settings.pg.database
+    schema: str = settings.pg.schema
     jdbcurl: str = f'postgresql://{host}:{port}/{database}?user={user}&password={password}'
+    engine = create_engine(url=jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
 
 
 class SystemInfo:

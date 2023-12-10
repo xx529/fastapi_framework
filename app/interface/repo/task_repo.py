@@ -3,6 +3,7 @@ from sqlalchemy import Column, String
 
 
 class TaskRecord(MultipleTable):
+    __abstract__ = True
     __basename__ = 'task'
 
     task_name = Column(String(255), nullable=False, comment='任务名称')

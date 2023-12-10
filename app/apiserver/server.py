@@ -5,7 +5,7 @@ from app.router import all_routers
 from contextlib import asynccontextmanager
 from app.config import AppServerConf, DirConf
 from app.apiserver.logger import lifespan_logger
-from app.apiserver.exception import ServerException
+from app.apiserver.exception import ExceptionClass
 from app.schema.base import BaseResponse
 from app.apiserver.database import Base, engine
 
@@ -38,8 +38,8 @@ class FastApiServer:
 
     @staticmethod
     def init_exception(app: FastAPI) -> None:
-        @app.exception_handler(ServerException)
-        async def server_exception_handler(request: Request, exc: ServerException):
+        @app.exception_handler(ExceptionClass)
+        async def server_exception_handler(request: Request, exc: ExceptionClass):
             res = BaseResponse(errcode=exc.errcode, errmsg=exc.errmsg, detail=exc.detail, data='')
             return JSONResponse(status_code=exc.status_code,
                                 content=res.model_dump())
