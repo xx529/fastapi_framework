@@ -1,4 +1,5 @@
 from enum import Enum
+
 from pydantic import BaseModel
 
 
@@ -29,9 +30,3 @@ class CommonException(Enum):
                               errmsg=self.value.errmsg,
                               errcode=self.value.errcode,
                               status_code=self.value.status_code)
-
-
-
-
-
-

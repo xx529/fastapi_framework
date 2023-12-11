@@ -1,5 +1,6 @@
-from app.apiserver.database import SingletonTable, db_session
-from sqlalchemy import Column, Integer, Float, TIMESTAMP
+from sqlalchemy import Column, Float, Integer, TIMESTAMP
+
+from app.apiserver.database import db_session, SingletonTable
 
 
 class OrderInfo(SingletonTable):

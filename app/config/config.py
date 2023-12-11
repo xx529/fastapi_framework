@@ -1,8 +1,9 @@
-from dynaconf import Dynaconf
-from pathlib import Path
-import sys
 import os
 import platform
+import sys
+from pathlib import Path
+
+from dynaconf import Dynaconf
 from sqlalchemy import create_engine
 
 current_dir = Path(__file__).parent

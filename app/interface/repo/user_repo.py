@@ -1,5 +1,6 @@
-from app.apiserver.database import SingletonTable, db_session
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, Integer, String
+
+from app.apiserver.database import db_session, SingletonTable
 
 
 class UserInfo(SingletonTable):

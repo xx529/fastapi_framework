@@ -1,14 +1,10 @@
-from fastapi import APIRouter, Query, Body, Header, Depends
-from app.schema.user import (
-    UserListResponse,
-    UserDetailResponse,
-    UserInfo,
-    CreateUserResponse,
-    UserInfoForCreate,
-)
-from app.schema.base import OkResponse, Headers
-from app.service.user_service import UserService
 from typing import Annotated
+
+from fastapi import APIRouter, Body, Header, Query
+
+from app.schema.base import OkResponse
+from app.schema.user import (CreateUserResponse, UserDetailResponse, UserInfo, UserInfoForCreate, UserListResponse)
+from app.service.user_service import UserService
 
 
 def common_headers(

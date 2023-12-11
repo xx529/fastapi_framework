@@ -1,11 +1,12 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import BIGINT, DateTime, Column, String, func, Boolean, create_engine
-from sqlalchemy.engine.reflection import Inspector
-from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm import sessionmaker
-from app.config import PgDataBaseConf
-from typing import Dict, Any, Union
+from typing import Dict
 
+from sqlalchemy import BIGINT, Boolean, Column, DateTime, func, String
+from sqlalchemy.engine.base import Engine
+from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+from app.config import PgDataBaseConf
 
 engine = PgDataBaseConf.engine
 

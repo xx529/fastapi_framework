@@ -1,6 +1,8 @@
-from loguru import logger
-from app.config import LogConf
 import sys
+
+from loguru import logger
+
+from app.config import LogConf
 
 logger.remove()
 
@@ -33,7 +35,6 @@ logger.add(sink=sys.stdout,
            level='INFO',
            format=LogConf.service_format,
            filter=lambda record: record['extra']['name'] == LogConf.service_name)
-
 
 lifespan_logger = logger.bind(name=LogConf.lifespan_name)
 service_logger = logger.bind(name=LogConf.service_name)

@@ -1,10 +1,11 @@
+import random
+
 import faker
 import pandas as pd
-import random
-from app.interface import UserInfoRepo
-from app.interface import ItemInfo
+
 from app.interface import OrderInfoRepo
 from app.interface import TaskRecordRepo
+from app.interface import UserInfoRepo
 
 
 class UserService:

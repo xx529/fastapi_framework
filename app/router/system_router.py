@@ -1,10 +1,11 @@
 import random
 
 from fastapi import APIRouter, Depends
-from app.schema.base import StrResponse, HtmlResponse
-from app.service.system_service import LogService
-from app.dependencies import Depd
+
 from app.apiserver.exception import CommonException
+from app.dependencies import Depd
+from app.schema.base import HtmlResponse, StrResponse
+from app.service.system_service import LogService
 
 router = APIRouter(prefix='/system', tags=['系统信息模块'])
 

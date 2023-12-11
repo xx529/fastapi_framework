@@ -1,5 +1,6 @@
-from app.apiserver.database import MultipleTable, get_db
 from sqlalchemy import Column, String
+
+from app.apiserver.database import MultipleTable
 
 
 class TaskRecord(MultipleTable):

@@ -1,5 +1,6 @@
-from app.config import LogConf
 import pandas as pd
+
+from app.config import LogConf
 
 
 class LogService:
@@ -14,4 +15,3 @@ class LogService:
             df_log[c] = df_log[c].str.strip()
 
         return df_log.to_html(justify='left').replace('\\n', '<br/>')
-

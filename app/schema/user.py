@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
 from typing import Annotated
+
+from pydantic import BaseModel, Field
+
 from app.schema.base import DictResponse
 
 UserId = Annotated[int, Field(description="用户ID", example=1)]

@@ -1,5 +1,6 @@
-from app.apiserver.database import SingletonTable
 from sqlalchemy import Column, String
+
+from app.apiserver.database import SingletonTable
 
 
 class ItemInfo(SingletonTable):
