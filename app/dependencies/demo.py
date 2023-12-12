@@ -18,3 +18,7 @@ class Depd:
         if t > 0.5:
             raise MyException.my_exception()
         return '1'
+
+
+class HeadersParamDepd:
+    ...

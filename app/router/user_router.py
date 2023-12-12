@@ -1,19 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Header, Query
+from fastapi import APIRouter, Body, Query, Depends
 
-from app.schema.base import OkResponse
+from app.schema.base import OkResponse, get_common_headers, HeadersParam
 from app.schema.user import (CreateUserResponse, UserDetailResponse, UserInfo, UserInfoForCreate, UserListResponse)
 from app.service.user_service import UserService
 
 
-def common_headers(
-        authorization: str = Header(description="用户认证信息", example="kdshfkasdhfasd-asdhjflasd"),
-):
-    return {"Authorization": authorization}
-
-
-router = APIRouter(prefix='/user', tags=['用户管理模块'])
+router = APIRouter(prefix='/user', tags=['用户管理模块'], dependencies=[Depends(get_common_headers)])
 
 
 @router.get(
@@ -28,6 +22,24 @@ def user_list(
 ):
     data = UserService.list(page=page, limit=limit)
     return UserListResponse(data=data)
+
+
+@router.patch(
+    path='',
+    summary='更新用户',
+    description='更新用户通用接口',
+    response_model=OkResponse
+)
+def update_user(
+        user_id: Annotated[int, Body(description='用户ID', ge=0)],
+        name: Annotated[str, Body(description='用户名')],
+        city: Annotated[str, Body(description='城市')],
+        age: Annotated[int, Body(description='年龄', ge=0)],
+        headers: HeadersParam = Depends(get_common_headers),
+):
+    print(headers)
+    UserService.update(user_id=user_id, name=name, city=city, age=age)
+    return OkResponse()
 
 
 @router.get(
@@ -57,22 +69,6 @@ def add_user(
 ):
     data = UserService.create(name=name, city=city, age=age)
     return CreateUserResponse(data=UserInfoForCreate(**data))
-
-
-@router.patch(
-    path='',
-    summary='更新用户',
-    description='更新用户通用接口',
-    response_model=OkResponse
-)
-def update_user(
-        user_id: Annotated[int, Body(description='用户ID', ge=0)],
-        name: Annotated[str, Body(description='用户名')],
-        city: Annotated[str, Body(description='城市')],
-        age: Annotated[int, Body(description='年龄', ge=0)],
-):
-    UserService.update(user_id=user_id, name=name, city=city, age=age)
-    return OkResponse()
 
 
 @router.delete(
