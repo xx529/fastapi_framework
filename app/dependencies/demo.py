@@ -1,5 +1,6 @@
-from fastapi import HTTPException
 import random
+
+from fastapi import HTTPException
 
 
 class MyException:
@@ -18,7 +19,3 @@ class Depd:
         if t > 0.5:
             raise MyException.my_exception()
         return '1'
-
-
-class HeadersParamDepd:
-    ...

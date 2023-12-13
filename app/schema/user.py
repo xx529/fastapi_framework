@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from fastapi import Header
 from pydantic import BaseModel, Field
 
 from app.schema.base import DictResponse
@@ -24,6 +25,13 @@ class UserInfoForList(BaseModel):
 
 class UserInfoForCreate(BaseModel):
     user_id: UserId
+
+
+class UserListQuery:
+    # page: int = Field(default=1, description="页码", ge=1, example=1)
+    # limit: int = Field(default=10, description="每页数量", ge=1, example=10)
+
+    page: Annotated[int, Header(description="页码", ge=1, example=1)]
 
 
 class UserListResponse(DictResponse):

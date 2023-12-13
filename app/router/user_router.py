@@ -1,15 +1,14 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Query, Depends
+from fastapi import APIRouter, Body, Depends, Query
 
-from app.schema.base import OkResponse, get_common_headers, HeadersParam
-from app.schema.user import (CreateUserResponse, UserDetailResponse, UserInfo, UserInfoForCreate, UserListResponse)
+from app.schema.base import CommonHeaders, HeaderParams, OkResponse
+from app.schema.user import (
+    CreateUserResponse, UserDetailResponse, UserInfo, UserInfoForCreate, UserListResponse
+)
 from app.service.user_service import UserService
 
-
-router = APIRouter(prefix='/user', tags=['用户管理模块'], dependencies=[Depends(get_common_headers)])
-
-
+router = APIRouter(prefix='/user', tags=['用户管理模块'], dependencies=[Depends(HeaderParams.get_common_headers)])
 @router.get(
     path='/list',
     summary='获取用户列表',
@@ -17,9 +16,11 @@ router = APIRouter(prefix='/user', tags=['用户管理模块'], dependencies=[De
     response_model=UserListResponse
 )
 def user_list(
+        headers: CommonHeaders = Depends(HeaderParams.get_common_headers),
         page: int = Query(default=1, description='页码', ge=1),
         limit: int = Query(default=10, description='每页数量', ge=1)
 ):
+    print(headers)
     data = UserService.list(page=page, limit=limit)
     return UserListResponse(data=data)
 
@@ -35,9 +36,7 @@ def update_user(
         name: Annotated[str, Body(description='用户名')],
         city: Annotated[str, Body(description='城市')],
         age: Annotated[int, Body(description='年龄', ge=0)],
-        headers: HeadersParam = Depends(get_common_headers),
 ):
-    print(headers)
     UserService.update(user_id=user_id, name=name, city=city, age=age)
     return OkResponse()
 
