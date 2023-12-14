@@ -1,6 +1,6 @@
 from typing import Annotated, Any, Literal
 
-from fastapi import Header, HTTPException
+from fastapi import Header
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
@@ -31,29 +31,16 @@ class HtmlResponse(HTMLResponse):
 class CommonHeaders(BaseModel):
     token: str
     task_id: int
-    phone: str | None = None
+    company_id: str
 
 
 class HeaderParams:
-    Token = Annotated[str, Header(description="用户Token", example="test-token")]
-    TaskID = Annotated[int, Header(description="任务ID", example=10)]
-    Phone = Annotated[str, Header(description="手机号", example="13800138000")]
-
-    @staticmethod
-    def get_token(token: Token) -> Token:
-        return token
-
-    @staticmethod
-    def get_task_id(task_id: TaskID) -> TaskID:
-        return task_id
-
-    @staticmethod
-    def get_phone(phone: Phone) -> Phone:
-        return phone
+    Token = Annotated[str, Header(description="用户Token", example="test-token", alias="Token")]
+    TaskID = Annotated[int, Header(description="任务ID", example=10, alias="TaskId")]
+    CompanyID = Annotated[str, Header(description="公司ID", example="10", alias="CompanyId")]
 
     @staticmethod
     def get_common_headers(token: Token,
                            task_id: TaskID,
-                           phone: Phone = None) -> dict:
-
-        return dict(token=token, task_id=task_id, phone=phone)
+                           company_id: CompanyID) -> CommonHeaders:
+        return CommonHeaders(token=token, task_id=task_id, company_id=company_id)

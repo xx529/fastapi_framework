@@ -23,19 +23,12 @@ class UserInfoForList(BaseModel):
     name: UserName
 
 
-class UserInfoForCreate(BaseModel):
-    user_id: UserId
-
-
-class UserListQuery:
-    # page: int = Field(default=1, description="页码", ge=1, example=1)
-    # limit: int = Field(default=10, description="每页数量", ge=1, example=10)
-
-    page: Annotated[int, Header(description="页码", ge=1, example=1)]
-
-
 class UserListResponse(DictResponse):
     data: list[UserInfoForList] = Field(description="用户列表")
+
+
+class UserInfoForCreate(BaseModel):
+    user_id: UserId
 
 
 class UserDetailResponse(DictResponse):

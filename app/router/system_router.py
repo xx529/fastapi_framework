@@ -14,7 +14,6 @@ router = APIRouter(prefix='/system', tags=['系统信息模块'])
             summary='健康检查',
             response_model=StrResponse)
 async def health(d: str = Depends(Depd.error_dep)):
-    d
     return StrResponse(data='ok')
 
 
