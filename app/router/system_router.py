@@ -1,9 +1,10 @@
 import random
+from typing import Annotated
+from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Path, Query
 
 from app.apiserver.exception import CommonException
-from app.dependencies import Depd
 from app.schema.base import HtmlResponse, StrResponse
 from app.service.system_service import LogService
 
@@ -13,7 +14,7 @@ router = APIRouter(prefix='/system', tags=['系统信息模块'])
 @router.get(path='/health',
             summary='健康检查',
             response_model=StrResponse)
-async def health(d: str = Depends(Depd.error_dep)):
+def health():
     return StrResponse(data='ok')
 
 
@@ -22,6 +23,23 @@ async def health(d: str = Depends(Depd.error_dep)):
 async def log_lifespan():
     data = LogService.life_log_records()
     return HtmlResponse(content=data)
+
+
+@router.get(path='/log/service',
+            summary='请求日志')
+def log_service(
+        last: int = Query(default=10, description='最近N条记录', ge=1),
+        resp_code: int = Query(default=None, description='筛选响应状态码记录', example=200),
+):
+    return last
+
+
+@router.get(path='/log/service/{request_id}',
+            summary='运行日志')
+def log_service_detail(
+        request_id: UUID = Path(description='请求ID', example='6fd471a0-101f-4dfb-be22-f36bbaae2905')
+):
+    return request_id
 
 
 @router.get(path='/error/demo',

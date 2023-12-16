@@ -12,8 +12,8 @@ class BaseResponse(BaseModel):
     data: Any = None
 
 
-class DictResponse(BaseResponse):
-    data: dict
+class JsonResponse(BaseResponse):
+    data: dict | str
 
 
 class StrResponse(BaseResponse):

@@ -6,6 +6,7 @@ import pandas as pd
 from app.interface import OrderInfoRepo
 from app.interface import TaskRecordRepo
 from app.interface import UserInfoRepo
+from app.schema.user import UserId
 
 
 class UserService:
@@ -31,8 +32,8 @@ class UserService:
         return data
 
     @staticmethod
-    def create(name, city=None, age=None):
-        return {'user_id': random.randint(0, 100)}
+    def create(name, city=None, age=None) -> UserId:
+        return random.randint(0, 100)
 
     @staticmethod
     def delete(user_id):
