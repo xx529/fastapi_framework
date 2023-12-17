@@ -1,6 +1,6 @@
 from typing import Annotated, Any, Literal
 
-from fastapi import Header
+from fastapi import Header, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
@@ -44,3 +44,19 @@ class HeaderParams:
                            task_id: TaskID,
                            company_id: CompanyID) -> CommonHeaders:
         return CommonHeaders(token=token, task_id=task_id, company_id=company_id)
+
+
+class PageQueryParams:
+    Page = Annotated[int, Query(description="页码", example=1, alias="page")]
+    Limit = Annotated[int, Query(description="每页数量", example=10, alias="limit")]
+    Search = Annotated[str, Query(description="搜索关键字", example="张三", alias="search")]
+
+    @staticmethod
+    def get_page_query_params(page: Page = None,
+                              limit: Limit = None,
+                              search: Search = None):
+        return {
+            'page': page,
+            'limit': limit,
+            'search': search
+        }

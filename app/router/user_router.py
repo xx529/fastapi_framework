@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Body, Depends, Query
 
-from app.schema.base import HeaderParams, OkResponse
-from app.schema.user import (
-    CreateUserResponse, UserDetailResponse, UserInfo, UserListResponse,
-)
+from app.schema.base import HeaderParams, OkResponse, PageQueryParams
+from app.schema.user import CreateUserResponse, UserDetailResponse, UserInfo, UserListResponse
 from app.service.user_service import UserService
-
 
 router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(HeaderParams.get_common_headers)])
 
@@ -77,9 +74,10 @@ def user_list(
         task_id: HeaderParams.TaskID,
         token: HeaderParams.Token,
         company_id: HeaderParams.CompanyID,
-        page: int = Query(default=1, description='页码', ge=1),
-        limit: int = Query(default=10, description='每页数量', ge=1)
+        page: PageQueryParams.Page = 1,
+        limit: PageQueryParams.Limit = 10,
+        search: PageQueryParams.Search = None,
 ):
-    print(token, task_id, company_id)
+    print(token, task_id, company_id, search)
     data = UserService.list(page=page, limit=limit)
     return UserListResponse(data=data)
