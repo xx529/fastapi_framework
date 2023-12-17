@@ -4,5 +4,5 @@ from app.apiserver.exception import CommonException
 
 myapp = FastApiServer.create_app()
 
-slog = service_logger
+log = service_logger
 rlog = request_logger

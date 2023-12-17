@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, Depends, Query
 
 from app.schema.base import HeaderParams, OkResponse, PageQueryParams
-from app.schema.user import CreateUserResponse, UserDetailResponse, UserInfo, UserListResponse
+from app.schema.user import UserCreateResponse, UserDetailResponse, UserInfo, UserListResponse
 from app.service.user_service import UserService
 
 router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(HeaderParams.get_common_headers)])
@@ -11,7 +11,7 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(HeaderPara
     path='/user',
     summary='创建用户',
     description='创建用户通用接口',
-    response_model=CreateUserResponse
+    response_model=UserCreateResponse
 )
 def user_add(
         name: str = Body(description="用户名", examples=["张三"]),
@@ -19,7 +19,7 @@ def user_add(
         age: int = Body(default=None, description="年龄", ge=0, examples=[18]),
 ):
     user_id = UserService.create(name=name, city=city, age=age)
-    return CreateUserResponse(data=user_id)
+    return UserCreateResponse(data=user_id)
 
 
 @router.delete(

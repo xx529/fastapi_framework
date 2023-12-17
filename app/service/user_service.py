@@ -21,8 +21,8 @@ class UserService:
         UserInfoRepo().get_user_info(1)
         OrderInfoRepo().get_order_info(1)
 
-        # TaskRecordRepo(task_id=11).create_tabel()
-        # TaskRecordRepo(task_id=11)
+        TaskRecordRepo(task_id=11).create_tabel()
+        TaskRecordRepo(task_id=11)
 
         return data
 

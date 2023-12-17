@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from app.config import PgDataBaseConf
+from app.apiserver.logger import service_logger
 
 engine = PgDataBaseConf.engine
 
@@ -15,8 +16,6 @@ Base = declarative_base()
 
 
 class BaseTableAttr(Base):
-    TABLE_NAME: str = None
-    SCHEMA: str = None
     ENGINE: Engine = None
 
     __abstract__ = True
@@ -32,7 +31,11 @@ class BaseTableAttr(Base):
 
     @classmethod
     def create(cls):
-        cls.__table__.create(bind=cls.engine)
+        if not cls.is_exists():
+            service_logger.info(f'create table: {cls.__tablename__}')
+            cls.__table__.create(bind=cls.ENGINE)
+        else:
+            service_logger.info(f'exist table: {cls.__tablename__}')
 
     @classmethod
     def is_exists(cls):
@@ -44,14 +47,12 @@ class SingletonTable(BaseTableAttr):
     __tablename__: str
 
 
-class MultipleTable(BaseTableAttr):
-    __abstract__ = True
-    __tablename__: str
+class TableFactory:
     __basename__: str
-    instances: Dict[str, Base] = {}
+    instances: Dict[str, SingletonTable] = {}
 
     @classmethod
-    def get_instance(cls, prefix=None, suffix=None) -> "MultipleTable":
+    def instance(cls, prefix=None, suffix=None) -> SingletonTable:
         table_name = cls.__basename__
         if prefix:
             table_name = f'{prefix}_{table_name}'
@@ -60,8 +61,7 @@ class MultipleTable(BaseTableAttr):
 
         if table_name not in cls.instances:
             print(f'create instance class: {table_name}')
-            instance = type(table_name, (Base, cls), {'__tablename__': table_name})
-            cls.instances[table_name] = instance
+            cls.instances[table_name] = type(table_name, (SingletonTable, ), {'__tablename__': table_name})
         else:
             print(f'exist instance class: {table_name}')
         return cls.instances[table_name]
