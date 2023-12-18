@@ -3,9 +3,7 @@ import random
 import faker
 import pandas as pd
 
-from app.interface import OrderInfoRepo
-from app.interface import TaskRecordRepo
-from app.interface import UserInfoRepo
+# from app.interface import TaskRecordRepo
 from app.schema.user import UserId
 
 
@@ -18,11 +16,11 @@ class UserService:
                                columns=['user_id', 'name'])
         offset = (page - 1) * limit
         data = user_ls[offset: offset + limit].to_dict(orient='records')
-        UserInfoRepo().get_user_info(1)
-        OrderInfoRepo().get_order_info(1)
-
-        TaskRecordRepo(task_id=11).create_tabel()
-        TaskRecordRepo(task_id=11)
+        # UserInfoRepo().get_user_info(1)
+        # OrderInfoRepo().get_order_info(1)
+        #
+        # TaskRecordRepo(task_id=11).create_tabel()
+        # TaskRecordRepo(task_id=11)
 
         return data
 
