@@ -3,11 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.apiserver.database import Base
 from app.apiserver.exception import ExceptionClass
 from app.apiserver.logger import lifespan_logger
 from app.apiserver.middleware import MiddleWare
-from app.config import AppServerConf, DirConf, PgDataBaseConf
+from app.config import AppServerConf, DirConf
 from app.router import all_routers
 from app.schema.base import BaseResponse
 
@@ -20,13 +19,14 @@ class FastApiServer:
         app = FastAPI(version=AppServerConf.version,
                       lifespan=cls.lifespan())
         cls.init_middlewares(app)
-        cls.init_routers(app)   
+        cls.init_routers(app)
         cls.init_exception(app)
         return app
 
     @staticmethod
     def init_database() -> None:
-        Base.metadata.create_all(bind=PgDataBaseConf.engine)
+        # create_all_tables()
+        ...
 
     @staticmethod
     def init_middlewares(app: FastAPI) -> None:

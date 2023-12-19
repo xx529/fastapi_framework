@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 from dynaconf import Dynaconf
-from sqlalchemy import create_engine
 
 current_dir = Path(__file__).parent
 
@@ -55,7 +54,6 @@ class PgDataBaseConf:
     database: str = settings.pg.database
     schema: str = settings.pg.schema
     jdbcurl: str = f'postgresql://{host}:{port}/{database}?user={user}&password={password}'
-    engine = create_engine(url=jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
 
 
 class SystemInfo:
