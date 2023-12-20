@@ -9,6 +9,7 @@ from app.apiserver.middleware import MiddleWare
 from app.config import AppServerConf, DirConf
 from app.router import all_routers
 from app.schema.base import BaseResponse
+from app.interface.repo._base import create_all_pg_tables
 
 
 class FastApiServer:
@@ -25,8 +26,7 @@ class FastApiServer:
 
     @staticmethod
     def init_database() -> None:
-        # create_all_tables()
-        ...
+        create_all_pg_tables()
 
     @staticmethod
     def init_middlewares(app: FastAPI) -> None:

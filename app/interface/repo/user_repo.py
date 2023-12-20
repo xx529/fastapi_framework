@@ -1,22 +1,13 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import select
+from ._tables import UserInfo
+from ._base import BaseRepo
 
-# from app.apiserver.database import db_session, SingletonTable
-#
-#
-# # class UserInfo(SingletonTable):
-# #     __tablename__ = 'user_info'
-# #
-# #     name = Column(String(255), nullable=False, comment='用户名')
-# #     age = Column(Integer, nullable=False, comment='年龄')
-# #     gender = Column(String(1), nullable=False, comment='性别')
-#
-#
-# class UserInfoRepo:
-#
-#     @staticmethod
-#     @db_session
-#     def get_user_info(db, user_id):
-#         print(id(db))
-#         print(user_id)
-#         print('----')
-#         print(db.query(UserInfo).filter(UserInfo.id == user_id).count())
+
+class UserInfoRepo(BaseRepo):
+
+    def __init__(self):
+        self.t: UserInfo = UserInfo.instance()
+
+    def select_by_id(self, user_id):
+        stmt = select(self.t).where(self.t.id == user_id)
+        return self.pull(stmt)
