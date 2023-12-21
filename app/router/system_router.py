@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Path, Query
 
-from app.apiserver.exception import CommonException
+from app.apiserver.exception import AppException
 from app.schema.base import HtmlResponse, StrResponse
 from app.service.system_service import LogService
 
@@ -47,7 +47,7 @@ def log_service_detail(
 async def error_demo():
     num = random.random()
     if num > 0.8:
-        raise CommonException.Demo(detail='this is demo')
+        raise AppException.Demo(detail='this is demo')
     if num > 0.4:
-        raise CommonException.Random(detail='this is random')
+        raise AppException.Random(detail='this is random')
     return StrResponse(data='ok')

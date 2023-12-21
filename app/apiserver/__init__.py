@@ -1,8 +1,8 @@
-from app.apiserver.server import FastApiServer
+from app.apiserver.server import HangServer
 from app.apiserver.logger import service_logger, request_logger
-from app.apiserver.exception import CommonException
+from app.apiserver.exception import AppException
 
-myapp = FastApiServer.create_app()
+myapp = HangServer.create_app()
 
 slog = service_logger
 rlog = request_logger

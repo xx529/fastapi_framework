@@ -3,20 +3,22 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.apiserver.exception import ExceptionClass
+from app.apiserver.exception import AppException, AppExceptionClass
 from app.apiserver.logger import lifespan_logger
 from app.apiserver.middleware import MiddleWare
 from app.config import AppServerConf, DirConf
+from app.interface.repo._base import create_all_pg_tables
 from app.router import all_routers
 from app.schema.base import BaseResponse
-from app.interface.repo._base import create_all_pg_tables
 
 
-class FastApiServer:
+class HangServer:
 
     @classmethod
     def create_app(cls) -> FastAPI:
         cls.init_database()
+        cls.init_redis()
+        cls.init_kafka()
         app = FastAPI(version=AppServerConf.version,
                       lifespan=cls.lifespan())
         cls.init_middlewares(app)
@@ -27,6 +29,14 @@ class FastApiServer:
     @staticmethod
     def init_database() -> None:
         create_all_pg_tables()
+
+    @staticmethod
+    def init_redis() -> None:
+        ...
+
+    @staticmethod
+    def init_kafka() -> None:
+        ...
 
     @staticmethod
     def init_middlewares(app: FastAPI) -> None:
@@ -40,10 +50,22 @@ class FastApiServer:
 
     @staticmethod
     def init_exception(app: FastAPI) -> None:
-        @app.exception_handler(ExceptionClass)
-        async def server_exception_handler(request: Request, exc: ExceptionClass):
-            res = BaseResponse(errcode=exc.errcode, errmsg=exc.errmsg, detail=exc.detail, data='')
+        @app.exception_handler(AppExceptionClass)
+        async def server_exception_handler(request: Request, exc: AppExceptionClass):
+            res = BaseResponse(errcode=exc.errcode,
+                               errmsg=exc.errmsg,
+                               detail=exc.detail,
+                               data='')
             return JSONResponse(status_code=exc.status_code,
+                                content=res.model_dump())
+
+        @app.exception_handler(Exception)
+        async def unknown_exception_handler(request: Request, exc: Exception):
+            res = BaseResponse(errcode=AppException.Unknown.value.errcode,
+                               errmsg=AppException.Unknown.value.errmsg,
+                               detail=AppException.Unknown.value.errmsg,
+                               data='')
+            return JSONResponse(status_code=AppException.Unknown.value.status_code,
                                 content=res.model_dump())
 
     @classmethod
