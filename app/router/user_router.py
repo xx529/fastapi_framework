@@ -78,6 +78,5 @@ def user_list(
         limit: PageQueryParams.Limit = 10,
         search: PageQueryParams.Search = None,
 ):
-    print(token, task_id, company_id, search)
-    data = UserService.list(page=page, limit=limit)
+    data = UserService.list(page=page, limit=limit, search=search)
     return UserListResponse(data=data)

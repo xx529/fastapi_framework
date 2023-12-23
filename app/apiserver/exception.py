@@ -21,6 +21,7 @@ class AppExceptionClass(Exception):
 class AppException(Enum):
     Unknown = ErrorMsg(errcode=10000, errmsg='未知错误')
     Runtime = ErrorMsg(errcode=10001, errmsg='运行时错误')
+    Database = ErrorMsg(errcode=10002, errmsg='数据库错误')
     Demo = ErrorMsg(errcode=9999, errmsg='demo问题')
     Random = ErrorMsg(errcode=9998, errmsg='随机报错')
     InvalidPathParameter = ErrorMsg(errcode=9997, errmsg='路由参数错误')

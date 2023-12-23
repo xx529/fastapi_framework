@@ -10,8 +10,10 @@ from app.schema.user import UserId
 class UserService:
 
     @staticmethod
-    def list(page, limit):
-        UserInfoRepo().select_by_id(user_id=1)
+    def list(page, limit, search):
+        user_info = UserInfoRepo().select_by_id(user_id=1, search=search)
+        print(pd.DataFrame(user_info))
+        print(user_info)
         f = faker.Faker(locale='zh_CN')
         user_ls = pd.DataFrame(data=[(x, f.name()) for x in range(100)],
                                columns=['user_id', 'name'])

@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.apiserver.logger import service_logger as slog
 from app.config import PgDataBaseConf
+from app.apiserver.exception import AppException
 
 Base = declarative_base()
 engine = create_engine(url=PgDataBaseConf.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
@@ -81,9 +82,14 @@ class BaseTable(Base):
 
 class BaseRepo(ABC):
 
-    def pull(self, stmt):
-        print(2334234234)
-        ...
-
-    def execute(self):
-        ...
+    @staticmethod
+    def execute(stmt):
+        db = SessionLocal()
+        try:
+            slog.info(stmt.compile(compile_kwargs={"literal_binds": True}))
+            return db.execute(stmt)
+        except Exception as e:
+            slog.error(f'pull error: {e}')
+            db.rollback()
+            db.close()
+            raise AppException.Database(detail=str(e))
