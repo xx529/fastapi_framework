@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Annotated, Any, Literal
 
 from fastapi import Header, Query
@@ -60,3 +61,10 @@ class PageQueryParams:
             'limit': limit,
             'search': search
         }
+
+
+class PullDataFormat(str, Enum):
+    RAW = 'RAW'
+    PANDAS = 'PANDAS',
+    RECORDS = 'RECORDS'
+    PYDANTIC = 'PYDANTIC'

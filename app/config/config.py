@@ -71,3 +71,7 @@ class AppServerConf:
 
 class Resource:
     demo: Path = DirConf.resource / 'demo.txt'
+
+
+class ExternalApiConf:
+    ...

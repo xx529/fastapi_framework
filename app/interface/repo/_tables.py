@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Float, Integer, String, TIMESTAMP
 
-from app.interface.repo._base import BaseTable, db_session
+from app.interface.repo._base import BaseTable
 
 
 class ItemInfo(BaseTable):
@@ -35,29 +35,3 @@ class UserInfo(BaseTable):
     name = Column(String(255), nullable=False, comment='用户名')
     age = Column(Integer, nullable=False, comment='年龄')
     gender = Column(String(1), nullable=False, comment='性别')
-
-
-class TaskRecordRepo:
-
-    def __init__(self, task_id):
-        self.t: TaskRecord = TaskRecord.instance(task_id=task_id)
-
-    def create_tabel(self):
-        self.t.create()
-
-    @db_session
-    def select(self, db, task_id):
-
-        result = (db.query(self.t.task_type,
-                           self.t.task_status)
-                  .filter(self.t.task_status == '333'))
-        return result
-
-
-t = TaskRecordRepo(task_id=11)
-
-t.select(task_id=1)
-
-
-print(t.t.is_exists())
-

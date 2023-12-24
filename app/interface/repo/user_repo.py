@@ -1,6 +1,7 @@
 from sqlalchemy import select, text
-from ._tables import UserInfo
+
 from ._base import BaseRepo
+from ._tables import UserInfo
 
 
 class UserInfoRepo(BaseRepo):

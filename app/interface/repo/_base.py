@@ -1,14 +1,16 @@
 from abc import ABC
-from contextlib import contextmanager
 from typing import Dict
 
+import pandas as pd
+from pydantic import BaseModel
 from sqlalchemy import BIGINT, Boolean, Column, create_engine, DateTime, func, inspect, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+from app.apiserver.exception import AppException
 from app.apiserver.logger import service_logger as slog
 from app.config import PgDataBaseConf
-from app.apiserver.exception import AppException
+from app.schema.base import PullDataFormat
 
 Base = declarative_base()
 engine = create_engine(url=PgDataBaseConf.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
@@ -19,23 +21,6 @@ table_class_instance: Dict[str, Base] = {}
 
 def create_all_pg_tables():
     Base.metadata.create_all(bind=engine)
-
-
-@contextmanager
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-def db_session(function):
-    def wrapper(self: object, *args: object, **kwargs: object) -> object:
-        with get_db() as db:
-            return function(self, db, *args, **kwargs)
-
-    return wrapper
 
 
 class BaseTable(Base):
@@ -83,13 +68,22 @@ class BaseTable(Base):
 class BaseRepo(ABC):
 
     @staticmethod
-    def execute(stmt):
+    def execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
         db = SessionLocal()
         try:
             slog.info(stmt.compile(compile_kwargs={"literal_binds": True}))
-            return db.execute(stmt)
+            result = db.execute(stmt)
+            match output:
+                case PullDataFormat.RAW:
+                    return result
+                case PullDataFormat.PANDAS:
+                    return pd.DataFrame(result)
+                case PullDataFormat.RECORDS:
+                    return pd.DataFrame(result).to_dict(orient='records')
         except Exception as e:
             slog.error(f'pull error: {e}')
             db.rollback()
-            db.close()
             raise AppException.Database(detail=str(e))
+        finally:
+            slog.info('close db session')
+            db.close()
