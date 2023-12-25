@@ -83,7 +83,7 @@ class BaseRepo(ABC):
         except Exception as e:
             slog.error(f'pull error: {e}')
             db.rollback()
-            raise AppException.Database(detail=str(e))
+            raise AppException.DatabaseError(detail=str(e))
         finally:
             slog.info('close db session')
             db.close()

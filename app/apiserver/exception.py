@@ -20,15 +20,16 @@ class AppExceptionClass(Exception):
 
 class AppException(Enum):
     Unknown = ErrorMsg(errcode=10000, errmsg='未知错误')
-    Runtime = ErrorMsg(errcode=10001, errmsg='运行时错误')
-    Database = ErrorMsg(errcode=10002, errmsg='数据库错误')
+    RuntimeError = ErrorMsg(errcode=10001, errmsg='运行时错误')
+    DatabaseError = ErrorMsg(errcode=10002, errmsg='数据库错误')
+    RemoteCallError = ErrorMsg(errcode=10003, errmsg='远程调用错误')
     Demo = ErrorMsg(errcode=9999, errmsg='demo问题')
     Random = ErrorMsg(errcode=9998, errmsg='随机报错')
     InvalidPathParameter = ErrorMsg(errcode=9997, errmsg='路由参数错误')
     InvalidHeaderParameter = ErrorMsg(errcode=9997, errmsg='请求头参数错误')
     InvalidBodyParameter = ErrorMsg(errcode=9997, errmsg='请求体错误')
 
-    def __call__(self, detail) -> AppExceptionClass:
+    def __call__(self, detail='') -> AppExceptionClass:
         return AppExceptionClass(detail=detail,
                                  errmsg=self.value.errmsg,
                                  errcode=self.value.errcode,

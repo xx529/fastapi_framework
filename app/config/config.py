@@ -73,5 +73,12 @@ class Resource:
     demo: Path = DirConf.resource / 'demo.txt'
 
 
-class ExternalApiConf:
-    ...
+class MyAppApiConf:
+    protocol: str = settings.external_api.myappapi.protocol
+    host: str = settings.external_api.myappapi.host
+    port: int = settings.external_api.myappapi.port
+    prefix: str = settings.external_api.myappapi.prefix
+
+    @classmethod
+    def url(cls, endpoint):
+        return f'{cls.protocol}://{cls.host}:{cls.port}{cls.prefix}{endpoint}'
