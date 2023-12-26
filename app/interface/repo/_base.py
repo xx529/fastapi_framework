@@ -2,7 +2,6 @@ from abc import ABC
 from typing import Dict
 
 import pandas as pd
-from pydantic import BaseModel
 from sqlalchemy import BIGINT, Boolean, Column, create_engine, DateTime, func, inspect, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker

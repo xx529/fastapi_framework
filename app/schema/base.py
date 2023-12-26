@@ -3,18 +3,18 @@ from typing import Annotated, Any, Literal
 
 from fastapi import Header, Query
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class BaseResponse(BaseModel):
     errcode: int = 0
     errmsg: str = ''
     detail: str = ''
-    data: Any = None
+    data: Any = ...
 
 
 class JsonResponse(BaseResponse):
-    data: dict | str
+    data: dict | list
 
 
 class StrResponse(BaseResponse):
@@ -23,6 +23,14 @@ class StrResponse(BaseResponse):
 
 class OkResponse(BaseResponse):
     data: Literal["ok"] = 'ok'
+
+
+class BoolResponse(BaseResponse):
+    data: bool = Field(description="成功: true，失败: false", examples=[True])
+
+
+class NullResponse(BaseResponse):
+    data: None = Field(default=None, description="空返回", examples=[None])
 
 
 class HtmlResponse(HTMLResponse):
@@ -56,11 +64,7 @@ class PageQueryParams:
     def get_page_query_params(page: Page = None,
                               limit: Limit = None,
                               search: Search = None):
-        return {
-            'page': page,
-            'limit': limit,
-            'search': search
-        }
+        return {'page': page, 'limit': limit, 'search': search}
 
 
 class PullDataFormat(str, Enum):

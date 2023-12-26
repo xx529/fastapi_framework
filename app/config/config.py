@@ -67,6 +67,7 @@ class AppServerConf:
     version: str = settings.VERSION
     host: str = settings.appserver.host
     port: int = settings.appserver.port
+    prefix: str = '/api/v1'
 
 
 class Resource:
@@ -74,10 +75,10 @@ class Resource:
 
 
 class MyAppApiConf:
-    protocol: str = settings.external_api.myappapi.protocol
-    host: str = settings.external_api.myappapi.host
-    port: int = settings.external_api.myappapi.port
-    prefix: str = settings.external_api.myappapi.prefix
+    protocol: str = settings.external_api.myapp.protocol
+    host: str = settings.external_api.myapp.host
+    port: int = settings.external_api.myapp.port
+    prefix: str = settings.external_api.myapp.prefix
 
     @classmethod
     def url(cls, endpoint):

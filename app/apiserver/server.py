@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter
 from fastapi.responses import JSONResponse
 
 from app.apiserver.exception import AppException, AppExceptionClass
@@ -45,8 +45,10 @@ class HangServer:
 
     @staticmethod
     def init_routers(app: FastAPI) -> None:
+        base_router = APIRouter(prefix=AppServerConf.prefix)
         for r in all_routers:
-            app.include_router(r)
+            base_router.include_router(r)
+        app.include_router(base_router)
 
     @staticmethod
     def init_exception(app: FastAPI) -> None:

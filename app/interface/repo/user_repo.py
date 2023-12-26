@@ -12,7 +12,9 @@ class UserInfoRepo(BaseRepo):
     def select_by_id(self, user_id, search=None):
         stmt = (select(self.t.name,
                        self.t.age,
-                       self.t.gender)
+                       self.t.gender,
+                       self.t.sex)
                 .filter(self.t.id != user_id,
+                        self.t.sex != '男',
                         self.t.name.like(f'%{search}%') if search else text('1=1')))
         return self.execute(stmt)

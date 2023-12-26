@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Depends, Query
 
-from app.schema.base import HeaderParams, OkResponse, PageQueryParams
+from app.schema.base import HeaderParams, OkResponse, PageQueryParams, BoolResponse
 from app.schema.user import UserCreateResponse, UserDetailResponse, UserInfo, UserListResponse
 from app.service.user_service import UserService
 
@@ -25,7 +25,7 @@ def user_add(
 @router.delete(
     path='/user',
     summary='删除用户',
-    description='删除用户通用接口',
+    description='删除用户通用接口，此接口是物理删除',
     response_model=OkResponse
 )
 def user_delete(
@@ -39,7 +39,7 @@ def user_delete(
     path='/user',
     summary='更新用户',
     description='更新用户通用接口',
-    response_model=OkResponse
+    response_model=BoolResponse
 )
 def user_update(
         user_id: int = Body(description='用户ID', ge=0),
@@ -48,7 +48,7 @@ def user_update(
         age: int = Body(description='年龄', ge=0),
 ):
     UserService.update(user_id=user_id, name=name, city=city, age=age)
-    return OkResponse()
+    return BoolResponse(data=True)
 
 
 @router.get(

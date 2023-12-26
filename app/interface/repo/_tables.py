@@ -1,6 +1,19 @@
 from sqlalchemy import Column, Float, Integer, String, TIMESTAMP
+from sqlalchemy.ext.declarative import declared_attr
 
 from app.interface.repo._base import BaseTable
+
+
+class UserInfo(BaseTable):
+    __tablename__ = 'user_info'
+
+    name = Column(String(255), nullable=False, comment='用户名')
+    age = Column(Integer, nullable=False, comment='年龄')
+    gender = Column(String(1), nullable=False, comment='性别')
+
+    @declared_attr
+    def sex(self):
+        return self.gender.label('sex')
 
 
 class ItemInfo(BaseTable):
@@ -27,11 +40,3 @@ class TaskRecord(BaseTable):
     task_name = Column(String(255), nullable=False, comment='任务名称')
     task_type = Column(String(255), nullable=False, comment='任务类型')
     task_status = Column(Integer, nullable=False, comment='任务状态')
-
-
-class UserInfo(BaseTable):
-    __tablename__ = 'user_info'
-
-    name = Column(String(255), nullable=False, comment='用户名')
-    age = Column(Integer, nullable=False, comment='年龄')
-    gender = Column(String(1), nullable=False, comment='性别')

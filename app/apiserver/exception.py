@@ -19,15 +19,20 @@ class AppExceptionClass(Exception):
 
 
 class AppException(Enum):
-    Unknown = ErrorMsg(errcode=10000, errmsg='未知错误')
-    RuntimeError = ErrorMsg(errcode=10001, errmsg='运行时错误')
-    DatabaseError = ErrorMsg(errcode=10002, errmsg='数据库错误')
-    RemoteCallError = ErrorMsg(errcode=10003, errmsg='远程调用错误')
-    Demo = ErrorMsg(errcode=9999, errmsg='demo问题')
-    Random = ErrorMsg(errcode=9998, errmsg='随机报错')
-    InvalidPathParameter = ErrorMsg(errcode=9997, errmsg='路由参数错误')
-    InvalidHeaderParameter = ErrorMsg(errcode=9997, errmsg='请求头参数错误')
-    InvalidBodyParameter = ErrorMsg(errcode=9997, errmsg='请求体错误')
+    Unknown = ErrorMsg(errcode=9999, errmsg='未知错误')
+
+    SystemError = ErrorMsg(errcode=1000, errmsg='系统错误')
+    RuntimeError = ErrorMsg(errcode=1001, errmsg='运行时错误')
+    DatabaseError = ErrorMsg(errcode=1002, errmsg='数据库错误')
+    RemoteCallError = ErrorMsg(errcode=1003, errmsg='远程调用错误')
+
+    InvalidError = ErrorMsg(errcode=2000, errmsg='参数错误')
+    InvalidPathParameter = ErrorMsg(errcode=2001, errmsg='路由参数错误')
+    InvalidHeaderParameter = ErrorMsg(errcode=2002, errmsg='请求头参数错误')
+    InvalidBodyParameter = ErrorMsg(errcode=2003, errmsg='请求体错误')
+
+    Demo = ErrorMsg(errcode=3000, errmsg='demo问题')
+    Random = ErrorMsg(errcode=3001, errmsg='随机报错')
 
     def __call__(self, detail='') -> AppExceptionClass:
         return AppExceptionClass(detail=detail,
