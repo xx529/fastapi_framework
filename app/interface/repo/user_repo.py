@@ -9,12 +9,13 @@ class UserInfoRepo(BaseRepo):
     def __init__(self):
         self.t: UserInfo = UserInfo.instance()
 
-    def select_by_id(self, user_id, search=None):
-        stmt = (select(self.t.name,
-                       self.t.age,
-                       self.t.gender,
-                       self.t.sex)
-                .filter(self.t.id != user_id,
-                        self.t.sex != '男',
-                        self.t.name.like(f'%{search}%') if search else text('1=1')))
+    def select(self, user_id):
+        stmt = select(self.t).filter(self.t.id != user_id)
         return self.execute(stmt)
+
+    def list(self, page: int, limit: int, order_by: str, order_type, search=None):
+        stmt = (select(*self.t.info_columns())
+                .filter(self.t.name.like(f'%{search}%') if search else text('1=1'))
+                .order_by(order_by))
+
+        return self.execute(stmt.limit(limit).offset((page - 1) * limit))

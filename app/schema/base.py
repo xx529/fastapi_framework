@@ -37,6 +37,11 @@ class HtmlResponse(HTMLResponse):
     status_code = 200
 
 
+class OrderTypeEnum(str, Enum):
+    asc = 'asc'
+    desc = 'desc'
+
+
 class CommonHeaders(BaseModel):
     token: str
     task_id: int
@@ -59,6 +64,8 @@ class PageQueryParams:
     Page = Annotated[int, Query(description="页码", example=1, alias="page")]
     Limit = Annotated[int, Query(description="每页数量", example=10, alias="limit")]
     Search = Annotated[str, Query(description="搜索关键字", example="张三", alias="search")]
+    OrderBy = Annotated[str, Query(description="排序字段", example="id", alias="order_by")]
+    OrderType = Annotated[OrderTypeEnum, Query(description="排序方式", example="asc", alias="order_type")]
 
     @staticmethod
     def get_page_query_params(page: Page = None,

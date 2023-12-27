@@ -71,12 +71,11 @@ def user_detail(
     response_model=UserListResponse
 )
 def user_list(
-        task_id: HeaderParams.TaskID,
-        token: HeaderParams.Token,
-        company_id: HeaderParams.CompanyID,
         page: PageQueryParams.Page = 1,
         limit: PageQueryParams.Limit = 10,
+        order_by: PageQueryParams.OrderBy = 'create_at',
+        order_type: PageQueryParams.OrderType = 'desc',
         search: PageQueryParams.Search = None,
 ):
-    data = UserService.list(page=page, limit=limit, search=search)
+    data = UserService.list(page=page, limit=limit, search=search, order_by=order_by, order_type=order_type)
     return UserListResponse(data=data)

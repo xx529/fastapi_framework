@@ -10,17 +10,15 @@ from app.schema.user import UserId
 class UserService:
 
     @staticmethod
-    def list(page, limit, search):
-        user_info = UserInfoRepo().select_by_id(user_id=1, search=search)
-        task_info = TaskRecordRepo(task_id=11).select_by_id(row_id=5)
-
-        f = faker.Faker(locale='zh_CN')
-        user_ls = pd.DataFrame(data=[(x, f.name()) for x in range(100)],
-                               columns=['user_id', 'name'])
-        offset = (page - 1) * limit
-        data = user_ls[offset: offset + limit].to_dict(orient='records')
-
-        return data
+    def list(page, limit, order_by, order_type, search):
+        df_list = UserInfoRepo().list(
+            page=page,
+            limit=limit,
+            order_by=order_by,
+            order_type=order_type,
+            search=search
+        )
+        return df_list.to_dict(orient='records')
 
     @staticmethod
     def detail(user_id):

@@ -20,8 +20,9 @@ class UserInfo(BaseModel):
 
 
 class UserInfoForList(BaseModel):
-    user_id: UserId
     name: UserName
+    age: UserAge
+    gender: UserGender
 
 
 class UserListResponse(JsonResponse):
