@@ -27,6 +27,7 @@ class UserInfoForList(BaseModel):
 
 class UserListResponse(JsonResponse):
     data: list[UserInfoForList] = Field(description='用户列表')
+    total: int = Field(description='用户总数')
 
 
 class UserDetailResponse(JsonResponse):

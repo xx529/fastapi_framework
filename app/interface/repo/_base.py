@@ -3,7 +3,7 @@ from typing import Dict
 
 import pandas as pd
 from sqlalchemy import BIGINT, Boolean, Column, create_engine, DateTime, func, inspect, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import sessionmaker
 
 from app.apiserver.exception import AppException
@@ -63,6 +63,10 @@ class BaseTable(Base):
     def is_exists(cls):
         return inspect(cls._engine).has_table(cls.__tablename__, schema=PgDataBaseConf.schema)
 
+    @declared_attr
+    def total_count(self):
+        return func.count(self.id).over().label('total_count')
+
 
 class BaseRepo(ABC):
 
@@ -80,9 +84,17 @@ class BaseRepo(ABC):
                 case PullDataFormat.RECORDS:
                     return pd.DataFrame(result).to_dict(orient='records')
         except Exception as e:
-            slog.error(f'pull error: {e}')
+            slog.error(f'execute error: {e}')
             db.rollback()
             raise AppException.DatabaseError(detail=str(e))
         finally:
             slog.info('close db session')
             db.close()
+
+    @staticmethod
+    def split_total_column(df, col='total_count'):
+        if len(df) == 0:
+            total = 0
+        else:
+            total = df.pop(col).unique()[0]
+        return df, total

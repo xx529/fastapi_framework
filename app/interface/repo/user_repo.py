@@ -14,8 +14,10 @@ class UserInfoRepo(BaseRepo):
         return self.execute(stmt)
 
     def list(self, page: int, limit: int, order_by: str, order_type, search=None):
-        stmt = (select(*self.t.info_columns())
+        stmt = (select(*self.t.info_columns(),
+                       self.t.total_count)
                 .filter(self.t.name.like(f'%{search}%') if search else text('1=1'))
                 .order_by(order_by))
 
-        return self.execute(stmt.limit(limit).offset((page - 1) * limit))
+        df = self.execute(stmt.limit(limit).offset((page - 1) * limit))
+        return self.split_total_column(df)

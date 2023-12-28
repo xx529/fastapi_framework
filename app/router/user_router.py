@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Body, Depends, Query
 
-from app.schema.base import HeaderParams, OkResponse, PageQueryParams, BoolResponse
+
+from typing import Literal
+from app.schema.base import HeaderParams, OkResponse, PageQueryParams, BoolResponse, OrderTypeEnum
 from app.schema.user import UserCreateResponse, UserDetailResponse, UserInfo, UserListResponse
 from app.service.user_service import UserService
 
@@ -71,11 +73,11 @@ def user_detail(
     response_model=UserListResponse
 )
 def user_list(
-        page: PageQueryParams.Page = 1,
-        limit: PageQueryParams.Limit = 10,
-        order_by: PageQueryParams.OrderBy = 'create_at',
-        order_type: PageQueryParams.OrderType = 'desc',
-        search: PageQueryParams.Search = None,
+        page: int = Query(default=1, description="页码"),
+        limit: int = Query(default=10, description="每页数量"),
+        order_type: OrderTypeEnum = Query(default='desc', description="排序方式"),
+        order_by: str = Query(default='create_at', description="排序字段"),
+        search: str = Query(default=None, description="搜索关键字", example='张三'),
 ):
-    data = UserService.list(page=page, limit=limit, search=search, order_by=order_by, order_type=order_type)
-    return UserListResponse(data=data)
+    data, total = UserService.list(page=page, limit=limit, search=search, order_by=order_by, order_type=order_type)
+    return UserListResponse(data=data, total=total)
