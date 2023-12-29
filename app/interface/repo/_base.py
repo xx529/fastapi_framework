@@ -1,15 +1,16 @@
 from abc import ABC
+from datetime import datetime
 from typing import Dict
 
 import pandas as pd
-from sqlalchemy import BIGINT, Boolean, Column, create_engine, DateTime, func, inspect, String
+from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import sessionmaker
 
 from app.apiserver.exception import AppException
 from app.apiserver.logger import service_logger as slog
 from app.config import PgDataBaseConf
-from app.schema.base import PullDataFormat
+from app.schema.base import OrderTypeEnum, PullDataFormat
 
 Base = declarative_base()
 engine = create_engine(url=PgDataBaseConf.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
@@ -29,12 +30,12 @@ class BaseTable(Base):
     __table_args__ = {'schema': PgDataBaseConf.schema}
     _engine = engine
 
-    id = Column(BIGINT, primary_key=True, autoincrement=True, comment="唯一ID值")
-    create_at = Column(DateTime, default=func.now(), nullable=False, comment="创建时间")
-    create_by = Column(String(64), default=func.now(), index=False, nullable=False, comment="创建者")
-    update_at = Column(DateTime, onupdate=func.now(), comment="最后更新时间")
-    update_by = Column(String(64), index=False, comment="最后更新者")
-    del_flag = Column(Boolean, index=False, default=False, nullable=False, comment="安全删除标记")
+    id = Column(BIGINT, primary_key=True, autoincrement=True, comment='唯一ID值')
+    create_at = Column(DateTime, default=datetime.now(), nullable=False, comment='创建时间')
+    create_by = Column(String(64), default='admin', index=False, nullable=False, comment='创建者')
+    update_at = Column(DateTime, onupdate=datetime.now(), comment='最后更新时间')
+    update_by = Column(String(64), index=False, comment='最后更新者')
+    del_flag = Column(Boolean, index=False, default=False, nullable=False, comment='安全删除标记')
 
     @classmethod
     def instance(cls, **kwargs) -> Base:
@@ -74,7 +75,7 @@ class BaseRepo(ABC):
     def execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
         db = SessionLocal()
         try:
-            slog.info(stmt.compile(compile_kwargs={"literal_binds": True}))
+            slog.info(stmt.compile(compile_kwargs={'literal_binds': True}))
             result = db.execute(stmt)
             match output:
                 case PullDataFormat.RAW:
@@ -98,3 +99,21 @@ class BaseRepo(ABC):
         else:
             total = df.pop(col).unique()[0]
         return df, total
+
+    @staticmethod
+    def order_expr(order_by: str, order_type: OrderTypeEnum | None = None):
+        match order_type:
+            case OrderTypeEnum.asc:
+                return asc(order_by)
+            case OrderTypeEnum.desc:
+                return desc(order_by)
+            case _:
+                return desc(order_by)
+
+    @staticmethod
+    def always_true():
+        return text('1=1')
+
+    @staticmethod
+    def always_false():
+        return text('1!=1')

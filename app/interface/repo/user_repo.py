@@ -1,4 +1,4 @@
-from sqlalchemy import select, text
+from sqlalchemy import select
 
 from ._base import BaseRepo
 from ._tables import UserInfo
@@ -16,8 +16,8 @@ class UserInfoRepo(BaseRepo):
     def list(self, page: int, limit: int, order_by: str, order_type, search=None):
         stmt = (select(*self.t.info_columns(),
                        self.t.total_count)
-                .filter(self.t.name.like(f'%{search}%') if search else text('1=1'))
-                .order_by(order_by))
+                .filter(self.t.name.like(f'%{search}%') if search else self.always_true())
+                .order_by(self.order_expr(order_by, order_type)))
 
         df = self.execute(stmt.limit(limit).offset((page - 1) * limit))
         return self.split_total_column(df)

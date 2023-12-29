@@ -1,9 +1,6 @@
 import random
 
-import faker
-import pandas as pd
-
-from app.interface import UserInfoRepo, TaskRecordRepo
+from app.interface import UserInfoRepo
 from app.schema.user import UserId
 
 
@@ -11,13 +8,11 @@ class UserService:
 
     @staticmethod
     def list(page, limit, order_by, order_type, search):
-        df_list, total = UserInfoRepo().list(
-            page=page,
-            limit=limit,
-            order_by=order_by,
-            order_type=order_type,
-            search=search
-        )
+        df_list, total = UserInfoRepo().list(page=page,
+                                             limit=limit,
+                                             order_by=order_by,
+                                             order_type=order_type,
+                                             search=search)
         return df_list.to_dict(orient='records'), total
 
     @staticmethod

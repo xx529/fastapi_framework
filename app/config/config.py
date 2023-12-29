@@ -7,7 +7,9 @@ from dynaconf import Dynaconf
 
 current_dir = Path(__file__).parent
 
-files = ['general.yaml', '*.env']
+files = ['default.yaml',
+         '*.env',
+         current_dir.parent.parent / 'settings.yaml']
 
 settings = Dynaconf(root_path=current_dir,
                     envvar_prefix='APP',
