@@ -1,2 +1,18 @@
-
-
+#appserver:
+#  host: 0.0.0.0
+#  port: 8003
+#
+#pg:
+#  host: localhost
+#  port: 5432
+#  user: postgres
+#  schema: myapp
+#  password: 123456
+#  database: postgres
+#
+#external_api:
+#  myapp:
+#    host: localhost
+#    port: 8003
+#    prefix: ''
+#    protocol: http
