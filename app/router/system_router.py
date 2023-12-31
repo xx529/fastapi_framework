@@ -1,8 +1,7 @@
 import random
-from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Path, Query
 
 from app.apiserver.exception import AppException
 from app.schema.base import HtmlResponse, StrResponse

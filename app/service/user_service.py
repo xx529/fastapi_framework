@@ -17,7 +17,7 @@ class UserService:
 
     @staticmethod
     def detail(user_id):
-        data = dict(user_id=user_id, name='张三', city='北京', age=18, gender='男')
+        data = UserInfoRepo().detail(user_id=user_id)
         return data
 
     @staticmethod

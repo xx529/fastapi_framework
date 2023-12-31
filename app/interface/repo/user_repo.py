@@ -1,7 +1,9 @@
+from app.apiserver.exception import AppException
 from sqlalchemy import select
 
 from ._base import BaseRepo
 from ._tables import UserInfo
+from app.schema.base import PullDataFormat
 
 
 class UserInfoRepo(BaseRepo):
@@ -21,3 +23,15 @@ class UserInfoRepo(BaseRepo):
 
         df = self.execute(stmt.limit(limit).offset((page - 1) * limit))
         return self.split_total_column(df)
+
+    def detail(self, user_id: int):
+        stmt = (select(self.t.user_id,
+                       self.t.name,
+                       self.t.age,
+                       self.t.gender)
+                .where(self.t.id == user_id))
+        data = self.execute(stmt, output=PullDataFormat.RECORDS)
+        if len(data) == 0:
+            raise AppException.UserNotExist(detail=f'user_id {user_id} not exist')
+        else:
+            return data[0]

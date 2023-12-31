@@ -15,6 +15,10 @@ class UserInfo(BaseTable):
     def sex(self):
         return self.gender.label('sex')
 
+    @declared_attr
+    def user_id(self):
+        return self.id.label('user_id')
+
     @classmethod
     def info_columns(cls):
         return [cls.name, cls.age, cls.gender]

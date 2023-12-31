@@ -14,7 +14,6 @@ UserGender = Annotated[Literal['男', '女'], Field(description='用户性别', 
 class UserInfo(BaseModel):
     user_id: UserId
     name: UserName
-    city: UserCity
     age: UserAge
     gender: UserGender
 

@@ -18,7 +18,7 @@ settings = Dynaconf(root_path=current_dir,
                     lowercase_read=True,
                     merge_enabled=True)
 
-print(settings.appserver.port)
+
 class DirConf:
     base: Path = current_dir.parent.parent
     app: Path = base / 'app'
