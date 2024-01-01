@@ -1,5 +1,5 @@
 from app.apiserver.exception import AppException
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from ._base import BaseRepo
 from ._tables import UserInfo
@@ -35,3 +35,7 @@ class UserInfoRepo(BaseRepo):
             raise AppException.UserNotExist(detail=f'user_id {user_id} not exist')
         else:
             return data[0]
+
+    def delete(self, user_id: int):
+        stmt = delete(self.t).where(self.t.id == user_id)
+        self.execute(stmt)

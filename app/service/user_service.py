@@ -21,12 +21,13 @@ class UserService:
         return data
 
     @staticmethod
-    def create(name, city=None, age=None) -> UserId:
+    def create(name, age=None) -> UserId:
         return random.randint(0, 100)
 
     @staticmethod
     def delete(user_id):
-        return None
+        # UserInfoRepo().delete(user_id=user_id)
+        ...
 
     @staticmethod
     def update(user_id, name, city, age):

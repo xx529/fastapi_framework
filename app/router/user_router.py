@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Body, Depends, Query
 
-
-from typing import Literal
-from app.schema.base import HeaderParams, OkResponse, PageQueryParams, BoolResponse, OrderTypeEnum
+from app.schema.base import BoolResponse, HeaderParams, OkResponse, OrderTypeEnum
 from app.schema.user import UserCreateResponse, UserDetailResponse, UserInfo, UserListResponse
 from app.service.user_service import UserService
 
@@ -17,10 +15,9 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(HeaderPara
 )
 def user_add(
         name: str = Body(description="用户名", examples=["张三"]),
-        city: str = Body(description="城市", examples=["北京"]),
         age: int = Body(default=None, description="年龄", ge=0, examples=[18]),
 ):
-    user_id = UserService.create(name=name, city=city, age=age)
+    user_id = UserService.create(name=name, age=age)
     return UserCreateResponse(data=user_id)
 
 
