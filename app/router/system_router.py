@@ -1,9 +1,7 @@
-import asyncio
 import random
 from uuid import UUID
 
 from fastapi import APIRouter, Path, Query
-from fastapi.responses import StreamingResponse
 
 from app.apiserver.exception import AppException
 from app.schema.base import HtmlResponse, StrResponse
@@ -52,19 +50,3 @@ async def error_demo():
     if num > 0.4:
         raise AppException.Random(detail='this is random')
     return StrResponse(data='ok')
-
-
-@router.get(path='/stream')
-async def stream():
-    async def event_stream():
-        for i in range(10):
-            yield f'data: {i}\n\n'
-            await asyncio.sleep(0.5)
-
-        await asyncio.sleep(2)
-        yield 'end'
-        yield 'end2'
-        yield 'end3'
-        yield 'end4'
-
-    return StreamingResponse(event_stream(), media_type="text/event-stream")
