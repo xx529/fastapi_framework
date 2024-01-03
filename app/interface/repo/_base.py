@@ -4,6 +4,7 @@ from typing import Dict
 
 import pandas as pd
 from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import sessionmaker
 
@@ -15,6 +16,9 @@ from app.schema.base import OrderTypeEnum, PullDataFormat
 Base = declarative_base()
 engine = create_engine(url=PgDataBaseConf.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# async_engine = create_async_engine(url=PgDataBaseConf.jdbcurl)
+# AsyncSessionLocal = sessionmaker(class_=AsyncSession, autocommit=False, autoflush=False, bind=async_engine)
 
 table_class_instance: Dict[str, Base] = {}
 
@@ -69,6 +73,34 @@ class BaseTable(Base):
         return func.count(self.id).over().label('total_count')
 
 
+class ExecutorMixin(ABC):
+    ...
+
+
+class SqlExprMixin(ABC):
+    @staticmethod
+    def order_expr(order_by: str, order_type: OrderTypeEnum | None = None):
+        match order_type:
+            case OrderTypeEnum.asc:
+                return asc(order_by)
+            case OrderTypeEnum.desc:
+                return desc(order_by)
+            case _:
+                return desc(order_by)
+
+    @staticmethod
+    def always_true():
+        return text('1=1')
+
+    @staticmethod
+    def always_false():
+        return text('1!=1')
+
+
+class _BaseRepo(ExecutorMixin, SqlExprMixin):
+    ...
+
+
 class BaseRepo(ABC):
 
     @staticmethod
@@ -91,6 +123,10 @@ class BaseRepo(ABC):
         finally:
             slog.info('close db session')
             db.close()
+
+    # @staticmethod
+    # async def async_execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
+    #     ...
 
     @staticmethod
     def split_total_column(df, col='total_count'):
