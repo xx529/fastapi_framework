@@ -58,6 +58,16 @@ class PgDataBaseConf:
     jdbcurl: str = f'postgresql://{host}:{port}/{database}?user={user}&password={password}'
 
 
+class RedisConf:
+    host: str = settings.redis.host
+    port: int = settings.redis.port
+    db: str = settings.redis.db
+    password: str = settings.redis.password
+    max_connections: int = settings.redis.max_connections
+    project_prefix: str = settings.redis.project_prefix
+    expire_seconds: int = settings.redis.expire_seconds
+
+
 class SystemInfo:
     python: str = sys.version
     operation: str = sys.platform

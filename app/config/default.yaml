@@ -11,6 +11,15 @@ pg:
   password: 123456
   database: postgres
 
+redis:
+    host: localhost
+    port: 9999
+    db: test
+    password: 123456
+    max_connections: 10
+    project_prefix: "test:app"
+    expire_seconds: 60
+
 external_api:
   myapp:
     host: localhost

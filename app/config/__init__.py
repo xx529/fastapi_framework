@@ -3,5 +3,6 @@ from app.config.config import (
     DirConf,
     LogConf,
     PgDataBaseConf,
-    MyAppApiConf
+    MyAppApiConf,
+    RedisConf,
 )

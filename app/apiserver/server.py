@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, APIRouter
+from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.apiserver.exception import AppException, AppExceptionClass
 from app.apiserver.logger import lifespan_logger
 from app.apiserver.middleware import MiddleWare
 from app.config import AppServerConf, DirConf
+from app.interface import Redis
 from app.interface.repo._base import create_all_pg_tables
 from app.router import all_routers
 from app.schema.base import BaseResponse
@@ -32,7 +33,7 @@ class HangServer:
 
     @staticmethod
     def init_redis() -> None:
-        ...
+        Redis.startup()
 
     @staticmethod
     def init_kafka() -> None:
@@ -96,3 +97,6 @@ class HangServer:
     @staticmethod
     def on_shutdown(app: FastAPI) -> None:
         lifespan_logger.info(f'shutdown version: {app.version}')
+        lifespan_logger.info('shutdown redis')
+        Redis.shutdown()
+        # TODO 关闭异步任务
