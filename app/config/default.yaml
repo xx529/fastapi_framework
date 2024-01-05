@@ -13,9 +13,9 @@ pg:
 
 redis:
     host: localhost
-    port: 9999
-    db: test
-    password: 123456
+    port: 6379
+    db: 0
+    password: ""
     max_connections: 10
     project_prefix: "test:app"
     expire_seconds: 60

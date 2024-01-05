@@ -7,7 +7,7 @@ import redis.asyncio as async_redis
 from app.config import RedisConf
 
 
-class RedisKeyField(str, Enum):
+class RedisKeyPrefix(str, Enum):
     base = 'base'
 
 
@@ -17,8 +17,8 @@ class Redis:
     expire_seconds = RedisConf.expire_seconds
     project_prefix = RedisConf.project_prefix
 
-    def __init__(self, key_field: RedisKeyField):
-        self.key_field = key_field
+    def __init__(self, key_prefix: RedisKeyPrefix):
+        self.key_prefix = key_prefix
         self.sync_redis = sync_redis.Redis(connection_pool=self._sync_pool)
         self.async_redis = async_redis.Redis(connection_pool=self._async_pool)
 
@@ -49,7 +49,7 @@ class Redis:
         await self.async_redis.delete(name)
 
     def _get_unique_key(self, key: str):
-        return f'{self.project_prefix}:{self.key_field.value}:{key}'
+        return f'{self.project_prefix}:{self.key_prefix.value}:{key}'
 
     @classmethod
     def startup(cls):
