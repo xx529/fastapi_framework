@@ -10,11 +10,11 @@ from sqlalchemy.orm import sessionmaker
 
 from app.apiserver.exception import AppException
 from app.apiserver.logger import service_logger as slog
-from app.config import PgDataBaseConf
+from app.config import pg_connection
 from app.schema.base import OrderTypeEnum, PullDataFormat
 
 Base = declarative_base()
-engine = create_engine(url=PgDataBaseConf.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
+engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # async_engine = create_async_engine(url=PgDataBaseConf.jdbcurl)
@@ -31,7 +31,7 @@ class BaseTable(Base):
     __tablename__: str
     __abstract__ = True
     __allow_unmapped__ = True
-    __table_args__ = {'schema': PgDataBaseConf.schema}
+    __table_args__ = {'schema': pg_connection.schema}
     _engine = engine
 
     id = Column(BIGINT, primary_key=True, autoincrement=True, comment='唯一ID值')
@@ -66,7 +66,7 @@ class BaseTable(Base):
 
     @classmethod
     def is_exists(cls):
-        return inspect(cls._engine).has_table(cls.__tablename__, schema=PgDataBaseConf.schema)
+        return inspect(cls._engine).has_table(cls.__tablename__, schema=pg_connection.schema)
 
     @declared_attr
     def total_count(self):

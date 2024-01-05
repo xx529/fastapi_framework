@@ -50,3 +50,9 @@ async def error_demo():
     if num > 0.4:
         raise AppException.Random(detail='this is random')
     return StrResponse(data='ok')
+
+
+@router.get(path='/config',
+            summary='当前运行配置信息')
+async def config():
+    return '1'

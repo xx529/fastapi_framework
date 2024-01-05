@@ -4,7 +4,7 @@ from typing import Any
 import redis as sync_redis
 import redis.asyncio as async_redis
 
-from app.config import RedisConf
+from app.config import redis_connection
 
 
 class RedisKeyPrefix(str, Enum):
@@ -14,8 +14,8 @@ class RedisKeyPrefix(str, Enum):
 class Redis:
     _async_pool: async_redis.ConnectionPool = None
     _sync_pool: sync_redis.ConnectionPool = None
-    expire_seconds = RedisConf.expire_seconds
-    project_prefix = RedisConf.project_prefix
+    expire_seconds = redis_connection.expire_seconds
+    project_prefix = redis_connection.project_prefix
 
     def __init__(self, key_prefix: RedisKeyPrefix):
         self.key_prefix = key_prefix
@@ -54,19 +54,19 @@ class Redis:
     @classmethod
     def startup(cls):
         if not cls._async_pool:
-            cls._async_pool = async_redis.ConnectionPool(host=RedisConf.host,
-                                                         port=RedisConf.port,
-                                                         db=RedisConf.db,
-                                                         password=RedisConf.password,
+            cls._async_pool = async_redis.ConnectionPool(host=redis_connection.host,
+                                                         port=redis_connection.port,
+                                                         db=redis_connection.db,
+                                                         password=redis_connection.password,
                                                          decode_responses=True,
-                                                         max_connections=RedisConf.max_connections)
+                                                         max_connections=redis_connection.max_connections)
         if not cls._sync_pool:
-            cls._sync_pool = sync_redis.ConnectionPool(host=RedisConf.host,
-                                                       port=RedisConf.port,
-                                                       db=RedisConf.db,
-                                                       password=RedisConf.password,
+            cls._sync_pool = sync_redis.ConnectionPool(host=redis_connection.host,
+                                                       port=redis_connection.port,
+                                                       db=redis_connection.db,
+                                                       password=redis_connection.password,
                                                        decode_responses=True,
-                                                       max_connections=RedisConf.max_connections)
+                                                       max_connections=redis_connection.max_connections)
 
     @classmethod
     def shutdown(cls):

@@ -79,3 +79,7 @@ class PullDataFormat(str, Enum):
     PANDAS = 'PANDAS',
     RECORDS = 'RECORDS'
     PYDANTIC = 'PYDANTIC'
+
+
+class AppConfigInfo(BaseModel):
+    ...
