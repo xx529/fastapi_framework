@@ -31,7 +31,7 @@ class BaseTable(Base):
     __tablename__: str
     __abstract__ = True
     __allow_unmapped__ = True
-    __table_args__ = {'schema': pg_connection.schema}
+    __table_args__ = {'schema': pg_connection.db_schema}
     _engine = engine
 
     id = Column(BIGINT, primary_key=True, autoincrement=True, comment='唯一ID值')

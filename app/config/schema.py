@@ -24,14 +24,14 @@ settings = Dynaconf(root_path=current_dir,
 
 
 class DirConfig(BaseModel):
-    root: Path = Field(project_dir, description='项目根目录', const=True)
-    app: Path = Field(None, description='程序源码目录', const=True)
-    data: Path = Field(None, description='持久化保存的数据目录', const=True)
-    log: Path = Field(None, description='日志目录', const=True)
-    request_log: Path = Field(None, description='请求日志目录', const=True)
-    service_log: Path = Field(None, description='服务日志目录', const=True)
-    lifespan_log: Path = Field(None, description='启停日志目录', const=True)
-    resource: Path = Field(None, description='资源文件目录', const=True)
+    root: Path = Field( project_dir, description='项目根目录')
+    app: Path = Field(None, description='程序源码目录')
+    data: Path = Field(None, description='持久化保存的数据目录')
+    log: Path = Field(None, description='日志目录')
+    request_log: Path = Field(None, description='请求日志目录')
+    service_log: Path = Field(None, description='服务日志目录')
+    lifespan_log: Path = Field(None, description='启停日志目录')
+    resource: Path = Field(None, description='资源文件目录')
 
     @model_validator(mode='after')
     def set_values(self):
@@ -48,24 +48,25 @@ class DirConfig(BaseModel):
 
 
 class LoggerConfig(BaseModel):
-    name: Literal['request', 'service', 'lifespan'] = Field(description='日志名称', const=True)
-    format: str = Field(description='日志格式', const=True)
-    path: Path = Field(description='日志文件路径', const=True)
-    file: Path = Field(None, description='日志文件', const=True)
+    name: Literal['request', 'service', 'lifespan'] = Field(description='日志名称')
+    format: str = Field(description='日志格式')
+    path: Path = Field(description='日志文件路径')
+    file: Path = Field(None, description='日志文件')
 
     @model_validator(mode='after')
     def set_values(self):
-        self.file = self.path / f'{self.name}.log'
+        if self.file is None:
+            self.file = self.path / f'{self.name}.log'
 
 
 class GeneralDataBaseConnection(BaseModel):
-    host: str = Field(description='地址', const=True)
-    port: int = Field(description='端口', const=True)
-    user: str = Field(description='用户名', const=True)
-    password: str = Field(description='密码', const=True)
-    database: str = Field(description='数据库', const=True)
-    schema: str = Field(description='schema', const=True)
-    jdbcurl: str = Field(None, description='jdbcurl', const=True)
+    host: str = Field(description='地址')
+    port: int = Field(description='端口')
+    user: str = Field(description='用户名')
+    password: str = Field(description='密码')
+    database: str = Field(description='数据库')
+    db_schema: str = Field(description='schema')
+    jdbcurl: str = Field(None, description='jdbcurl')
 
     @model_validator(mode='after')
     def set_values(self):
@@ -73,44 +74,44 @@ class GeneralDataBaseConnection(BaseModel):
 
 
 class RedisConnection(BaseModel):
-    host: str = Field(description='地址', const=True)
-    port: int = Field(description='端口', const=True)
-    db: int = Field(description='数据库', const=True)
-    password: str = Field(description='密码', const=True)
-    max_connections: int = Field(description='最大连接数', const=True)
-    project_prefix: str = Field(description='项目前缀', const=True)
-    expire_seconds: int = Field(description='默认过期时间', const=True)
+    host: str = Field(description='地址')
+    port: int = Field(description='端口')
+    db: int = Field(description='数据库')
+    password: str = Field(description='密码')
+    max_connections: int = Field(description='最大连接数')
+    project_prefix: str = Field(description='项目前缀')
+    expire_seconds: int = Field(description='默认过期时间')
 
 
 class SystemInfo(BaseModel):
-    python: str = Field(sys.version, description='python版本', const=True)
-    operation: str = Field(sys.platform, description='操作系统', const=True)
-    cpus: int = Field(os.cpu_count(), description='cpu核数', const=True)
-    arch: str = Field(platform.machine(), description='cpu架构', const=True)
+    python: str = Field(sys.version, description='python版本')
+    operation: str = Field(sys.platform, description='操作系统')
+    cpus: int = Field(os.cpu_count(), description='cpu核数')
+    arch: str = Field(platform.machine(), description='cpu架构')
 
 
 class AppServerConfig(BaseModel):
-    version: str = Field(description='服务当前版本', const=True)
-    host: str = Field(description='服务地址', const=True)
-    port: int = Field(description='服务端口', const=True)
-    prefix: str = Field(description='url前缀', const=True)
+    version: str = Field(description='服务当前版本')
+    host: str = Field(description='服务地址')
+    port: int = Field(description='服务端口')
+    prefix: str = Field(description='url前缀')
 
 
 class ResourceFileConfig(BaseModel):
-    path: Path = Field(description='资源文件目录路径', const=True)
-    demo: Path = Field(None, description='demo.txt文件', const=True)
+    path: Path = Field(description='资源文件目录路径')
+    demo: Path = Field(None, description='demo.txt文件')
 
     @model_validator(mode='after')
     def set_values(self):
-        self.demo = self.path / 'demo.txt'
+        if self.demo is None:
+            self.demo = self.path / 'demo.txt'
 
 
-class MyAppApiConf:
-    protocol: str = settings.external_api.myapp.protocol
-    host: str = settings.external_api.myapp.host
-    port: int = settings.external_api.myapp.port
-    prefix: str = settings.external_api.myapp.prefix
+class ApiConfig(BaseModel):
+    protocol: str = Field(description='协议')
+    host: str = Field(description='地址')
+    port: int = Field(description='端口')
+    prefix: str = Field(description='url前缀')
 
-    @classmethod
-    def url(cls, endpoint):
-        return f'{cls.protocol}://{cls.host}:{cls.port}{cls.prefix}{endpoint}'
+    def url(self, path):
+        return f'{self.protocol}://{self.host}:{self.port}{self.prefix}{path}'

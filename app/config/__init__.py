@@ -1,15 +1,7 @@
-from app.config.schema import MyAppApiConf
 from app.config.schema import (
-    settings,
-    DirConfig,
-    LoggerConfig,
-    ResourceFileConfig,
-    SystemInfo,
-    GeneralDataBaseConnection,
-    RedisConnection,
-    AppServerConfig,
+    ApiConfig, AppServerConfig, DirConfig, GeneralDataBaseConnection, LoggerConfig,
+    RedisConnection, ResourceFileConfig, settings, SystemInfo,
 )
-
 
 system_info = SystemInfo()
 project_dir = DirConfig()
@@ -37,7 +29,7 @@ pg_connection = GeneralDataBaseConnection(host=settings.pg.host,
                                           user=settings.pg.user,
                                           password=settings.pg.password,
                                           database=settings.pg.database,
-                                          schema=settings.pg.schema)
+                                          db_schema=settings.pg.schema)
 
 redis_connection = RedisConnection(host=settings.redis.host,
                                    port=settings.redis.port,
@@ -46,3 +38,8 @@ redis_connection = RedisConnection(host=settings.redis.host,
                                    max_connections=settings.redis.max_connections,
                                    project_prefix=settings.redis.project_prefix,
                                    expire_seconds=settings.redis.expire_seconds)
+
+api_conf = ApiConfig(protocol=settings.external_api.myapp.protocol,
+                     host=settings.external_api.myapp.host,
+                     port=settings.external_api.myapp.port,
+                     prefix=settings.external_api.myapp.prefix)
