@@ -1,11 +1,16 @@
+import warnings
+
 from sqlalchemy import Column, Float, Integer, String, TIMESTAMP
 from sqlalchemy.ext.declarative import declared_attr
 
 from app.interface.repo._base import BaseTable
 
+warnings.filterwarnings('ignore')
+
 
 class UserInfo(BaseTable):
     __tablename__ = 'user_info'
+    __abstract__ = False
 
     name = Column(String(255), nullable=False, comment='用户名')
     age = Column(Integer, nullable=False, comment='年龄')
@@ -26,6 +31,7 @@ class UserInfo(BaseTable):
 
 class ItemInfo(BaseTable):
     __tablename__ = 'item_info'
+    __abstract__ = False
 
     name = Column(String(255), nullable=False, comment='商品名称')
     category = Column(String(255), nullable=False, comment='商品类目')
@@ -33,6 +39,7 @@ class ItemInfo(BaseTable):
 
 class OrderInfo(BaseTable):
     __tablename__ = 'order_info'
+    __abstract__ = False
 
     user_id = Column(Integer, nullable=False, comment='购买者ID')
     item_id = Column(Integer, nullable=False, comment='商品ID')
@@ -42,8 +49,8 @@ class OrderInfo(BaseTable):
 
 
 class TaskRecord(BaseTable):
-    __abstract__ = True
     __tablename__ = 'task_record_{task_id}'
+    __abstract__ = True
 
     task_name = Column(String(255), nullable=False, comment='任务名称')
     task_type = Column(String(255), nullable=False, comment='任务类型')

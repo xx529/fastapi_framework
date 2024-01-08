@@ -69,9 +69,9 @@ class Redis:
                                                        max_connections=redis_connection.max_connections)
 
     @classmethod
-    def shutdown(cls):
+    async def shutdown(cls):
         if cls._async_pool:
-            cls._async_pool.disconnect()
+            await cls._async_pool.disconnect()
             cls._async_pool = None
         if cls._sync_pool:
             cls._sync_pool.disconnect()

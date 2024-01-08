@@ -78,7 +78,7 @@ class HangServer:
         async def __lifespan(app: FastAPI):
             cls.on_start(app)
             yield
-            cls.on_shutdown(app)
+            await cls.on_shutdown(app)
 
         return __lifespan
 
@@ -95,8 +95,8 @@ class HangServer:
                 lifespan_logger.info(f'exists {d}')
 
     @staticmethod
-    def on_shutdown(app: FastAPI) -> None:
+    async def on_shutdown(app: FastAPI) -> None:
         lifespan_logger.info(f'shutdown version: {app.version}')
         lifespan_logger.info('shutdown redis')
-        Redis.shutdown()
+        await Redis.shutdown()
         # TODO 关闭异步任务

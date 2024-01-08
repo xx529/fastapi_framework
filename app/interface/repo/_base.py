@@ -68,9 +68,9 @@ class BaseTable(Base):
     def is_exists(cls):
         return inspect(cls._engine).has_table(cls.__tablename__, schema=pg_connection.schema)
 
-    @declared_attr
-    def total_count(self):
-        return func.count(self.id).over().label('total_count')
+    @classmethod
+    def total_count(cls):
+        return func.count(cls.id).over().label('total_count')
 
 
 class ExecutorMixin(ABC):
