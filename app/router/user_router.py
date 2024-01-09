@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body, Depends, Query
 
-from app.schema.base import BoolResponse, HeaderParams, OkResponse, OrderTypeEnum
+from app.schema.base import BoolResponse, HeaderParams, OkResponse
+from app.schema.enum import OrderTypeEnum
 from app.schema.user import UserCreateResponse, UserDetailResponse, UserInfo, UserListResponse
 from app.service.user_service import UserService
 
@@ -55,6 +56,7 @@ def user_update(
     summary='查询用户',
     description='根据用户ID获取用户信息通用接口',
     response_model=UserDetailResponse
+
 )
 def user_detail(
         user_id: int = Query(description='用户ID', ge=0, examples=["aaa"])

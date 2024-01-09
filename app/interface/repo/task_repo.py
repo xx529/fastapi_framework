@@ -3,7 +3,7 @@ from ._base import BaseRepo
 
 from sqlalchemy import select
 
-from app.schema.base import PullDataFormat
+from ...schema.enum import PullDataFormat
 
 
 class TaskRecordRepo(BaseRepo):

@@ -3,7 +3,7 @@ from sqlalchemy import select, delete
 
 from ._base import BaseRepo
 from ._tables import UserInfo
-from app.schema.base import PullDataFormat
+from ...schema.enum import PullDataFormat
 
 
 class UserInfoRepo(BaseRepo):

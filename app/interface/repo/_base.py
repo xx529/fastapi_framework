@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from app.apiserver.exception import AppException
 from app.apiserver.logger import service_logger as slog
 from app.config import pg_connection
-from app.schema.base import OrderTypeEnum, PullDataFormat
+from app.schema.enum import OrderTypeEnum, PullDataFormat
 
 Base = declarative_base()
 engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
@@ -107,7 +107,7 @@ class BaseRepo(ABC):
     def execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
         db = SessionLocal()
         try:
-            slog.info(stmt.compile(compile_kwargs={'literal_binds': True}))
+            slog.info(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
             match output:
                 case PullDataFormat.RAW:

@@ -1,9 +1,10 @@
-from enum import Enum
 from typing import Annotated, Any, Literal
 
 from fastapi import Header, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
+
+from app.schema.enum import OrderTypeEnum
 
 
 class BaseResponse(BaseModel):
@@ -37,11 +38,6 @@ class HtmlResponse(HTMLResponse):
     status_code = 200
 
 
-class OrderTypeEnum(str, Enum):
-    asc = 'asc'
-    desc = 'desc'
-
-
 class CommonHeaders(BaseModel):
     token: str
     task_id: int
@@ -72,13 +68,6 @@ class PageQueryParams:
                               limit: Limit = None,
                               search: Search = None):
         return {'page': page, 'limit': limit, 'search': search}
-
-
-class PullDataFormat(str, Enum):
-    RAW = 'RAW'
-    PANDAS = 'PANDAS',
-    RECORDS = 'RECORDS'
-    PYDANTIC = 'PYDANTIC'
 
 
 class AppConfigInfo(BaseModel):
