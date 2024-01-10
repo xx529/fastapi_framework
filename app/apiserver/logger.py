@@ -7,32 +7,32 @@ from app.config import lifespan_log_conf, request_log_conf, service_log_conf
 logger.remove()
 
 logger.add(sink=lifespan_log_conf.file,
+           level=lifespan_log_conf.level,
            format=lifespan_log_conf.format,
-           level='INFO',
            filter=lambda record: record['extra']['name'] == lifespan_log_conf.name)
 
 logger.add(sink=sys.stdout,
+           level=lifespan_log_conf.level,
            format=lifespan_log_conf.format,
-           level='INFO',
            filter=lambda record: record['extra']['name'] == lifespan_log_conf.name)
 
 logger.add(sink=request_log_conf.file,
+           level=request_log_conf.level,
            format=request_log_conf.format,
-           level='INFO',
            filter=lambda record: record['extra']['name'] == request_log_conf.name)
 
 logger.add(sink=sys.stdout,
-           level='INFO',
+           level=request_log_conf.level,
            format=request_log_conf.format,
            filter=lambda record: record['extra']['name'] == request_log_conf.name)
 
 logger.add(sink=service_log_conf.file,
+           level=service_log_conf.level,
            format=service_log_conf.format,
-           level='INFO',
            filter=lambda record: record['extra']['name'] == service_log_conf.name)
 
 logger.add(sink=sys.stdout,
-           level='INFO',
+           level=service_log_conf.level,
            format=service_log_conf.format,
            filter=lambda record: record['extra']['name'] == service_log_conf.name)
 

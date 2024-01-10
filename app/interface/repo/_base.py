@@ -46,12 +46,12 @@ class BaseTable(Base):
         if getattr(cls, '__abstract__') is True:
             table_name = cls.__tablename__.format(**kwargs)
             if table_name not in table_class_instance:
-                slog.info(f'create multi table class: {table_name}')
+                slog.debug(f'create multi table class: {table_name}')
                 table_class_instance[table_name] = type(table_name,
                                                         (cls,),
                                                         {'__tablename__': table_name})
             else:
-                slog.info(f'get multi table class: {table_name}')
+                slog.debug(f'get multi table class: {table_name}')
             return table_class_instance[table_name]
         else:
             return cls
@@ -59,10 +59,10 @@ class BaseTable(Base):
     @classmethod
     def create(cls):
         if not cls.is_exists():
-            slog.info(f'create table: {cls.__tablename__}')
+            slog.debug(f'create table: {cls.__tablename__}')
             cls.__table__.create(bind=cls._engine)
         else:
-            slog.info(f'exist table: {cls.__tablename__}')
+            slog.debug(f'exist table: {cls.__tablename__}')
 
     @classmethod
     def is_exists(cls):
@@ -107,7 +107,7 @@ class BaseRepo(ABC):
     def execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
         db = SessionLocal()
         try:
-            slog.info(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+            slog.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
             match output:
                 case PullDataFormat.RAW:
@@ -121,7 +121,7 @@ class BaseRepo(ABC):
             db.rollback()
             raise AppException.DatabaseError(detail=str(e))
         finally:
-            slog.info('close db session')
+            slog.debug('close db session')
             db.close()
 
     # @staticmethod

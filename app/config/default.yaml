@@ -27,3 +27,6 @@ external_api:
     port: 8003
     prefix: ''
     protocol: http
+
+log:
+  level: DEBUG

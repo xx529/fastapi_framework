@@ -24,7 +24,7 @@ settings = Dynaconf(root_path=current_dir,
 
 
 class DirConfig(BaseModel):
-    root: Path = Field( project_dir, description='项目根目录')
+    root: Path = Field(project_dir, description='项目根目录')
     app: Path = Field(None, description='程序源码目录')
     data: Path = Field(None, description='持久化保存的数据目录')
     log: Path = Field(None, description='日志目录')
@@ -49,6 +49,7 @@ class DirConfig(BaseModel):
 
 class LoggerConfig(BaseModel):
     name: Literal['request', 'service', 'lifespan'] = Field(description='日志名称')
+    level: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] = Field(description='日志级别')
     format: str = Field(description='日志格式')
     path: Path = Field(description='日志文件路径')
     file: Path = Field(None, description='日志文件')

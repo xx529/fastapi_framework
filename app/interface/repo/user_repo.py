@@ -18,7 +18,6 @@ class UserInfoRepo(BaseRepo):
                 .order_by(self.order_expr(order_by, order_type)))
 
         df = self.execute(stmt.limit(limit).offset((page - 1) * limit))
-        print(df)
         return self.split_total_column(df)
 
     def detail(self, user_id: int):
