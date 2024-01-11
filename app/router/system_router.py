@@ -13,8 +13,10 @@ router = APIRouter(prefix='/system', tags=['系统信息模块'])
 @router.get(path='/health/heartbeat',
             summary='健康检查',
             response_model=StrResponse)
-def health():
-    return StrResponse(data='ok')
+async def health(
+        num: int = Query(description='测试参数')
+):
+    return StrResponse(data=str(num))
 
 
 @router.get(path='/log/lifespan',
