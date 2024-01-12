@@ -1,14 +1,21 @@
-import threading
-import uuid
 from starlette.requests import Request
-from .logger import request_logger
+import uuid
+from .logger import request_logger, Logger
+from .ctx import request_id
 
 
 class MiddleWare:
 
     @staticmethod
+    async def set_ctx(request: Request, call_next):
+        request_id.set(uuid.uuid4())
+        response = await call_next(request)
+        return response
+
+    @staticmethod
     async def show_request_info(request: Request, call_next):
-        request_logger.debug(f'{request.method} {request.url}')
+        Logger.info(f'{request.method} {request.url}')
+        # request_logger.debug(f'{request.method} {request.url}')
         request_logger.debug(f'headers: {dict(request.headers)}')
         response = await call_next(request)
         if response.status_code not in [200]:
@@ -24,5 +31,5 @@ class MiddleWare:
 
     @classmethod
     def get_all_middleware(cls):
-        mls = [cls.show_request_info, cls.auth_handler]
+        mls = [cls.set_ctx, cls.show_request_info, cls.auth_handler]
         return mls[::-1]

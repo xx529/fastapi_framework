@@ -14,12 +14,12 @@ app_conf = AppServerConfig(version=settings.appserver.version,
 
 request_log_conf = LoggerConfig(name='request',
                                 level=settings.log.level,
-                                format='{time:YYYY-MM-DD HH:mm:ss} | {thread.name} | {level} | {message}',
+                                format='{time:YYYY-MM-DD HH:mm:ss} | {thread} | {level} | {message}',
                                 path=project_dir.request_log)
 
 service_log_conf = LoggerConfig(name='service',
                                 level=settings.log.level,
-                                format='{time:YYYY-MM-DD HH:mm:ss} | {thread.name} | {level} | {message}',
+                                format='{time:YYYY-MM-DD HH:mm:ss} | {thread} | {level} | {message}',
                                 path=project_dir.service_log)
 
 lifespan_log_conf = LoggerConfig(name='lifespan',

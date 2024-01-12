@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.apiserver.exception import AppException
 from app.apiserver.logger import service_logger as slog
+from app.apiserver.logger import Logger
 from app.config import pg_connection
 from app.schema.enum import OrderTypeEnum, PullDataFormat
 
@@ -107,7 +108,8 @@ class BaseRepo(ABC):
     def execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
         db = SessionLocal()
         try:
-            slog.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+            Logger.info(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+            # slog.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
             match output:
                 case PullDataFormat.RAW:
