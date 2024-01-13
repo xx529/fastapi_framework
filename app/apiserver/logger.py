@@ -3,7 +3,7 @@ import sys
 from loguru import logger
 
 from app.config import lifespan_log_conf, request_log_conf, service_log_conf
-from .ctx import request_id
+from .context import RequestCtx
 
 logger.remove()
 
@@ -38,24 +38,27 @@ logger.add(sink=sys.stdout,
            filter=lambda record: record['extra']['name'] == service_log_conf.name)
 
 lifespan_logger = logger.bind(name=lifespan_log_conf.name)
-service_logger = logger.bind(name=service_log_conf.name)
-request_logger = logger.bind(name=request_log_conf.name)
+_service_logger = logger.bind(name=service_log_conf.name)
+_request_logger = logger.bind(name=request_log_conf.name)
 
 
 class Logger:
 
-    @staticmethod
-    def info(msg):
-        request_logger.info(f'{request_id.get()} | {msg}')
+    def __init__(self, logger_obj):
+        self.log = logger_obj
 
-    @staticmethod
-    def debug(msg):
-        request_logger.debug(f'{request_id.get()} | {msg}')
+    def info(self, msg):
+        self.log.info(f'{RequestCtx.get_request_id()} | {msg}')
 
-    @staticmethod
-    def warning(msg):
-        request_logger.warning(f'{request_id.get()} | {msg}')
+    def debug(self, msg):
+        self.log.debug(f'{RequestCtx.get_request_id()} | {msg}')
 
-    @staticmethod
-    def error(msg):
-        request_logger.error(f'{request_id.get()} | {msg}')
+    def warning(self, msg):
+        self.log.warning(f'{RequestCtx.get_request_id()} | {msg}')
+
+    def error(self, msg):
+        self.log.error(f'{RequestCtx.get_request_id()} | {msg}')
+
+
+request_logger = Logger(_request_logger)
+service_logger = Logger(_service_logger)

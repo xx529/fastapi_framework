@@ -5,33 +5,35 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 from app.schema.enum import OrderTypeEnum
+from uuid import UUID
 
 
 class BaseResponse(BaseModel):
-    errcode: int = 0
-    errmsg: str = ''
-    detail: str = ''
-    data: Any = ...
+    request_id: UUID = Field('', description='请求ID')
+    errcode: int = Field(0, description='错误码')
+    errmsg: str = Field('', description='错误信息')
+    detail: str = Field('', description='错误详情')
+    data: Any = Field(..., description='返回数据')
 
 
 class JsonResponse(BaseResponse):
-    data: dict | list
+    data: dict | list = Field(..., description='返回 json 数据')
 
 
 class StrResponse(BaseResponse):
-    data: str
+    data: str = Field(..., description='返回 string 数据')
 
 
 class OkResponse(BaseResponse):
-    data: Literal["ok"] = 'ok'
+    data: Literal['ok'] = Field('ok', description='返回 ok 字符串')
 
 
 class BoolResponse(BaseResponse):
-    data: bool = Field(description="成功: true，失败: false", examples=[True])
+    data: bool = Field(description='成功: true，失败: false')
 
 
 class NullResponse(BaseResponse):
-    data: None = Field(default=None, description="空返回", examples=[None])
+    data: None = Field(default=None, description='空返回')
 
 
 class HtmlResponse(HTMLResponse):
@@ -45,9 +47,9 @@ class CommonHeaders(BaseModel):
 
 
 class HeaderParams:
-    Token = Annotated[str, Header(description="用户Token", example="test-token", alias="Token")]
-    TaskID = Annotated[int, Header(description="任务ID", example=10, alias="TaskId")]
-    CompanyID = Annotated[str, Header(description="公司ID", example="10", alias="CompanyId")]
+    Token = Annotated[str, Header(description='用户Token', example='test-token', alias='Token')]
+    TaskID = Annotated[int, Header(description='任务ID', example=10, alias='TaskId')]
+    CompanyID = Annotated[str, Header(description='公司ID', example='10', alias='CompanyId')]
 
     @staticmethod
     def get_common_headers(token: Token,
@@ -57,18 +59,14 @@ class HeaderParams:
 
 
 class PageQueryParams:
-    Page = Annotated[int, Query(description="页码", example=1, alias="page")]
-    Limit = Annotated[int, Query(description="每页数量", example=10, alias="limit")]
-    Search = Annotated[str, Query(description="搜索关键字", example="张三", alias="search")]
-    OrderBy = Annotated[str, Query(description="排序字段", example="id", alias="order_by")]
-    OrderType = Annotated[OrderTypeEnum, Query(description="排序方式", example="asc", alias="order_type")]
+    Page = Annotated[int, Query(description='页码', example=1, alias='page')]
+    Limit = Annotated[int, Query(description='每页数量', example=10, alias='limit')]
+    Search = Annotated[str, Query(description='搜索关键字', example='张三', alias='search')]
+    OrderBy = Annotated[str, Query(description='排序字段', example='id', alias='order_by')]
+    OrderType = Annotated[OrderTypeEnum, Query(description='排序方式', example='asc', alias='order_type')]
 
     @staticmethod
     def get_page_query_params(page: Page = None,
                               limit: Limit = None,
                               search: Search = None):
         return {'page': page, 'limit': limit, 'search': search}
-
-
-class AppConfigInfo(BaseModel):
-    ...

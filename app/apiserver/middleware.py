@@ -1,21 +1,20 @@
 from starlette.requests import Request
 import uuid
-from .logger import request_logger, Logger
-from .ctx import request_id
+from .logger import request_logger
+from .context import RequestCtx
 
 
 class MiddleWare:
 
     @staticmethod
     async def set_ctx(request: Request, call_next):
-        request_id.set(uuid.uuid4())
+        RequestCtx.set_request_id(uuid.uuid4())
         response = await call_next(request)
         return response
 
     @staticmethod
     async def show_request_info(request: Request, call_next):
-        Logger.info(f'{request.method} {request.url}')
-        # request_logger.debug(f'{request.method} {request.url}')
+        request_logger.info(f'{request.method} {request.url}')
         request_logger.debug(f'headers: {dict(request.headers)}')
         response = await call_next(request)
         if response.status_code not in [200]:
