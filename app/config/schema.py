@@ -28,7 +28,7 @@ class DirConfig(BaseModel):
     app: Path = Field(None, description='程序源码目录')
     data: Path = Field(None, description='持久化保存的数据目录')
     log: Path = Field(None, description='日志目录')
-    request_log: Path = Field(None, description='请求日志目录')
+    runtime_log: Path = Field(None, description='运行日志目录')
     service_log: Path = Field(None, description='服务日志目录')
     lifespan_log: Path = Field(None, description='启停日志目录')
     resource: Path = Field(None, description='资源文件目录')
@@ -38,17 +38,17 @@ class DirConfig(BaseModel):
         self.app = self.root / 'app'
         self.data = self.root / 'data'
         self.log = self.data / 'log'
-        self.request_log = self.log / 'request'
+        self.runtime_log = self.log / 'runtime'
         self.service_log = self.log / 'service'
         self.lifespan_log = self.log / 'lifespan'
         self.resource = self.app / 'resource'
 
     def check_create_ls(self):
-        return [self.request_log, self.service_log, self.lifespan_log]
+        return [self.runtime_log, self.service_log, self.lifespan_log]
 
 
 class LoggerConfig(BaseModel):
-    name: Literal['request', 'service', 'lifespan'] = Field(description='日志名称')
+    name: Literal['runtime', 'service', 'lifespan'] = Field(description='日志名称')
     level: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] = Field(description='日志级别')
     format: str = Field(description='日志格式')
     path: Path = Field(description='日志文件路径')

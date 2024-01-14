@@ -12,10 +12,10 @@ app_conf = AppServerConfig(version=settings.appserver.version,
                            port=settings.appserver.port,
                            prefix='/api/v1')
 
-request_log_conf = LoggerConfig(name='request',
+runtime_log_conf = LoggerConfig(name='runtime',
                                 level=settings.log.level,
                                 format='{time:YYYY-MM-DD HH:mm:ss} | {thread} | {level} | {message}',
-                                path=project_dir.request_log)
+                                path=project_dir.runtime_log)
 
 service_log_conf = LoggerConfig(name='service',
                                 level=settings.log.level,

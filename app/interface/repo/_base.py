@@ -4,13 +4,11 @@ from typing import Dict
 
 import pandas as pd
 from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from app.apiserver.exception import AppException
-from app.apiserver.logger import service_logger as slog
-from app.apiserver.logger import Logger
+from app.apiserver.logger import runtime_logger
 from app.config import pg_connection
 from app.schema.enum import OrderTypeEnum, PullDataFormat
 
@@ -47,12 +45,12 @@ class BaseTable(Base):
         if getattr(cls, '__abstract__') is True:
             table_name = cls.__tablename__.format(**kwargs)
             if table_name not in table_class_instance:
-                slog.debug(f'create multi table class: {table_name}')
+                runtime_logger.debug(f'create multi table class: {table_name}')
                 table_class_instance[table_name] = type(table_name,
                                                         (cls,),
                                                         {'__tablename__': table_name})
             else:
-                slog.debug(f'get multi table class: {table_name}')
+                runtime_logger.debug(f'get multi table class: {table_name}')
             return table_class_instance[table_name]
         else:
             return cls
@@ -60,10 +58,10 @@ class BaseTable(Base):
     @classmethod
     def create(cls):
         if not cls.is_exists():
-            slog.debug(f'create table: {cls.__tablename__}')
+            runtime_logger.debug(f'create table: {cls.__tablename__}')
             cls.__table__.create(bind=cls._engine)
         else:
-            slog.debug(f'exist table: {cls.__tablename__}')
+            runtime_logger.debug(f'exist table: {cls.__tablename__}')
 
     @classmethod
     def is_exists(cls):
@@ -98,18 +96,13 @@ class SqlExprMixin(ABC):
         return text('1!=1')
 
 
-class _BaseRepo(ExecutorMixin, SqlExprMixin):
-    ...
-
-
 class BaseRepo(ABC):
 
     @staticmethod
     def execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
         db = SessionLocal()
         try:
-            Logger.info(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
-            # slog.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+            runtime_logger.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
             match output:
                 case PullDataFormat.RAW:
@@ -119,16 +112,17 @@ class BaseRepo(ABC):
                 case PullDataFormat.RECORDS:
                     return pd.DataFrame(result).to_dict(orient='records')
         except Exception as e:
-            slog.error(f'execute error: {e}')
+            runtime_logger.error(f'execute error: {e}')
             db.rollback()
             raise AppException.DatabaseError(detail=str(e))
         finally:
-            slog.debug('close db session')
+            runtime_logger.debug('close db session')
             db.close()
 
-    # @staticmethod
-    # async def async_execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
-    #     ...
+    @staticmethod
+    async def async_execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
+        # TODO 异步查询数据库
+        ...
 
     @staticmethod
     def split_total_column(df, col='total_count'):

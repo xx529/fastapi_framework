@@ -1,7 +1,10 @@
-from starlette.requests import Request
 import uuid
-from .logger import request_logger
+
+from starlette.requests import Request
+
+from app.schema.enum import RequestSuccessCode
 from .context import RequestCtx
+from .logger import runtime_logger
 
 
 class MiddleWare:
@@ -9,26 +12,27 @@ class MiddleWare:
     @staticmethod
     async def set_ctx(request: Request, call_next):
         RequestCtx.set_request_id(uuid.uuid4())
+        runtime_logger.debug(f'set request id: {RequestCtx.get_request_id()}')
         response = await call_next(request)
         return response
 
     @staticmethod
-    async def show_request_info(request: Request, call_next):
-        request_logger.info(f'{request.method} {request.url}')
-        request_logger.debug(f'headers: {dict(request.headers)}')
+    async def log_request(request: Request, call_next):
+        # TODO 记录服务日志开始
+
+        runtime_logger.info(f'{request.method} {request.url}')
+        runtime_logger.debug(f'headers: {dict(request.headers)}')
         response = await call_next(request)
-        if response.status_code not in [200]:
-            request_logger.error(f'{response.status_code}')
+
+        if response.status_code in RequestSuccessCode.list():
+            runtime_logger.info(f'status code: {response.status_code}')
         else:
-            request_logger.info(f'{response.status_code}')
-        return response
+            runtime_logger.error(f'status code: {response.status_code}')
 
-    @staticmethod
-    async def auth_handler(request, call_next):
-        response = await call_next(request)
+        # TODO 记录服务日志结束
         return response
 
     @classmethod
     def get_all_middleware(cls):
-        mls = [cls.set_ctx, cls.show_request_info, cls.auth_handler]
+        mls = [cls.set_ctx, cls.log_request]
         return mls[::-1]

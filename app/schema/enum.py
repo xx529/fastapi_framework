@@ -15,3 +15,12 @@ class RedisKeyField(str, Enum):
 class OrderTypeEnum(str, Enum):
     asc = 'asc'
     desc = 'desc'
+
+
+class RequestSuccessCode(int, Enum):
+    success = 200
+    created = 201
+
+    @classmethod
+    def list(cls):
+        return [x.value for x in list(cls)]

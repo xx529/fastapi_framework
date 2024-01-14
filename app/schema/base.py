@@ -1,4 +1,5 @@
 from typing import Annotated, Any, Literal
+from datetime import datetime
 
 from fastapi import Header, Query
 from fastapi.responses import HTMLResponse
@@ -70,3 +71,18 @@ class PageQueryParams:
                               limit: Limit = None,
                               search: Search = None):
         return {'page': page, 'limit': limit, 'search': search}
+
+
+class ServerLogData:
+    request_id: UUID = Field(description='请求ID')
+    url: str = Field(description='请求地址')
+    method: str = Field(description='请求方法')
+    headers: dict = Field(description='请求头')
+    params: dict = Field(description='请求参数')
+    body: dict = Field(description='请求体')
+    response: dict = Field(description='响应结果')
+    start_time: datetime = Field(description='请求开始时间')
+    status_code: int = Field(default=None, description='响应状态码')
+    end_time: datetime = Field(default=None, description='请求结束时间')
+    cost: float = Field(default=None, description='请求耗时（秒）')
+
