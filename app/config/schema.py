@@ -79,6 +79,7 @@ class RedisConnection(BaseModel):
     port: int = Field(description='端口')
     db: int = Field(description='数据库')
     password: str = Field(description='密码')
+    timeout: int = Field(description='超时时间')
     max_connections: int = Field(description='最大连接数')
     project_prefix: str = Field(description='项目前缀')
     expire_seconds: int = Field(description='默认过期时间')

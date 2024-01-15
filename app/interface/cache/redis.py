@@ -13,11 +13,12 @@ class RedisConnectPool:
 
     @classmethod
     def create_sync_pool(cls, conn: RedisConnection):
-        pool = sync_redis.ConnectionPool(host=conn.host,
-                                         port=conn.port,
-                                         db=conn.db,
-                                         password=conn.password,
-                                         max_connections=conn.max_connections)
+        pool = sync_redis.BlockingConnectionPool(host=conn.host,
+                                                 port=conn.port,
+                                                 db=conn.db,
+                                                 timeout=conn.timeout,
+                                                 password=conn.password,
+                                                 max_connections=conn.max_connections)
         cls._sync_pools.append(pool)
         return pool
 

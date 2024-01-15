@@ -39,6 +39,7 @@ local_redis = RedisConnection(host=settings.redis.host,
                               db=settings.redis.db,
                               password=settings.redis.password,
                               max_connections=settings.redis.max_connections,
+                              timeout=settings.redis.timeout,
                               project_prefix=settings.redis.project_prefix,
                               expire_seconds=settings.redis.expire_seconds)
 
