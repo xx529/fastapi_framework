@@ -28,9 +28,7 @@ class DirConfig(BaseModel):
     app: Path = Field(None, description='程序源码目录')
     data: Path = Field(None, description='持久化保存的数据目录')
     log: Path = Field(None, description='日志目录')
-    runtime_log: Path = Field(None, description='运行日志目录')
-    service_log: Path = Field(None, description='服务日志目录')
-    lifespan_log: Path = Field(None, description='启停日志目录')
+    general_log: Path = Field(default=None, description='通用日志目录')
     resource: Path = Field(None, description='资源文件目录')
 
     @model_validator(mode='after')
@@ -38,21 +36,18 @@ class DirConfig(BaseModel):
         self.app = self.root / 'app'
         self.data = self.root / 'data'
         self.log = self.data / 'log'
-        self.runtime_log = self.log / 'runtime'
-        self.service_log = self.log / 'service'
-        self.lifespan_log = self.log / 'lifespan'
+        self.general_log = self.log / 'general'
         self.resource = self.app / 'resource'
 
     def check_create_ls(self):
-        return [self.runtime_log, self.service_log, self.lifespan_log]
+        return [self.general_log]
 
 
 class LoggerConfig(BaseModel):
-    name: Literal['runtime', 'service', 'lifespan'] = Field(description='日志名称')
+    name: str = Field(description='日志名称')
     level: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] = Field(description='日志级别')
-    format: str = Field(description='日志格式')
     path: Path = Field(description='日志文件路径')
-    file: Path = Field(None, description='日志文件')
+    file: Path = Field(default=None, description='日志文件')
 
     @model_validator(mode='after')
     def set_values(self):
@@ -93,6 +88,7 @@ class SystemInfo(BaseModel):
 
 
 class AppServerConfig(BaseModel):
+    name: str = Field(description='服务名称')
     version: str = Field(description='服务当前版本')
     host: str = Field(description='服务地址')
     port: int = Field(description='服务端口')

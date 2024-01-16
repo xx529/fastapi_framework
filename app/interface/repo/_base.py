@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from app.apiserver.exception import AppException
-from app.apiserver.logger import runtime_logger
+from app.apiserver.logger import database_log
 from app.config import pg_connection
 from app.schema.enum import OrderTypeEnum, PullDataFormat
 
@@ -45,12 +45,12 @@ class BaseTable(Base):
         if getattr(cls, '__abstract__') is True:
             table_name = cls.__tablename__.format(**kwargs)
             if table_name not in table_class_instance:
-                runtime_logger.debug(f'create multi table class: {table_name}')
+                database_log.debug(f'create multi table class: {table_name}')
                 table_class_instance[table_name] = type(table_name,
                                                         (cls,),
                                                         {'__tablename__': table_name})
             else:
-                runtime_logger.debug(f'get multi table class: {table_name}')
+                database_log.debug(f'get multi table class: {table_name}')
             return table_class_instance[table_name]
         else:
             return cls
@@ -58,10 +58,10 @@ class BaseTable(Base):
     @classmethod
     def create(cls):
         if not cls.is_exists():
-            runtime_logger.debug(f'create table: {cls.__tablename__}')
+            database_log.debug(f'create table: {cls.__tablename__}')
             cls.__table__.create(bind=cls._engine)
         else:
-            runtime_logger.debug(f'exist table: {cls.__tablename__}')
+            database_log.debug(f'exist table: {cls.__tablename__}')
 
     @classmethod
     def is_exists(cls):
@@ -102,7 +102,7 @@ class BaseRepo(ABC):
     def execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
         db = SessionLocal()
         try:
-            runtime_logger.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+            database_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
             match output:
                 case PullDataFormat.RAW:
@@ -112,11 +112,11 @@ class BaseRepo(ABC):
                 case PullDataFormat.RECORDS:
                     return pd.DataFrame(result).to_dict(orient='records')
         except Exception as e:
-            runtime_logger.error(f'execute error: {e}')
+            database_log.error(f'execute error: {e}')
             db.rollback()
             raise AppException.DatabaseError(detail=str(e))
         finally:
-            runtime_logger.debug('close db session')
+            database_log.debug('close db session')
             db.close()
 
     @staticmethod

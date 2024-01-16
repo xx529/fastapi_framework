@@ -4,6 +4,7 @@ myapp = myapp
 
 
 if __name__ == '__main__':
+    # TODO 启动方式
     import uvicorn
     uvicorn.run(app='main:myapp',
                 host='localhost',

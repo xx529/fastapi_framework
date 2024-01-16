@@ -1,12 +1,14 @@
+import uuid
 from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.apiserver.exception import AppException, AppExceptionClass
-from app.apiserver.logger import lifespan_logger
+from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
 from app.config import project_dir, app_conf
+from app.apiserver.context import RequestCtx
 from app.interface import Redis
 from app.interface.repo._base import create_all_pg_tables
 from app.router import all_routers
@@ -76,6 +78,7 @@ class HangServer:
 
         @asynccontextmanager
         async def __lifespan(app: FastAPI):
+            RequestCtx.set_request_id(uuid.uuid4())
             cls.on_start(app)
             yield
             await cls.on_shutdown(app)
@@ -84,19 +87,19 @@ class HangServer:
 
     @staticmethod
     def on_start(app: FastAPI) -> None:
-        lifespan_logger.info(f'startup version: {app.version}')
+        lifespan_log.info(f'startup version: {app.version}')
 
-        lifespan_logger.info('check dirs')
+        lifespan_log.info('check dirs')
         for d in project_dir.check_create_ls():
             if not d.exists():
-                lifespan_logger.info(f'create {d}')
+                lifespan_log.info(f'create {d}')
                 d.mkdir(parents=True)
             else:
-                lifespan_logger.info(f'exists {d}')
+                lifespan_log.info(f'exists {d}')
 
     @staticmethod
     async def on_shutdown(app: FastAPI) -> None:
-        lifespan_logger.info(f'shutdown version: {app.version}')
-        lifespan_logger.info('shutdown redis')
+        lifespan_log.info(f'shutdown version: {app.version}')
+        lifespan_log.info('shutdown redis')
         await Redis.shutdown()
         # TODO 关闭异步任务

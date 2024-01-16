@@ -7,25 +7,15 @@ system_info = SystemInfo()
 project_dir = DirConfig()
 resource_files = ResourceFileConfig(path=project_dir.resource)
 
-app_conf = AppServerConfig(version=settings.appserver.version,
+app_conf = AppServerConfig(name=settings.appserver.name,
+                           version=settings.appserver.version,
                            host=settings.appserver.host,
                            port=settings.appserver.port,
                            prefix='/api/v1')
 
-runtime_log_conf = LoggerConfig(name='runtime',
-                                level=settings.log.level,
-                                format='{time:YYYY-MM-DD HH:mm:ss} | {thread} | {level} | {message}',
-                                path=project_dir.runtime_log)
-
-service_log_conf = LoggerConfig(name='service',
-                                level=settings.log.level,
-                                format='{time:YYYY-MM-DD HH:mm:ss} | {thread} | {level} | {message}',
-                                path=project_dir.service_log)
-
-lifespan_log_conf = LoggerConfig(name='lifespan',
-                                 level=settings.log.level,
-                                 format='{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}',
-                                 path=project_dir.lifespan_log)
+log_conf = LoggerConfig(name='log',
+                        level=settings.log.level,
+                        path=project_dir.general_log)
 
 pg_connection = GeneralDataBaseConnection(host=settings.pg.host,
                                           port=settings.pg.port,

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Path, Query
 from app.apiserver.exception import AppException
 from app.schema.base import HtmlResponse, StrResponse
 from app.service.system_service import LogService
-from app.apiserver.logger import runtime_logger
+from app.apiserver.logger import runtime_log
 
 
 router = APIRouter(prefix='/system', tags=['系统信息模块'])
@@ -18,7 +18,7 @@ router = APIRouter(prefix='/system', tags=['系统信息模块'])
 async def health(
         num: int = Query(description='测试参数')
 ):
-    runtime_logger.info(num)
+    runtime_log.info(num)
     return StrResponse(data=str(num))
 
 
