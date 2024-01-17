@@ -2,10 +2,10 @@ import os
 import platform
 import sys
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from dynaconf import Dynaconf
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 
 current_dir = Path(__file__).parent
 project_dir = current_dir.parent.parent
@@ -31,8 +31,7 @@ class DirConfig(BaseModel):
     general_log: Path = Field(default=None, description='通用日志目录')
     resource: Path = Field(None, description='资源文件目录')
 
-    @model_validator(mode='after')
-    def set_values(self):
+    def model_post_init(self, __context):
         self.app = self.root / 'app'
         self.data = self.root / 'data'
         self.log = self.data / 'log'
@@ -49,8 +48,7 @@ class LoggerConfig(BaseModel):
     path: Path = Field(description='日志文件路径')
     file: Path = Field(default=None, description='日志文件')
 
-    @model_validator(mode='after')
-    def set_values(self):
+    def model_post_init(self, __context):
         if self.file is None:
             self.file = self.path / f'{self.name}.log'
 
@@ -64,8 +62,7 @@ class GeneralDataBaseConnection(BaseModel):
     db_schema: str = Field(description='schema')
     jdbcurl: str = Field(None, description='jdbcurl')
 
-    @model_validator(mode='after')
-    def set_values(self):
+    def model_post_init(self, __context):
         self.jdbcurl = f'postgresql://{self.host}:{self.port}/{self.database}?user={self.user}&password={self.password}'
 
 
@@ -99,8 +96,7 @@ class ResourceFileConfig(BaseModel):
     path: Path = Field(description='资源文件目录路径')
     demo: Path = Field(None, description='demo.txt文件')
 
-    @model_validator(mode='after')
-    def set_values(self):
+    def model_post_init(self, __context):
         if self.demo is None:
             self.demo = self.path / 'demo.txt'
 

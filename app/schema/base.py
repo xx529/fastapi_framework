@@ -1,16 +1,16 @@
 from typing import Annotated, Any, Literal
-from datetime import datetime
+from uuid import UUID
 
 from fastapi import Header, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
+from app.apiserver.context import RequestCtx
 from app.schema.enum import OrderTypeEnum
-from uuid import UUID
 
 
 class BaseResponse(BaseModel):
-    request_id: UUID = Field('', description='请求ID')
+    request_id: UUID = Field(default_factory=RequestCtx.get_request_id, description='请求ID')
     errcode: int = Field(0, description='错误码')
     errmsg: str = Field('', description='错误信息')
     detail: str = Field('', description='错误详情')
@@ -71,18 +71,3 @@ class PageQueryParams:
                               limit: Limit = None,
                               search: Search = None):
         return {'page': page, 'limit': limit, 'search': search}
-
-
-class ServerLogData:
-    request_id: UUID = Field(description='请求ID')
-    url: str = Field(description='请求地址')
-    method: str = Field(description='请求方法')
-    headers: dict = Field(description='请求头')
-    params: dict = Field(description='请求参数')
-    body: dict = Field(description='请求体')
-    response: dict = Field(description='响应结果')
-    start_time: datetime = Field(description='请求开始时间')
-    status_code: int = Field(default=None, description='响应状态码')
-    end_time: datetime = Field(default=None, description='请求结束时间')
-    cost: float = Field(default=None, description='请求耗时（秒）')
-

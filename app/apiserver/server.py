@@ -4,12 +4,12 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from app.apiserver.context import RequestCtx
 from app.apiserver.exception import AppException, AppExceptionClass
 from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
-from app.config import project_dir, app_conf
-from app.apiserver.context import RequestCtx
-from app.interface import Redis
+from app.config import app_conf, project_dir
+from app.interface import redis
 from app.interface.repo._base import create_all_pg_tables
 from app.router import all_routers
 from app.schema.base import BaseResponse
@@ -19,8 +19,7 @@ class HangServer:
 
     @classmethod
     def create_app(cls) -> FastAPI:
-        cls.init_database()
-        cls.init_redis()
+        # cls.init_database()
         cls.init_kafka()
         app = FastAPI(version=app_conf.version,
                       lifespan=cls.lifespan())
@@ -28,14 +27,6 @@ class HangServer:
         cls.init_routers(app)
         cls.init_exception(app)
         return app
-
-    @staticmethod
-    def init_database() -> None:
-        create_all_pg_tables()
-
-    @staticmethod
-    def init_redis() -> None:
-        Redis.startup()
 
     @staticmethod
     def init_kafka() -> None:
@@ -97,9 +88,16 @@ class HangServer:
             else:
                 lifespan_log.info(f'exists {d}')
 
+        lifespan_log.info('startup database')
+        create_all_pg_tables()
+
+        lifespan_log.info('startup redis')
+        redis.startup()
+
     @staticmethod
     async def on_shutdown(app: FastAPI) -> None:
-        lifespan_log.info(f'shutdown version: {app.version}')
         lifespan_log.info('shutdown redis')
-        await Redis.shutdown()
+        await redis.shutdown()
+
+        lifespan_log.info(f'shutdown version: {app.version}')
         # TODO 关闭异步任务

@@ -80,9 +80,9 @@ class SqlExprMixin(ABC):
     @staticmethod
     def order_expr(order_by: str, order_type: OrderTypeEnum | None = None):
         match order_type:
-            case OrderTypeEnum.asc:
+            case OrderTypeEnum.ASC:
                 return asc(order_by)
-            case OrderTypeEnum.desc:
+            case OrderTypeEnum.DESC:
                 return desc(order_by)
             case _:
                 return desc(order_by)
@@ -135,9 +135,9 @@ class BaseRepo(ABC):
     @staticmethod
     def order_expr(order_by: str, order_type: OrderTypeEnum | None = None):
         match order_type:
-            case OrderTypeEnum.asc:
+            case OrderTypeEnum.ASC:
                 return asc(order_by)
-            case OrderTypeEnum.desc:
+            case OrderTypeEnum.DESC:
                 return desc(order_by)
             case _:
                 return desc(order_by)

@@ -19,7 +19,7 @@ redis:
     db: 0
     password: ""
     max_connections: 10
-    project_prefix: "test:app"
+    project_prefix: "myapp"
     timeout: 2
     expire_seconds: 60
 

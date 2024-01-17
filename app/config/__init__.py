@@ -24,14 +24,14 @@ pg_connection = GeneralDataBaseConnection(host=settings.pg.host,
                                           database=settings.pg.database,
                                           db_schema=settings.pg.schema)
 
-local_redis = RedisConnection(host=settings.redis.host,
-                              port=settings.redis.port,
-                              db=settings.redis.db,
-                              password=settings.redis.password,
-                              max_connections=settings.redis.max_connections,
-                              timeout=settings.redis.timeout,
-                              project_prefix=settings.redis.project_prefix,
-                              expire_seconds=settings.redis.expire_seconds)
+redis_conf = RedisConnection(host=settings.redis.host,
+                             port=settings.redis.port,
+                             db=settings.redis.db,
+                             password=settings.redis.password,
+                             max_connections=settings.redis.max_connections,
+                             timeout=settings.redis.timeout,
+                             project_prefix=settings.redis.project_prefix,
+                             expire_seconds=settings.redis.expire_seconds)
 
 api_conf = ApiConfig(protocol=settings.external_api.myapp.protocol,
                      host=settings.external_api.myapp.host,
