@@ -3,7 +3,7 @@ from ._base import BaseRepo
 
 from sqlalchemy import select
 
-from ...schema.enum import PullDataFormat
+from ...schema.enum import PullDataFormatEnum
 
 
 class TaskRecordRepo(BaseRepo):
@@ -21,4 +21,4 @@ class TaskRecordRepo(BaseRepo):
         stmt = (select(self.t.task_name,
                        self.t.task_type)
                 .where(self.t.id == row_id))
-        return self.execute(stmt, output=PullDataFormat.RECORDS)
+        return self.execute(stmt, output=PullDataFormatEnum.RECORDS)

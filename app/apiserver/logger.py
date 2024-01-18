@@ -3,7 +3,7 @@ import sys
 from loguru import logger
 
 from app.config import log_conf, app_conf
-from app.schema.enum import LoggerType
+from app.schema.enum import LoggerTypeEnum
 from .context import RequestCtx
 
 FULL_FORMAT = ('{time:YYYY-MM-DD HH:mm:ss.SSS} '
@@ -41,7 +41,7 @@ logger.add(sink=sys.stdout,
 
 _logger = logger.patch(patch_request_id).bind(project_name=app_conf.name)
 
-runtime_log = _logger.bind(type=LoggerType.RUNTIME.value)
-lifespan_log = _logger.bind(type=LoggerType.LIFESPAN.value)
-database_log = _logger.bind(type=LoggerType.DATABASE.value)
-redis_log = _logger.bind(type=LoggerType.REDIS.value)
+runtime_log = _logger.bind(type=LoggerTypeEnum.RUNTIME.value)
+lifespan_log = _logger.bind(type=LoggerTypeEnum.LIFESPAN.value)
+database_log = _logger.bind(type=LoggerTypeEnum.DATABASE.value)
+redis_log = _logger.bind(type=LoggerTypeEnum.REDIS.value)

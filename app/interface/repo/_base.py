@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from app.apiserver.exception import AppException
 from app.apiserver.logger import database_log
 from app.config import pg_connection
-from app.schema.enum import OrderTypeEnum, PullDataFormat
+from app.schema.enum import OrderTypeEnum, PullDataFormatEnum
 
 Base = declarative_base()
 engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
@@ -99,17 +99,17 @@ class SqlExprMixin(ABC):
 class BaseRepo(ABC):
 
     @staticmethod
-    def execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
+    def execute(stmt, output: PullDataFormatEnum = PullDataFormatEnum.PANDAS):
         db = SessionLocal()
         try:
             database_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
             match output:
-                case PullDataFormat.RAW:
+                case PullDataFormatEnum.RAW:
                     return result
-                case PullDataFormat.PANDAS:
+                case PullDataFormatEnum.PANDAS:
                     return pd.DataFrame(result)
-                case PullDataFormat.RECORDS:
+                case PullDataFormatEnum.RECORDS:
                     return pd.DataFrame(result).to_dict(orient='records')
         except Exception as e:
             database_log.error(f'execute error: {e}')
@@ -120,7 +120,7 @@ class BaseRepo(ABC):
             db.close()
 
     @staticmethod
-    async def async_execute(stmt, output: PullDataFormat = PullDataFormat.PANDAS):
+    async def async_execute(stmt, output: PullDataFormatEnum = PullDataFormatEnum.PANDAS):
         # TODO 异步查询数据库
         ...
 

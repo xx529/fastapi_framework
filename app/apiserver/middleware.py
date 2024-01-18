@@ -2,7 +2,7 @@ import uuid
 
 from starlette.requests import Request
 
-from app.schema.enum import RequestSuccessCode
+from app.schema.enum import RequestSuccessCodeEnum
 from .context import RequestCtx
 from .logger import runtime_log
 
@@ -24,7 +24,7 @@ class MiddleWare:
         runtime_log.debug(f'headers: {dict(request.headers)}')
         response = await call_next(request)
 
-        if response.status_code in RequestSuccessCode.list():
+        if response.status_code in RequestSuccessCodeEnum.list():
             runtime_log.info(f'status code: {response.status_code}')
         else:
             runtime_log.error(f'status code: {response.status_code}')

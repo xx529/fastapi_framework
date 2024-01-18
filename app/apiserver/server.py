@@ -9,7 +9,7 @@ from app.apiserver.exception import AppException, AppExceptionClass
 from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
 from app.config import app_conf, project_dir
-from app.interface import redis
+from app.interface.cache.redis import redis_cache
 from app.interface.repo._base import create_all_pg_tables
 from app.router import all_routers
 from app.schema.base import BaseResponse
@@ -78,7 +78,7 @@ class HangServer:
 
     @staticmethod
     def on_start(app: FastAPI) -> None:
-        lifespan_log.info(f'startup version: {app.version}')
+        lifespan_log.info(f'startup api server version: {app.version}')
 
         lifespan_log.info('check dirs')
         for d in project_dir.check_create_ls():
@@ -92,12 +92,12 @@ class HangServer:
         create_all_pg_tables()
 
         lifespan_log.info('startup redis')
-        redis.startup()
+        redis_cache.startup()
 
     @staticmethod
     async def on_shutdown(app: FastAPI) -> None:
         lifespan_log.info('shutdown redis')
-        await redis.shutdown()
+        await redis_cache.shutdown()
 
-        lifespan_log.info(f'shutdown version: {app.version}')
+        lifespan_log.info(f'shutdown api server version: {app.version}')
         # TODO 关闭异步任务

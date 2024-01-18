@@ -1,15 +1,11 @@
 from enum import Enum
 
 
-class PullDataFormat(str, Enum):
+class PullDataFormatEnum(str, Enum):
     RAW = 'raw'
     PANDAS = 'pandas',
     RECORDS = 'records'
     PYDANTIC = 'pydantic'
-
-
-class RedisKeyField(str, Enum):
-    BASE = 'base'
 
 
 class OrderTypeEnum(str, Enum):
@@ -17,7 +13,7 @@ class OrderTypeEnum(str, Enum):
     DESC = 'desc'
 
 
-class RequestSuccessCode(int, Enum):
+class RequestSuccessCodeEnum(int, Enum):
     SUCCESS = 200
     CREATED = 201
 
@@ -26,13 +22,18 @@ class RequestSuccessCode(int, Enum):
         return [x.value for x in list(cls)]
 
 
-class LoggerType(str, Enum):
+class LoggerTypeEnum(str, Enum):
     RUNTIME = 'runtime'
     LIFESPAN = 'lifespan'
     DATABASE = 'database'
     REDIS = 'redis'
 
 
-class RedisKey(str, Enum):
+class RedisKeyEnum(str, Enum):
     USER_REPO = 'user_repo'
     ITEM_REPO = 'item_repo'
+
+
+class RedisActionEnum(str, Enum):
+    CACHE = 'cache'  # 自动缓存与查询
+    CLEAR = 'clear'  # 删除行为对应的缓存
