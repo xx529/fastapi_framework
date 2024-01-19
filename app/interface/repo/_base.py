@@ -1,8 +1,10 @@
 from abc import ABC
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Literal
 
 import pandas as pd
+from pandas import DataFrame
+from pydantic import BaseModel
 from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -99,18 +101,22 @@ class SqlExprMixin(ABC):
 class BaseRepo(ABC):
 
     @staticmethod
-    def execute(stmt, output: PullDataFormatEnum = PullDataFormatEnum.PANDAS):
+    def execute(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
         db = SessionLocal()
         try:
             database_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
             match output:
-                case PullDataFormatEnum.RAW:
+                case 'raw':
                     return result
-                case PullDataFormatEnum.PANDAS:
+                case 'pandas':
                     return pd.DataFrame(result)
-                case PullDataFormatEnum.RECORDS:
+                case 'list':
                     return pd.DataFrame(result).to_dict(orient='records')
+                case BaseModel():
+                    return output.model_validate(result)
+                case None:
+                    return None
         except Exception as e:
             database_log.error(f'execute error: {e}')
             db.rollback()

@@ -21,4 +21,4 @@ class TaskRecordRepo(BaseRepo):
         stmt = (select(self.t.task_name,
                        self.t.task_type)
                 .where(self.t.id == row_id))
-        return self.execute(stmt, output=PullDataFormatEnum.RECORDS)
+        return self.execute(stmt, output='list')

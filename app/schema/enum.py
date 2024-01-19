@@ -5,7 +5,7 @@ class PullDataFormatEnum(str, Enum):
     RAW = 'raw'
     PANDAS = 'pandas',
     RECORDS = 'records'
-    PYDANTIC = 'pydantic'
+    NULL = 'null'
 
 
 class OrderTypeEnum(str, Enum):
@@ -32,8 +32,3 @@ class LoggerTypeEnum(str, Enum):
 class RedisKeyEnum(str, Enum):
     USER_REPO = 'user_repo'
     ITEM_REPO = 'item_repo'
-
-
-class RedisActionEnum(str, Enum):
-    CACHE = 'cache'  # 自动缓存与查询
-    CLEAR = 'clear'  # 删除行为对应的缓存

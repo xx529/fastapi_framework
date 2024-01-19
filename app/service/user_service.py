@@ -26,8 +26,7 @@ class UserService:
 
     @staticmethod
     def delete(user_id):
-        # UserInfoRepo().delete(user_id=user_id)
-        ...
+        UserInfoRepo().delete(user_id=user_id)
 
     @staticmethod
     def update(user_id, name, city, age):

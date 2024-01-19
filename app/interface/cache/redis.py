@@ -10,7 +10,6 @@ import redis.asyncio as aredis
 
 from app.apiserver.logger import redis_log
 from app.config import redis_conf
-from app.schema.enum import RedisActionEnum
 
 
 class RedisCache:
@@ -42,22 +41,18 @@ class RedisCache:
         self.client = client
         self.pools = pools
 
-    def __call__(self,
-                 key: Callable[..., str],
-                 condition: Callable[..., bool] = None,
-                 action: RedisActionEnum = RedisActionEnum.CACHE,
-                 ttl: int = None):
-        # TODO 实现条件判断
-        # TODO 实现行为判断
-        # TODO 多个装饰器叠加
+    def cache(self,
+              key: Callable[..., str],
+              condition: Callable[..., bool] = None,
+              ttl: int = None):
         def layer(func):
 
             if asyncio.iscoroutinefunction(func):
 
                 @wraps(func)
                 async def ainner(*args, **kwargs):
-                    if self.exec_condition(condition, *args, **kwargs):
-                        cache_key = self.get_custom_cache_key(key, func, *args, **kwargs)
+                    if self.check_condition(condition, func, *args, **kwargs):
+                        cache_key = self.exec_lambda_func(key, func, *args, **kwargs)
                         if self.exists(f'{self.key_prefix}:{cache_key}'):
                             result = await self.aget(key=cache_key)
                         else:
@@ -73,8 +68,8 @@ class RedisCache:
 
                 @wraps(func)
                 def inner(*args, **kwargs):
-                    if self.exec_condition(condition, *args, **kwargs):
-                        cache_key = self.get_custom_cache_key(key, func, *args, **kwargs)
+                    if self.check_condition(condition, func, *args, **kwargs):
+                        cache_key = self.exec_lambda_func(key, func, *args, **kwargs)
                         if self.exists(f'{self.key_prefix}:{cache_key}'):
                             result = self.get(key=cache_key)
                         else:
@@ -82,6 +77,35 @@ class RedisCache:
                             self.set(key=cache_key, value=result, expire_seconds=ttl)
                     else:
                         result = func(*args, **kwargs)
+                    return result
+
+                return inner
+
+        return layer
+
+    def clear(self, key: Callable[..., str]) -> None:
+
+        def layer(func):
+
+            if asyncio.iscoroutinefunction(func):
+
+                @wraps(func)
+                async def ainner(*args, **kwargs):
+                    result = await func(*args, **kwargs)
+                    clear_key = self.exec_lambda_func(key, func, *args, **kwargs)
+                    redis_log.debug(f'clear key: {clear_key}')
+                    self.clear_batch(match_key=f'{self.key_prefix}:{clear_key}')
+                    return result
+
+                return ainner
+
+            else:
+                @wraps(func)
+                def inner(*args, **kwargs):
+                    result = func(*args, **kwargs)
+                    clear_key = self.exec_lambda_func(key, func, *args, **kwargs)
+                    redis_log.debug(f'clear key: {clear_key}')
+                    self.clear_batch(match_key=f'{self.key_prefix}:{clear_key}')
                     return result
 
                 return inner
@@ -133,12 +157,8 @@ class RedisCache:
             redis_log.debug(f'del key: {key}')
         pipeline.execute()
 
-    def clear(self, match_key: str) -> None:
-        ...
+    def clear_batch(self, match_key: str) -> None:
 
-    def clear_all(self) -> None:
-
-        match_key = f'{self.key_prefix}:*'
         keys = []
         batch_size = 100
         for key in self.client.scan_iter(match_key, count=batch_size):
@@ -150,6 +170,9 @@ class RedisCache:
         else:
             self.delete_keys(keys)
 
+    def clear_all_cache(self):
+        self.clear_batch(match_key=f'{self.key_prefix}:*')
+
     def exists(self, key) -> bool:
         return self.client.exists(key)
 
@@ -157,33 +180,34 @@ class RedisCache:
         return f'{self.key_prefix}:{key}'
 
     @staticmethod
-    def get_custom_cache_key(key, func, *args, **kwargs) -> str:
+    def exec_lambda_func(lambda_func: Callable, decorator_func: Callable, *args, **kwargs) -> str:
 
         # 转换成统一 kwargs 的参数形式
         param_dict = dict(kwargs)
-        for v, k in zip(args, inspect.signature(func).parameters.values()):
+        for v, k in zip(args, inspect.signature(decorator_func).parameters.values()):
             param_dict[str(k)] = v
 
         # 获取需要的 keys
-        select_keys = [str(x) for x in inspect.signature(key).parameters.values()]
+        select_keys = [str(x) for x in inspect.signature(lambda_func).parameters.values()]
 
-        # 调用 lambda 函数生成 cache key
-        cache_key = key(**{k: param_dict.get(k, None) for k in select_keys})
+        # 调用 lambda 函数生成结果
+        result = lambda_func(**{k: param_dict.get(k, None) for k in select_keys})
 
-        return cache_key
+        return result
 
-    def exec_condition(self, condition: Callable[..., bool], *args, **kwargs) -> bool:
+    def check_condition(self, lambda_func: Callable[..., bool], decorator_func: Callable, *args, **kwargs) -> bool:
 
         # 不需要检测时候
-        if condition is None:
+        if lambda_func is None:
             redis_log.debug(f'pass condition check')
             return True
 
-        if True:
-            redis_log.debug(f'condition is satisfied')
+        is_satisfied = self.exec_lambda_func(lambda_func, decorator_func, *args, **kwargs)
+        if is_satisfied:
+            redis_log.debug(f'cache condition is satisfied')
         else:
-            redis_log.debug(f'condition is not satisfied')
-        return True
+            redis_log.debug(f'cache condition is not satisfied')
+        return is_satisfied
 
     def startup(self) -> "RedisCache":
         if not self.apools:
