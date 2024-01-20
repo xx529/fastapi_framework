@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body, Depends, Query
+from typing import Literal
 
 from app.schema.base import BoolResponse, HeaderParams, OkResponse
 from app.schema.enum import OrderTypeEnum
@@ -14,11 +15,12 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(HeaderPara
     description='创建用户通用接口',
     response_model=UserCreateResponse
 )
-def user_add(
-        name: str = Body(description="用户名", examples=["张三"]),
-        age: int = Body(default=None, description="年龄", ge=0, examples=[18]),
+def user_create(
+        name: str = Body(description='用户名', examples=['张三']),
+        age: int = Body(description='年龄', ge=0, examples=[18]),
+        gender: Literal['男', '女'] = Body(description='性别')
 ):
-    user_id = UserService.create(name=name, age=age)
+    user_id = UserService.create(name=name, age=age, gender=gender)
     return UserCreateResponse(data=user_id)
 
 
@@ -59,10 +61,10 @@ def user_update(
 
 )
 def user_detail(
-        user_id: int = Query(description='用户ID', ge=0, examples=["aaa"])
+        user_id: int = Query(description='用户ID', ge=0, examples=['aaa'])
 ):
     data = UserService.detail(user_id=user_id)
-    return UserDetailResponse(data=UserInfo(**data))
+    return UserDetailResponse(data=data)
 
 
 @router.get(
@@ -72,11 +74,11 @@ def user_detail(
     response_model=UserListResponse
 )
 def user_list(
-        page: int = Query(default=1, description="页码"),
-        limit: int = Query(default=10, description="每页数量"),
-        order_type: OrderTypeEnum = Query(default='desc', description="排序方式"),
-        order_by: str = Query(default='create_at', description="排序字段"),
-        search: str = Query(default=None, description="搜索关键字", example='张三'),
+        page: int = Query(default=1, description='页码'),
+        limit: int = Query(default=10, description='每页数量'),
+        order_type: OrderTypeEnum = Query(default='desc', description='排序方式'),
+        order_by: str = Query(default='create_at', description='排序字段'),
+        search: str = Query(default=None, description='搜索关键字', example='张三'),
 ):
     data, total = UserService.list(page=page, limit=limit, search=search, order_by=order_by, order_type=order_type)
     return UserListResponse(data=data, total=total)
