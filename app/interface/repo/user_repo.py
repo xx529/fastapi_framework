@@ -1,4 +1,5 @@
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select, update, insert
+from datetime import datetime
 
 from app.apiserver.exception import AppException
 from app.interface.cache.redis import redis_cache
@@ -16,6 +17,15 @@ class UserInfoRepo(BaseRepo):
 
     def __init__(self):
         self.t: UserInfo = UserInfo.instance()
+
+    def create(self, name: str, age: int, gender: str):
+        stmt = (insert(self.t)
+                .values(name=name,
+                        age=age,
+                        gender=gender,
+                        del_flag=False)
+                .returning(self.t.user_id))
+        return self.execute(stmt)['user_id'][0]
 
     @redis_cache.cache(key=user_list_key, condition=user_list_condition)
     def list(self, page: int, limit: int, order_by: str, order_type, search=None):
@@ -53,7 +63,3 @@ class UserInfoRepo(BaseRepo):
                 .where(self.t.id == user_id)
                 .values(name=name, city=city, age=age))
         self.execute(stmt, output=None)
-
-    @redis_cache.clear(key=user_detail_key)
-    def create(self):
-        ...

@@ -7,6 +7,10 @@ from app.schema.user import UserId, UserInfo, UserInfoForList
 
 
 class UserService:
+    @staticmethod
+    def create_user(name: str, age: int, gender: str) -> UserId:
+        user_id = UserInfoRepo().create(name=name, age=age, gender=gender)
+        return user_id
 
     @staticmethod
     def list(page, limit, order_by, order_type, search) -> Tuple[List[UserInfoForList], int]:
@@ -22,10 +26,6 @@ class UserService:
         data = UserInfoRepo().detail(user_id=user_id)
         return UserInfo(**data)
 
-    @staticmethod
-    def create(name: str, age: int, gender: str) -> UserId:
-        # TODO 新增用户接口
-        return random.randint(0, 100)
 
     @staticmethod
     def delete(user_id: int) -> None:

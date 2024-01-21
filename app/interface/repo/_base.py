@@ -16,7 +16,7 @@ from app.schema.enum import OrderTypeEnum, PullDataFormatEnum
 
 Base = declarative_base()
 engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autoflush=False, bind=engine)
 
 # async_engine = create_async_engine(url=PgDataBaseConf.jdbcurl)
 # AsyncSessionLocal = sessionmaker(class_=AsyncSession, autocommit=False, autoflush=False, bind=async_engine)
@@ -36,9 +36,9 @@ class BaseTable(Base):
     _engine = engine
 
     id = Column(BIGINT, primary_key=True, autoincrement=True, comment='唯一ID值')
-    create_at = Column(DateTime, default=datetime.now(), nullable=False, comment='创建时间')
+    create_at = Column(DateTime,  default=func.now(), nullable=False, comment='创建时间')
     create_by = Column(String(64), default='admin', index=False, nullable=False, comment='创建者')
-    update_at = Column(DateTime, onupdate=datetime.now(), comment='最后更新时间')
+    update_at = Column(DateTime,  onupdate=func.now(), comment='最后更新时间')
     update_by = Column(String(64), index=False, comment='最后更新者')
     del_flag = Column(Boolean, index=False, default=False, nullable=False, comment='安全删除标记')
 
@@ -106,6 +106,7 @@ class BaseRepo(ABC):
         try:
             database_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
+            db.commit()
             match output:
                 case 'raw':
                     return result

@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Body, Depends, Query
 from typing import Literal
+
+from fastapi import APIRouter, Body, Depends, Query
 
 from app.schema.base import BoolResponse, HeaderParams, OkResponse
 from app.schema.enum import OrderTypeEnum
-from app.schema.user import UserCreateResponse, UserDetailResponse, UserInfo, UserListResponse
+from app.schema.user import UserCreateResponse, UserDetailResponse, UserListResponse
 from app.service.user_service import UserService
 
 router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(HeaderParams.get_common_headers)])
@@ -20,7 +21,7 @@ def user_create(
         age: int = Body(description='年龄', ge=0, examples=[18]),
         gender: Literal['男', '女'] = Body(description='性别')
 ):
-    user_id = UserService.create(name=name, age=age, gender=gender)
+    user_id = UserService.create_user(name=name, age=age, gender=gender)
     return UserCreateResponse(data=user_id)
 
 
@@ -76,9 +77,14 @@ def user_detail(
 def user_list(
         page: int = Query(default=1, description='页码'),
         limit: int = Query(default=10, description='每页数量'),
-        order_type: OrderTypeEnum = Query(default='desc', description='排序方式'),
+        order_type: OrderTypeEnum = Query(default=OrderTypeEnum.DESC.value, description='排序方式'),
         order_by: str = Query(default='create_at', description='排序字段'),
         search: str = Query(default=None, description='搜索关键字', example='张三'),
 ):
-    data, total = UserService.list(page=page, limit=limit, search=search, order_by=order_by, order_type=order_type)
+    data, total = UserService.list(page=page,
+                                   limit=limit,
+                                   search=search,
+                                   order_by=order_by,
+                                   order_type=order_type)
+
     return UserListResponse(data=data, total=total)
