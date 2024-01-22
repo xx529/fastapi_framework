@@ -4,9 +4,8 @@ from uuid import UUID
 from fastapi import APIRouter, Path, Query
 
 from app.apiserver.exception import AppException
-from app.schema.base import HtmlResponse, StrResponse
+from app.schema.base import HtmlResponse, StrResponse, OkResponse
 from app.service.system_service import LogService
-from app.apiserver.logger import runtime_log
 
 
 router = APIRouter(prefix='/system', tags=['系统信息模块'])
@@ -14,12 +13,9 @@ router = APIRouter(prefix='/system', tags=['系统信息模块'])
 
 @router.get(path='/health/heartbeat',
             summary='健康检查',
-            response_model=StrResponse)
-async def health(
-        num: int = Query(description='测试参数')
-):
-    runtime_log.info(num)
-    return StrResponse(data=str(num))
+            response_model=OkResponse)
+async def health():
+    return OkResponse()
 
 
 @router.get(path='/log/lifespan',

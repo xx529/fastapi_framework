@@ -26,7 +26,7 @@ class UserInfo(BaseTable):
 
     @classmethod
     def info_columns(cls):
-        return [cls.name, cls.age, cls.gender]
+        return [cls.user_id, cls.name, cls.age, cls.gender]
 
 
 class ItemInfo(BaseTable):

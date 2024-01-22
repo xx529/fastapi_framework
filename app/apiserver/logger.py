@@ -43,5 +43,5 @@ _logger = logger.patch(patch_request_id).bind(project_name=app_conf.name)
 
 runtime_log = _logger.bind(type=LoggerTypeEnum.RUNTIME.value)
 lifespan_log = _logger.bind(type=LoggerTypeEnum.LIFESPAN.value)
-database_log = _logger.bind(type=LoggerTypeEnum.DATABASE.value)
+pg_log = _logger.bind(type=LoggerTypeEnum.POSTGRES.value)
 redis_log = _logger.bind(type=LoggerTypeEnum.REDIS.value)

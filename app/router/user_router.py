@@ -34,7 +34,7 @@ def user_create(
 def user_delete(
         user_id: int = Body(description='用户ID', ge=0)
 ):
-    UserService.delete(user_id=user_id)
+    UserService.delete_user(user_id=user_id)
     return OkResponse()
 
 
@@ -46,11 +46,11 @@ def user_delete(
 )
 def user_update(
         user_id: int = Body(description='用户ID', ge=0),
-        name: str = Body(description='用户名'),
-        city: str = Body(description='城市'),
-        age: int = Body(description='年龄', ge=0),
+        name: str = Body(None, description='用户名'),
+        age: int = Body(None, description='年龄', ge=0),
+        gender: Literal['男', '女'] = Body(None, description='性别'),
 ):
-    UserService.update(user_id=user_id, name=name, city=city, age=age)
+    UserService.update_user(user_id=user_id, name=name, age=age, gender=gender)
     return BoolResponse(data=True)
 
 

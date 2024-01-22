@@ -1,9 +1,7 @@
-import random
 from typing import List, Tuple
 
-from app.apiserver.logger import runtime_log
 from app.interface import UserInfoRepo
-from app.schema.user import UserId, UserInfo, UserInfoForList
+from app.schema.user import UserId, UserInfo
 
 
 class UserService:
@@ -13,7 +11,7 @@ class UserService:
         return user_id
 
     @staticmethod
-    def list(page, limit, order_by, order_type, search) -> Tuple[List[UserInfoForList], int]:
+    def list(page, limit, order_by, order_type, search) -> Tuple[List[UserInfo], int]:
         df_list, total = UserInfoRepo().list(page=page,
                                              limit=limit,
                                              order_by=order_by,
@@ -26,15 +24,10 @@ class UserService:
         data = UserInfoRepo().detail(user_id=user_id)
         return UserInfo(**data)
 
-
     @staticmethod
-    def delete(user_id: int) -> None:
+    def delete_user(user_id: int) -> None:
         UserInfoRepo().delete(user_id=user_id)
 
     @staticmethod
-    def update(user_id: int, name: str = None, city: str = None, age: int = None) -> None:
-        if all(map(lambda x: x is None, [name, city, age])):
-            runtime_log.info('no need to update!')
-            return
-
-        UserInfoRepo().update(user_id=user_id, name=name, city=city, age=age)
+    def update_user(user_id: int, name: str = None, age: int = None, gender: str = None) -> None:
+        UserInfoRepo().update(user_id=user_id, name=name, gender=gender, age=age)

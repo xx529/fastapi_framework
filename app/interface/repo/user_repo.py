@@ -57,9 +57,12 @@ class UserInfoRepo(BaseRepo):
         self.execute(stmt, output=None)
 
     @redis_cache.clear(key=user_detail_key)
-    def update(self, user_id: int, name: str = None, city: str = None, age: int = None):
-        # TODO 按需更新
+    def update(self, user_id: int, name: str = None, gender: str = None, age: int = None):
+        print(user_id, name, gender, age)
         stmt = (update(self.t)
                 .where(self.t.id == user_id)
-                .values(name=name, city=city, age=age))
+                .values(name=name if name is not None else self.t.name,
+                        gender=gender if gender is not None else self.t.gender,
+                        age=age if age is not None else self.t.age,
+                        update_by='admin'))
         self.execute(stmt, output=None)

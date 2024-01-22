@@ -25,7 +25,7 @@ class RequestSuccessCodeEnum(int, Enum):
 class LoggerTypeEnum(str, Enum):
     RUNTIME = 'runtime'
     LIFESPAN = 'lifespan'
-    DATABASE = 'database'
+    POSTGRES = 'postgres'
     REDIS = 'redis'
 
 

@@ -1,16 +1,14 @@
 from abc import ABC
-from datetime import datetime
 from typing import Dict, Literal
 
 import pandas as pd
-from pandas import DataFrame
 from pydantic import BaseModel
 from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from app.apiserver.exception import AppException
-from app.apiserver.logger import database_log
+from app.apiserver.logger import pg_log
 from app.config import pg_connection
 from app.schema.enum import OrderTypeEnum, PullDataFormatEnum
 
@@ -28,6 +26,10 @@ def create_all_pg_tables():
     Base.metadata.create_all(bind=engine)
 
 
+def close_all_connection():
+    SessionLocal.close_all()
+
+
 class BaseTable(Base):
     __tablename__: str
     __abstract__ = True
@@ -36,9 +38,9 @@ class BaseTable(Base):
     _engine = engine
 
     id = Column(BIGINT, primary_key=True, autoincrement=True, comment='唯一ID值')
-    create_at = Column(DateTime,  default=func.now(), nullable=False, comment='创建时间')
+    create_at = Column(DateTime, default=func.now(), nullable=False, comment='创建时间')
     create_by = Column(String(64), default='admin', index=False, nullable=False, comment='创建者')
-    update_at = Column(DateTime,  onupdate=func.now(), comment='最后更新时间')
+    update_at = Column(DateTime, onupdate=func.now(), comment='最后更新时间')
     update_by = Column(String(64), index=False, comment='最后更新者')
     del_flag = Column(Boolean, index=False, default=False, nullable=False, comment='安全删除标记')
 
@@ -47,12 +49,12 @@ class BaseTable(Base):
         if getattr(cls, '__abstract__') is True:
             table_name = cls.__tablename__.format(**kwargs)
             if table_name not in table_class_instance:
-                database_log.debug(f'create multi table class: {table_name}')
+                pg_log.debug(f'create multi table class: {table_name}')
                 table_class_instance[table_name] = type(table_name,
                                                         (cls,),
                                                         {'__tablename__': table_name})
             else:
-                database_log.debug(f'get multi table class: {table_name}')
+                pg_log.debug(f'get multi table class: {table_name}')
             return table_class_instance[table_name]
         else:
             return cls
@@ -60,10 +62,10 @@ class BaseTable(Base):
     @classmethod
     def create(cls):
         if not cls.is_exists():
-            database_log.debug(f'create table: {cls.__tablename__}')
+            pg_log.debug(f'create table: {cls.__tablename__}')
             cls.__table__.create(bind=cls._engine)
         else:
-            database_log.debug(f'exist table: {cls.__tablename__}')
+            pg_log.debug(f'exist table: {cls.__tablename__}')
 
     @classmethod
     def is_exists(cls):
@@ -104,7 +106,7 @@ class BaseRepo(ABC):
     def execute(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
         db = SessionLocal()
         try:
-            database_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+            pg_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
             db.commit()
             match output:
@@ -119,11 +121,11 @@ class BaseRepo(ABC):
                 case None:
                     return None
         except Exception as e:
-            database_log.error(f'execute error: {e}')
+            pg_log.error(f'execute error: {e}')
             db.rollback()
             raise AppException.DatabaseError(detail=str(e))
         finally:
-            database_log.debug('close db session')
+            pg_log.debug('close db session')
             db.close()
 
     @staticmethod
