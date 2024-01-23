@@ -11,6 +11,7 @@ app_conf = AppServerConfig(name=settings.appserver.name,
                            version=settings.appserver.version,
                            host=settings.appserver.host,
                            port=settings.appserver.port,
+                           debug=settings.appserver.debug,
                            prefix='/api/v1')
 
 log_conf = LoggerConfig(name='log',

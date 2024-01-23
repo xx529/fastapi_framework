@@ -6,18 +6,21 @@ from pydantic import BaseModel
 from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app.apiserver.exception import AppException
 from app.apiserver.logger import pg_log
 from app.config import pg_connection
-from app.schema.enum import OrderTypeEnum, PullDataFormatEnum
+from app.schema.enum import OrderTypeEnum
 
 Base = declarative_base()
-engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
-SessionLocal = sessionmaker(autoflush=False, bind=engine)
 
-# async_engine = create_async_engine(url=PgDataBaseConf.jdbcurl)
-# AsyncSessionLocal = sessionmaker(class_=AsyncSession, autocommit=False, autoflush=False, bind=async_engine)
+engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
+SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+
+aengine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
+ASessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=aengine, class_=AsyncSession)
+
 
 table_class_instance: Dict[str, Base] = {}
 
@@ -103,8 +106,9 @@ class SqlExprMixin(ABC):
 class BaseRepo(ABC):
 
     @staticmethod
-    def execute(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
+    def exec(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
         db = SessionLocal()
+        pg_log.debug('sync db session')
         try:
             pg_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
             result = db.execute(stmt)
@@ -129,9 +133,31 @@ class BaseRepo(ABC):
             db.close()
 
     @staticmethod
-    async def async_execute(stmt, output: PullDataFormatEnum = PullDataFormatEnum.PANDAS):
-        # TODO 异步查询数据库
-        ...
+    async def aexec(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
+        db = ASessionLocal()
+        pg_log.debug('async db session')
+        try:
+            pg_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+            result = await db.execute(stmt)
+            await db.commit()
+            match output:
+                case 'raw':
+                    return result
+                case 'pandas':
+                    return pd.DataFrame(result)
+                case 'list':
+                    return pd.DataFrame(result).to_dict(orient='records')
+                case BaseModel():
+                    return output.model_validate(result)
+                case None:
+                    return None
+        except Exception as e:
+            pg_log.error(f'execute error: {e}')
+            db.rollback()
+            raise AppException.DatabaseError(detail=str(e))
+        finally:
+            pg_log.debug('close db session')
+            db.close()
 
     @staticmethod
     def split_total_column(df, col='total_count'):

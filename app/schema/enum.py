@@ -27,6 +27,8 @@ class LoggerTypeEnum(str, Enum):
     LIFESPAN = 'lifespan'
     POSTGRES = 'postgres'
     REDIS = 'redis'
+    SERVICE = 'service'
+    MIDDLEWARE = 'middleware'
 
 
 class RedisKeyEnum(str, Enum):

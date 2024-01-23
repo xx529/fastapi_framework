@@ -61,9 +61,11 @@ class GeneralDataBaseConnection(BaseModel):
     database: str = Field(description='数据库')
     db_schema: str = Field(description='schema')
     jdbcurl: str = Field(None, description='jdbcurl')
+    async_jdbcurl: str = Field(None, description='异步 jdbcurl')
 
     def model_post_init(self, __context):
         self.jdbcurl = f'postgresql://{self.host}:{self.port}/{self.database}?user={self.user}&password={self.password}'
+        self.async_jdbcurl = f'postgresql+asyncpg://{self.host}:{self.port}/{self.database}?user={self.user}&password={self.password}'
 
 
 class RedisConnection(BaseModel):
@@ -90,6 +92,7 @@ class AppServerConfig(BaseModel):
     host: str = Field(description='服务地址')
     port: int = Field(description='服务端口')
     prefix: str = Field(description='url前缀')
+    debug: bool = Field(description='是否开启debug模式')
 
 
 class ResourceFileConfig(BaseModel):

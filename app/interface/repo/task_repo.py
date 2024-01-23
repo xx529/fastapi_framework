@@ -1,9 +1,7 @@
-from ._tables import TaskRecord
-from ._base import BaseRepo
-
 from sqlalchemy import select
 
-from ...schema.enum import PullDataFormatEnum
+from ._base import BaseRepo
+from ._tables import TaskRecord
 
 
 class TaskRecordRepo(BaseRepo):
@@ -21,4 +19,4 @@ class TaskRecordRepo(BaseRepo):
         stmt = (select(self.t.task_name,
                        self.t.task_type)
                 .where(self.t.id == row_id))
-        return self.execute(stmt, output='list')
+        return self.exec(stmt, output='list')

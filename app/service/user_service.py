@@ -11,17 +11,17 @@ class UserService:
         return user_id
 
     @staticmethod
-    def list(page, limit, order_by, order_type, search) -> Tuple[List[UserInfo], int]:
-        df_list, total = UserInfoRepo().list(page=page,
-                                             limit=limit,
-                                             order_by=order_by,
-                                             order_type=order_type,
-                                             search=search)
+    async def list(page, limit, order_by, order_type, search) -> Tuple[List[UserInfo], int]:
+        df_list, total = await UserInfoRepo().list(page=page,
+                                                   limit=limit,
+                                                   order_by=order_by,
+                                                   order_type=order_type,
+                                                   search=search)
         return df_list.to_dict(orient='records'), total
 
     @staticmethod
-    def detail(user_id: int) -> UserInfo:
-        data = UserInfoRepo().detail(user_id=user_id)
+    async def detail(user_id: int) -> UserInfo:
+        data = await UserInfoRepo().detail(user_id=user_id)
         return UserInfo(**data)
 
     @staticmethod

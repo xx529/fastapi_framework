@@ -61,10 +61,10 @@ def user_update(
     response_model=UserDetailResponse
 
 )
-def user_detail(
+async def user_detail(
         user_id: int = Query(description='用户ID', ge=0, examples=['aaa'])
 ):
-    data = UserService.detail(user_id=user_id)
+    data = await UserService.detail(user_id=user_id)
     return UserDetailResponse(data=data)
 
 
@@ -74,17 +74,17 @@ def user_detail(
     description='获取用户列表通用接口',
     response_model=UserListResponse
 )
-def user_list(
+async def user_list(
         page: int = Query(default=1, description='页码'),
         limit: int = Query(default=10, description='每页数量'),
         order_type: OrderTypeEnum = Query(default=OrderTypeEnum.DESC.value, description='排序方式'),
         order_by: str = Query(default='create_at', description='排序字段'),
         search: str = Query(default=None, description='搜索关键字', example='张三'),
 ):
-    data, total = UserService.list(page=page,
-                                   limit=limit,
-                                   search=search,
-                                   order_by=order_by,
-                                   order_type=order_type)
+    data, total = await UserService.list(page=page,
+                                         limit=limit,
+                                         search=search,
+                                         order_by=order_by,
+                                         order_type=order_type)
 
     return UserListResponse(data=data, total=total)

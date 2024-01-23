@@ -6,21 +6,21 @@ from app.config import log_conf, app_conf
 from app.schema.enum import LoggerTypeEnum
 from .context import RequestCtx
 
-FULL_FORMAT = ('{time:YYYY-MM-DD HH:mm:ss.SSS} '
-               '{extra[project_name]} '
+FULL_FORMAT = ('<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> '
+               '<red>{extra[project_name]}</red> '
                '[PID:{process}] '
                '[TID:{thread}] '
-               '[{level}] '
+               '<level>[{level}]</level> '
                '[{file.path}:{function}:{line}] '
                '- '
-               '[RID:{extra[request_id]}] '
-               '[TYPE:{extra[type]}] '
-               '{message}')
+               '<yellow>[RID:{extra[request_id]}]</yellow> '
+               '<magenta>[{extra[type]}]</magenta> '
+               '<WHITE>{message}</WHITE>')
 
-SHORT_FORMAT = ('[{time:HH:mm:ss.SSS}] '
-                '[RID:{extra[request_id]}] '
-                '[{level}] '
-                '[TYPE:{extra[type]}] '
+SHORT_FORMAT = ('<green>[{time:HH:mm:ss.SSS}]</green> '
+                '<level>[{level}]</level> '
+                '<yellow>[RID:{extra[request_id]}]</yellow> '
+                '<magenta>[{extra[type]}]</magenta> '
                 '{message}')
 
 
@@ -33,15 +33,19 @@ logger.remove()
 logger.add(sink=log_conf.file,
            format=FULL_FORMAT,
            level=log_conf.level,
-           serialize=False)
+           serialize=False,
+           enqueue=True)
 
 logger.add(sink=sys.stdout,
-           format=SHORT_FORMAT,
-           level=log_conf.level)
+           format=SHORT_FORMAT if app_conf.debug else FULL_FORMAT,
+           colorize=True,
+           level=log_conf.level,
+           enqueue=True)
 
 _logger = logger.patch(patch_request_id).bind(project_name=app_conf.name)
 
-runtime_log = _logger.bind(type=LoggerTypeEnum.RUNTIME.value)
+service_log = _logger.bind(type=LoggerTypeEnum.SERVICE.value)
 lifespan_log = _logger.bind(type=LoggerTypeEnum.LIFESPAN.value)
 pg_log = _logger.bind(type=LoggerTypeEnum.POSTGRES.value)
 redis_log = _logger.bind(type=LoggerTypeEnum.REDIS.value)
+middleware_log = _logger.bind(type=LoggerTypeEnum.MIDDLEWARE.value)

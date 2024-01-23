@@ -4,6 +4,7 @@ appserver:
   host: localhost
   port: 8003
   workers: 5
+  debug: true
 
 pg:
   host: localhost
