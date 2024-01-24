@@ -18,6 +18,13 @@ async def health():
     return OkResponse()
 
 
+@router.get(path='/log/request',
+            summary='请求日志')
+async def log_request():
+    data = LogService.request_log()
+    return HtmlResponse(content=data)
+
+
 @router.get(path='/log/lifespan',
             summary='启停日志')
 async def log_lifespan():

@@ -33,7 +33,7 @@ class UserInfoRepo(BaseRepo):
                 .filter(self.model.name.like(f'%{search}%') if search else self.always_true())
                 .order_by(self.order_expr(order_by, order_type)))
 
-        df = await self.aexec(stmt.limit(limit).offset((page - 1) * limit))
+        df = await self.async_exec(stmt.limit(limit).offset((page - 1) * limit))
         return self.split_total_column(df)
 
     @redis_cache.cache(key=user_detail_key)
@@ -43,7 +43,7 @@ class UserInfoRepo(BaseRepo):
                        self.model.age,
                        self.model.gender)
                 .where(self.model.user_id == user_id))
-        data = await self.aexec(stmt, output='list')
+        data = await self.async_exec(stmt, output='list')
         if len(data) == 0:
             raise AppException.UserNotExist(detail=f'user_id {user_id} not exist')
         else:

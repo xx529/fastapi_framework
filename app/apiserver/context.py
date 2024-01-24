@@ -8,7 +8,10 @@ class RequestCtx:
 
     @staticmethod
     def get_request_id() -> str:
-        return request_id.get()
+        try:
+            return request_id.get()
+        except Exception:
+            return None
 
     @staticmethod
     def set_request_id(value: UUID):

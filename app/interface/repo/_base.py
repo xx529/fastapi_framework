@@ -4,9 +4,9 @@ from typing import Dict, Literal
 import pandas as pd
 from pydantic import BaseModel
 from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app.apiserver.exception import AppException
 from app.apiserver.logger import pg_log
@@ -18,9 +18,8 @@ Base = declarative_base()
 engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
 SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
-aengine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
-ASessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=aengine, class_=AsyncSession)
-
+sync_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
+AsyncSessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=sync_engine, class_=AsyncSession)
 
 table_class_instance: Dict[str, Base] = {}
 
@@ -31,6 +30,7 @@ def create_all_pg_tables():
 
 def close_all_connection():
     SessionLocal.close_all()
+    AsyncSessionLocal.close_all()
 
 
 class BaseTable(Base):
@@ -80,30 +80,6 @@ class BaseTable(Base):
 
 
 class ExecutorMixin(ABC):
-    ...
-
-
-class SqlExprMixin(ABC):
-    @staticmethod
-    def order_expr(order_by: str, order_type: OrderTypeEnum | None = None):
-        match order_type:
-            case OrderTypeEnum.ASC:
-                return asc(order_by)
-            case OrderTypeEnum.DESC:
-                return desc(order_by)
-            case _:
-                return desc(order_by)
-
-    @staticmethod
-    def always_true():
-        return text('1=1')
-
-    @staticmethod
-    def always_false():
-        return text('1!=1')
-
-
-class BaseRepo(ABC):
 
     @staticmethod
     def exec(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
@@ -133,8 +109,8 @@ class BaseRepo(ABC):
             db.close()
 
     @staticmethod
-    async def aexec(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
-        db = ASessionLocal()
+    async def async_exec(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
+        db = AsyncSessionLocal()
         pg_log.debug('async db session')
         try:
             pg_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
@@ -159,14 +135,8 @@ class BaseRepo(ABC):
             pg_log.debug('close db session')
             db.close()
 
-    @staticmethod
-    def split_total_column(df, col='total_count'):
-        if len(df) == 0:
-            total = 0
-        else:
-            total = df.pop(col).unique()[0]
-        return df, total
 
+class SqlExprMixin(ABC):
     @staticmethod
     def order_expr(order_by: str, order_type: OrderTypeEnum | None = None):
         match order_type:
@@ -184,3 +154,18 @@ class BaseRepo(ABC):
     @staticmethod
     def always_false():
         return text('1!=1')
+
+
+class UtilsMixin(ABC):
+    @staticmethod
+    def split_total_column(df, col='total_count'):
+        if len(df) == 0:
+            total = 0
+        else:
+            total = df.pop(col).unique()[0]
+        return df, total
+
+
+class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin):
+    ...
+
