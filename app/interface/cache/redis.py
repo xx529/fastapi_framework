@@ -85,7 +85,7 @@ class RedisCache:
 
     def clear(self, key: Callable[..., str]) -> None:
 
-        def layer(func):
+        def layer(func=None):
 
             if asyncio.iscoroutinefunction(func):
 

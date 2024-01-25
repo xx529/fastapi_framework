@@ -29,6 +29,8 @@ class LoggerTypeEnum(str, Enum):
     REDIS = 'redis'
     SERVICE = 'service'
     MIDDLEWARE = 'middleware'
+    REQUEST = 'request'
+    TRANSACTION = 'transaction'
 
 
 class RedisKeyEnum(str, Enum):

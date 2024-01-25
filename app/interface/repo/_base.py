@@ -16,10 +16,10 @@ from app.schema.enum import OrderTypeEnum
 Base = declarative_base()
 
 engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
-SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine)
 
 sync_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
-AsyncSessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=sync_engine, class_=AsyncSession)
+AsyncSessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=sync_engine, class_=AsyncSession)
 
 table_class_instance: Dict[str, Base] = {}
 
@@ -81,6 +81,8 @@ class BaseTable(Base):
 
 class ExecutorMixin(ABC):
 
+    db: AsyncSession
+
     @staticmethod
     def exec(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
         db = SessionLocal()
@@ -108,32 +110,20 @@ class ExecutorMixin(ABC):
             pg_log.debug('close db session')
             db.close()
 
-    @staticmethod
-    async def async_exec(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
-        db = AsyncSessionLocal()
-        pg_log.debug('async db session')
-        try:
-            pg_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
-            result = await db.execute(stmt)
-            await db.commit()
-            match output:
-                case 'raw':
-                    return result
-                case 'pandas':
-                    return pd.DataFrame(result)
-                case 'list':
-                    return pd.DataFrame(result).to_dict(orient='records')
-                case BaseModel():
-                    return output.model_validate(result)
-                case None:
-                    return None
-        except Exception as e:
-            pg_log.error(f'execute error: {e}')
-            db.rollback()
-            raise AppException.DatabaseError(detail=str(e))
-        finally:
-            pg_log.debug('close db session')
-            db.close()
+    async def async_exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
+        pg_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+        result = await self.db.execute(stmt)
+        match output:
+            case 'raw':
+                return result.scalars()
+            case 'pandas':
+                return pd.DataFrame(result)
+            case 'list':
+                return pd.DataFrame(result).to_dict(orient='records')
+            case BaseModel():
+                return output.model_validate(result)
+            case None:
+                return None
 
 
 class SqlExprMixin(ABC):

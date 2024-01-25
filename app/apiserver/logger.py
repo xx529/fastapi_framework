@@ -45,7 +45,9 @@ logger.add(sink=sys.stdout,
 _logger = logger.patch(patch_request_id).bind(project_name=app_conf.name)
 
 service_log = _logger.bind(type=LoggerTypeEnum.SERVICE.value)
+request_log = _logger.bind(type=LoggerTypeEnum.REQUEST.value)
 lifespan_log = _logger.bind(type=LoggerTypeEnum.LIFESPAN.value)
 pg_log = _logger.bind(type=LoggerTypeEnum.POSTGRES.value)
 redis_log = _logger.bind(type=LoggerTypeEnum.REDIS.value)
 middleware_log = _logger.bind(type=LoggerTypeEnum.MIDDLEWARE.value)
+transaction_log = _logger.bind(type=LoggerTypeEnum.TRANSACTION.value)

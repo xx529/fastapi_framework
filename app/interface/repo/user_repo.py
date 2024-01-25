@@ -1,4 +1,5 @@
 from sqlalchemy import delete, select, update, insert
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.apiserver.exception import AppException
 from app.interface.cache.redis import redis_cache
@@ -14,19 +15,24 @@ del_user_list_key = lambda: f'{RedisKeyEnum.USER_REPO.value}:*-list'
 
 class UserInfoRepo(BaseRepo):
 
-    def __init__(self):
+    def __init__(self, db: AsyncSession):
         self.model: UserInfo = UserInfo
+        self.db = db
 
-    def create(self, name: str, age: int, gender: str):
+    async def create(self, name: str, age: int, gender: str):
         stmt = (insert(self.model)
                 .values(name=name,
                         age=age,
                         gender=gender,
                         del_flag=False)
                 .returning(self.model.user_id))
-        return self.exec(stmt)['user_id'][0]
+        data = await self.async_exec(stmt, output='raw')
+        user_id = data.first()
+        await redis_cache.adelete(user_detail_key(user_id))
+        await redis_cache.clear_batch(del_user_list_key())
+        return user_id
 
-    # @redis_cache.cache(key=user_list_key, condition=user_list_condition)
+    @redis_cache.cache(key=user_list_key, condition=user_list_condition)
     async def list(self, page: int, limit: int, order_by: str, order_type, search=None):
         stmt = (select(*self.model.info_columns(),
                        self.model.total_count())

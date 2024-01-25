@@ -18,7 +18,7 @@ class MiddleWare:
 
     @staticmethod
     async def log_request(request: Request, call_next):
-        # TODO 记录服务日志开始
+        # TODO 记录服务日志开始 request_log
 
         middleware_log.info(f'{request.method} {request.url}')
         middleware_log.debug(f'headers: {dict(request.headers)}')
@@ -29,7 +29,7 @@ class MiddleWare:
         else:
             middleware_log.error(f'status code: {response.status_code}')
 
-        # TODO 记录服务日志结束
+        # TODO 记录服务日志结束 request_log
         return response
 
     @classmethod

@@ -16,12 +16,12 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(HeaderPara
     description='创建用户通用接口',
     response_model=UserCreateResponse
 )
-def user_create(
+async def user_create(
         name: str = Body(description='用户名', examples=['张三']),
         age: int = Body(description='年龄', ge=0, examples=[18]),
         gender: Literal['男', '女'] = Body(description='性别')
 ):
-    user_id = UserService.create_user(name=name, age=age, gender=gender)
+    user_id = await UserService.create_user(name=name, age=age, gender=gender)
     return UserCreateResponse(data=user_id)
 
 
