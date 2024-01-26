@@ -81,37 +81,25 @@ class BaseTable(Base):
 
 class ExecutorMixin(ABC):
 
-    db: AsyncSession
+    db: AsyncSession | SessionLocal
 
-    @staticmethod
-    def exec(stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
-        db = SessionLocal()
-        pg_log.debug('sync db session')
-        try:
-            pg_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
-            result = db.execute(stmt)
-            db.commit()
-            match output:
-                case 'raw':
-                    return result
-                case 'pandas':
-                    return pd.DataFrame(result)
-                case 'list':
-                    return pd.DataFrame(result).to_dict(orient='records')
-                case BaseModel():
-                    return output.model_validate(result)
-                case None:
-                    return None
-        except Exception as e:
-            pg_log.error(f'execute error: {e}')
-            db.rollback()
-            raise AppException.DatabaseError(detail=str(e))
-        finally:
-            pg_log.debug('close db session')
-            db.close()
+    def exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
+        pg_log.debug(self.stmt_to_sql(stmt))
+        result = self.db.execute(stmt)
+        match output:
+            case 'raw':
+                return result
+            case 'pandas':
+                return pd.DataFrame(result)
+            case 'list':
+                return pd.DataFrame(result).to_dict(orient='records')
+            case BaseModel():
+                return output.model_validate(result)
+            case None:
+                return None
 
     async def async_exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
-        pg_log.debug(str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', ''))
+        pg_log.debug(self.stmt_to_sql(stmt))
         result = await self.db.execute(stmt)
         match output:
             case 'raw':
@@ -124,6 +112,10 @@ class ExecutorMixin(ABC):
                 return output.model_validate(result)
             case None:
                 return None
+
+    @staticmethod
+    def stmt_to_sql(stmt):
+        return str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', '')
 
 
 class SqlExprMixin(ABC):
@@ -156,6 +148,16 @@ class UtilsMixin(ABC):
         return df, total
 
 
-class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin):
-    ...
+class CurdSqlMixin(ABC):
+    db: AsyncSession | SessionLocal
+    model: BaseTable
 
+    def get_by_primary_key(self, primary_key):
+        return self.db.query(self.model).filter(self.model.id == primary_key)
+
+    async def a_get_by_primary_key(self, primary_key):
+        return await self.db.get(self.model, primary_key)
+
+
+class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin, CurdSqlMixin):
+    ...

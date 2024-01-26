@@ -62,7 +62,6 @@ class UserInfoRepo(BaseRepo):
 
     @redis_cache.clear(key=user_detail_key)
     def update(self, user_id: int, name: str = None, gender: str = None, age: int = None):
-        print(user_id, name, gender, age)
         stmt = (update(self.model)
                 .where(self.model.id == user_id)
                 .values(name=name if name is not None else self.model.name,

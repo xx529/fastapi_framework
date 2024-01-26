@@ -33,7 +33,7 @@ logger.remove()
 logger.add(sink=log_conf.file,
            format=FULL_FORMAT,
            level=log_conf.level,
-           serialize=False,
+           serialize=True,
            enqueue=True)
 
 logger.add(sink=sys.stdout,
