@@ -44,7 +44,7 @@ logger.add(sink=sys.stdout,
 
 _logger = logger.patch(patch_request_id).bind(project_name=app_conf.name)
 
-service_log = _logger.bind(type=LoggerTypeEnum.SERVICE.value)
+runtime_log = _logger.bind(type=LoggerTypeEnum.RUNTIME.value)
 request_log = _logger.bind(type=LoggerTypeEnum.REQUEST.value)
 lifespan_log = _logger.bind(type=LoggerTypeEnum.LIFESPAN.value)
 pg_log = _logger.bind(type=LoggerTypeEnum.POSTGRES.value)

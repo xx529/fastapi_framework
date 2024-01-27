@@ -20,8 +20,11 @@ async def health():
 
 @router.get(path='/log/request',
             summary='请求日志')
-async def log_request():
-    data = LogService.request_log()
+async def log_request(
+        refresh: bool = Query(default=False, description='刷新缓存', example=False),
+):
+
+    data = LogService.request_log(refresh=refresh)
     return HtmlResponse(content=data)
 
 
@@ -32,7 +35,7 @@ async def log_lifespan():
     return HtmlResponse(content=data)
 
 
-@router.get(path='/log/service',
+@router.get(path='/log/request',
             summary='请求日志')
 def log_service(
         last: int = Query(default=10, description='最近N条记录', ge=1),
@@ -41,7 +44,7 @@ def log_service(
     return last
 
 
-@router.get(path='/log/service/{request_id}',
+@router.get(path='/log/request/{request_id}',
             summary='运行日志')
 def log_service_detail(
         request_id: UUID = Path(description='请求ID', example='6fd471a0-101f-4dfb-be22-f36bbaae2905')

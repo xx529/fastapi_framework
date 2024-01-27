@@ -1,5 +1,6 @@
 import pandas as pd
 from app.config import log_conf
+from functools import lru_cache
 import re
 
 
@@ -19,9 +20,18 @@ class LogService:
         ...
 
     @staticmethod
-    def request_log():
+    @lru_cache
+    def load_log():
         with open(log_conf.file) as f:
             data = f.readlines()
+        return data
+
+    @classmethod
+    def request_log(cls, refresh: bool):
+        if refresh:
+            cls.load_log.cache_clear()
+
+        data = cls.load_log()
 
         columns = ['date', 'time', 'name', 'PID', 'TID', 'level', 'file', 'delimiter', 'RID', 'type', 'message']
 
