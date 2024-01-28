@@ -1,14 +1,13 @@
 from abc import ABC
-from typing import Dict, Literal
+from typing import Dict, List, Literal
 
 import pandas as pd
 from pydantic import BaseModel
-from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text
+from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text, select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
-from app.apiserver.exception import AppException
 from app.apiserver.logger import pg_log
 from app.config import pg_connection
 from app.schema.enum import OrderTypeEnum
@@ -80,8 +79,7 @@ class BaseTable(Base):
 
 
 class ExecutorMixin(ABC):
-
-    db: AsyncSession | SessionLocal
+    db: AsyncSession | Session
 
     def exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
         pg_log.debug(self.stmt_to_sql(stmt))
@@ -149,14 +147,14 @@ class UtilsMixin(ABC):
 
 
 class CurdSqlMixin(ABC):
-    db: AsyncSession | SessionLocal
+    db: AsyncSession | Session
     model: BaseTable
 
-    def get_by_primary_key(self, primary_key):
-        return self.db.query(self.model).filter(self.model.id == primary_key)
+    def get_by_primary_key(self, primary_key: str | int):
+        return select(self.model).filter(self.model.id == primary_key)
 
-    async def a_get_by_primary_key(self, primary_key):
-        return await self.db.get(self.model, primary_key)
+    def get_by_primary_keys(self, primary_keys: List[str | int]):
+        return select(self.model).filter(self.model.id.in_(primary_keys))
 
 
 class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin, CurdSqlMixin):
