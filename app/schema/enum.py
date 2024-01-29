@@ -29,7 +29,8 @@ class LoggerTypeEnum(str, Enum):
     REDIS = 'redis'
     SERVICE = 'service'
     MIDDLEWARE = 'middleware'
-    REQUEST = 'request'
+    REQUEST_START = 'request_start'
+    REQUEST_FINISH = 'request_finish'
     TRANSACTION = 'transaction'
 
 
