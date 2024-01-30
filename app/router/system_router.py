@@ -1,5 +1,6 @@
 import random
 from uuid import UUID
+from typing import Literal, List, Optional
 
 from fastapi import APIRouter, Path, Query
 
@@ -21,10 +22,13 @@ async def health():
 @router.get(path='/log/request',
             summary='请求日志')
 async def log_request(
-        refresh: bool = Query(default=False, description='刷新缓存', example=False),
+        refresh: bool = Query(default=False, description='刷新缓存'),
+        method: List[Literal['GET', 'POST', 'PUT', 'DELETE']] = Query(default=None, description='请求方法'),
+        code: List[int] = Query(default=None, description='请求状态码'),
+        url_match: str = Query(default=None, description='请求路径匹配'),
 ):
 
-    data = LogService.request_log(refresh=refresh)
+    data = LogService.request_log(refresh=refresh, method=method, code=code, url_match=url_match)
     return HtmlResponse(content=data)
 
 
@@ -33,15 +37,6 @@ async def log_request(
 async def log_lifespan():
     data = LogService.life_log_records()
     return HtmlResponse(content=data)
-
-
-@router.get(path='/log/request',
-            summary='请求日志')
-def log_service(
-        last: int = Query(default=10, description='最近N条记录', ge=1),
-        resp_code: int = Query(default=None, description='筛选响应状态码记录', example=200),
-):
-    return last
 
 
 @router.get(path='/log/request/{request_id}',

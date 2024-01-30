@@ -1,7 +1,12 @@
-import pandas as pd
-from app.config import log_conf
+import json
 from functools import lru_cache
-import re
+from typing import List
+
+import pandas as pd
+from pandas import DataFrame
+
+from app.config import log_conf, project_dir
+from app.schema.enum import LoggerTypeEnum
 
 
 class LogService:
@@ -21,42 +26,53 @@ class LogService:
 
     @staticmethod
     @lru_cache
-    def load_log():
+    def load_all_log() -> DataFrame:
         with open(log_conf.file) as f:
-            data = f.readlines()
-        return data
+            df_raw = pd.DataFrame([json.loads(x)['record'] for x in f.readlines()])
+        df_log = pd.DataFrame()
+        df_log['datetime'] = pd.to_datetime(df_raw['time'].apply(lambda x: x['repr']))
+        df_log['PID'] = df_raw['process'].apply(lambda x: f"{x['name']}({x['id']})")
+        df_log['TID'] = df_raw['thread'].apply(lambda x: f"{x['name']}({x['id']})")
+        df_log['level'] = df_raw['level'].apply(lambda x: x['name'])
+        df_log['type'] = df_raw['extra'].apply(lambda x: x['type'])
+        df_log['file'] = df_raw['file'].apply(lambda x: x['path'])
+        df_log['file'] = df_log['file'].apply(lambda x: x.removeprefix(str(project_dir.root)))
+        df_log['line'] = df_raw['line']
+        df_log['request_id'] = df_raw['extra'].apply(lambda x: x['request_id'])
+        df_log['message'] = df_raw['message']
+        df_log['exception'] = df_raw['exception']
+        return df_log
 
     @classmethod
-    def request_log(cls, refresh: bool):
+    def request_log(cls, refresh: bool, method: List[str], code: List[int], url_match: str):
         if refresh:
-            cls.load_log.cache_clear()
+            cls.load_all_log.cache_clear()
 
-        data = cls.load_log()
+        df_log = cls.load_all_log()
+        cols = ['datetime', 'request_id', 'message']
 
-        columns = ['date', 'time', 'name', 'PID', 'TID', 'level', 'file', 'delimiter', 'RID', 'type', 'message']
+        df_start = df_log.query(f'type == "{LoggerTypeEnum.REQUEST_START.value}"')[cols]
+        df_finish = df_log.query(f'type == "{LoggerTypeEnum.REQUEST_FINISH.value}"')[cols]
 
-        data_ls = []
-        for d in data:
-            record = d.split()
-            data_ls.append(record[:len(columns) - 1] + [' '.join(record[len(columns) - 1:])])
+        df_request = pd.merge(df_start, df_finish, on='request_id', suffixes=('_start', '_finish'))
+        df_request['duration(s)'] = (df_request['datetime_finish'] - df_request['datetime_start']).dt.total_seconds()
+        df_request[['method', 'url']] = df_request[['message_start']].apply(
+            lambda x: x['message_start'].split(), axis=1, result_type='expand'
+        )
+        df_request['code'] = df_request['message_finish'].apply(lambda x: int(x.removeprefix('status code: ')))
 
-        df_log = pd.DataFrame(data_ls, columns=columns)
-        df_log.drop('delimiter', axis=1, inplace=True)
-        df_log['PID'] = df_log['PID'].apply(lambda x: re.search('\[PID:(\d+)\]', x).group(1))
-        df_log['TID'] = df_log['TID'].apply(lambda x: re.search('\[TID:(\d+)\]', x).group(1))
-        df_log['RID'] = df_log['RID'].apply(lambda x: re.search('\[RID:(.*)\]', x).group(1))
-        df_log['type'] = df_log['type'].apply(lambda x: x[1:-1])
-        df_log['level'] = df_log['level'].apply(lambda x: x[1:-1])
-        df_log['file'] = df_log['file'].apply(lambda x: x[1:-1])
-        df_log['datetime'] = pd.to_datetime(df_log['date'] + ' ' + df_log['time'])
+        default_filter_urls = ['/openapi.json', 'docs', '/system/log']
+        df_request = df_request[~df_request['url'].str.contains('|'.join(default_filter_urls))]
 
-        df_request = df_log.sort_values('datetime', ascending=False).query('type != "lifespan"').groupby('RID').agg(
-            start=pd.NamedAgg('datetime', 'min'),
-            end=pd.NamedAgg('datetime', 'max'),
-            state=pd.NamedAgg('message', 'first'),
-        ).reset_index()
+        if method:
+            df_request = df_request[df_request['method'].isin(method)]
 
-        df_request['duration'] = df_request[['end', 'start']].apply(lambda x: (x[0] - x[1]).seconds, axis=1)
-        # df_request['code'] = df_request['state'].apply(lambda x: re.search('status code: (\d+)', x).group(1))
+        if code:
+            df_request = df_request[df_request['code'].isin(code)]
 
-        return df_request.to_html(justify='left').replace('\\n', '<br/>')
+        if url_match:
+            df_request = df_request[df_request['url'].str.contains(url_match)]
+
+        out_cols = ['request_id', 'datetime_start', 'datetime_finish', 'duration(s)', 'method', 'url', 'code']
+        df_request.sort_values(by='datetime_start', ascending=False, inplace=True)
+        return df_request[out_cols].to_html(justify='left').replace('\\n', '<br/>')

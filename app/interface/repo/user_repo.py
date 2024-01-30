@@ -29,7 +29,7 @@ class UserInfoRepo(BaseRepo):
         data = await self.async_exec(stmt, output='raw')
         user_id = data.first()
         await redis_cache.adelete(user_detail_key(user_id))
-        await redis_cache.clear_batch(del_user_list_key())
+        redis_cache.clear_batch(del_user_list_key())
         return user_id
 
     @redis_cache.cache(key=user_list_key, condition=user_list_condition)

@@ -27,11 +27,23 @@ class LoggerTypeEnum(str, Enum):
     LIFESPAN = 'lifespan'
     POSTGRES = 'postgres'
     REDIS = 'redis'
-    SERVICE = 'service'
     MIDDLEWARE = 'middleware'
     REQUEST_START = 'request_start'
     REQUEST_FINISH = 'request_finish'
     TRANSACTION = 'transaction'
+
+    @classmethod
+    def get_running_types(cls):
+        return [cls.RUNTIME.value,
+                cls.POSTGRES.value,
+                cls.REDIS.value,
+                cls.MIDDLEWARE.value,
+                cls.TRANSACTION.value]
+
+    @classmethod
+    def get_request_types(cls):
+        return [cls.REQUEST_START.value,
+                cls.REQUEST_FINISH.value]
 
 
 class RedisKeyEnum(str, Enum):
