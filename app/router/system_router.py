@@ -1,13 +1,12 @@
 import random
+from typing import List, Literal
 from uuid import UUID
-from typing import Literal, List, Optional
 
 from fastapi import APIRouter, Path, Query
 
 from app.apiserver.exception import AppException
-from app.schema.base import HtmlResponse, StrResponse, OkResponse
+from app.schema.base import HtmlResponse, OkResponse, StrResponse
 from app.service.system_service import LogService
-
 
 router = APIRouter(prefix='/system', tags=['系统信息模块'])
 
@@ -27,9 +26,27 @@ async def log_request(
         code: List[int] = Query(default=None, description='请求状态码'),
         url_match: str = Query(default=None, description='请求路径匹配'),
 ):
-
     data = LogService.request_log(refresh=refresh, method=method, code=code, url_match=url_match)
     return HtmlResponse(content=data)
+
+
+@router.get(path='/log/request/{request_id}',
+            summary='运行日志')
+def log_request_detail(
+        request_id: UUID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905'),
+        refresh: bool = Query(default=False, description='刷新缓存'),
+
+):
+    data = LogService.runtime_log(request_id=request_id, refresh=refresh)
+    return HtmlResponse(content=data)
+
+
+@router.get(path='/log/exception/{request_id}',
+            summary="异常日志")
+def log_exception_detail(
+        request_id: UUID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905'),
+):
+    return '1'
 
 
 @router.get(path='/log/lifespan',
@@ -37,14 +54,6 @@ async def log_request(
 async def log_lifespan():
     data = LogService.life_log_records()
     return HtmlResponse(content=data)
-
-
-@router.get(path='/log/request/{request_id}',
-            summary='运行日志')
-def log_service_detail(
-        request_id: UUID = Path(description='请求ID', example='6fd471a0-101f-4dfb-be22-f36bbaae2905')
-):
-    return request_id
 
 
 @router.get(path='/error/demo',
