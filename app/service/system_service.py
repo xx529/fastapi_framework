@@ -55,12 +55,19 @@ class LogService:
         df_log['duration'] = df_log['datetime'].diff().dt.total_seconds().fillna(0.0)
 
         total_duration = df_log['duration'].sum()
-        df_log['proportion'] = df_log['duration'].apply(lambda x: f'{round(x/total_duration, 2)*100}%')
-        return df_log.to_html(justify='left')
+        df_log['proportion'] = df_log['duration'].apply(lambda x: f'{round(x / total_duration, 2) * 100}%')
+
+        df_log['message'] = df_log[['type', 'message']].apply(
+            lambda x: x['message'].replace(' ', '###space###')
+            if x['type'] == LoggerTypeEnum.EXCEPTION
+            else x['message'], axis=1)
+
+        df_log.drop(['exception', 'request_id'], axis=1, inplace=True)
+        html = df_log.to_html(justify='left').replace('\\n', '<br>').replace('###space###', '&nbsp;')
+        return html
 
     @classmethod
     def request_log(cls, refresh: bool, method: List[str], code: List[int], url_match: str):
-        # TODO exception 报错明细信息
         if refresh:
             cls.load_all_log.cache_clear()
 
@@ -70,7 +77,8 @@ class LogService:
         df_start = df_log.query(f'type == "{LoggerTypeEnum.REQUEST_START.value}"')[cols]
         df_finish = df_log.query(f'type == "{LoggerTypeEnum.REQUEST_FINISH.value}"')[cols]
 
-        df_request = pd.merge(df_start, df_finish, on='request_id', suffixes=('_start', '_finish'))
+        df_request = pd.merge(df_start, df_finish, on='request_id', suffixes=('_start', '_finish'), how='left')
+        # TODO 未完成的情况
         df_request['duration(s)'] = (df_request['datetime_finish'] - df_request['datetime_start']).dt.total_seconds()
         df_request['code'] = df_request['message_finish'].apply(lambda x: int(x.removeprefix('status code: ')))
         df_request['exception'] = df_request['exception_finish'].apply(lambda x: x['type'] if x is not None else '')
@@ -78,7 +86,7 @@ class LogService:
         df_request[['method', 'url']] = df_request[['message_start']].apply(
             lambda x: x['message_start'].split(), axis=1, result_type='expand'
         )
-        print(df_request.columns)
+
         default_filter_urls = ['/openapi.json', 'docs', '/system/log']
         df_request = df_request[~df_request['url'].str.contains('|'.join(default_filter_urls))]
 
@@ -95,4 +103,5 @@ class LogService:
                     'method', 'url', 'code', 'exception', 'detail']
 
         df_request.sort_values(by='datetime_start', ascending=False, inplace=True)
-        return df_request[out_cols].to_html(justify='left')
+        html = df_request[out_cols].to_html(justify='left')
+        return html

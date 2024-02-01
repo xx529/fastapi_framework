@@ -41,14 +41,6 @@ def log_request_detail(
     return HtmlResponse(content=data)
 
 
-@router.get(path='/log/exception/{request_id}',
-            summary="异常日志")
-def log_exception_detail(
-        request_id: UUID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905'),
-):
-    return '1'
-
-
 @router.get(path='/log/lifespan',
             summary='启停日志')
 async def log_lifespan():
@@ -59,11 +51,9 @@ async def log_lifespan():
 @router.get(path='/error/demo',
             summary='测试报错')
 async def error_demo():
-    num = random.random()
-    if num > 0.8:
-        raise AppException.Demo(detail='this is demo')
-    if num > 0.4:
-        raise AppException.Random(detail='this is random')
+    # num = random.random()
+    # raise AppException.Random(detail='this is random')
+    1 / 0
     return StrResponse(data='ok')
 
 

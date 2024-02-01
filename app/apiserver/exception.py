@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class ErrorMsg(BaseModel):
     errcode: int
     errmsg: str
-    status_code: int = 400
+    status_code: int = 500
 
 
 class AppExceptionClass(Exception):

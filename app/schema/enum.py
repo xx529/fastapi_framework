@@ -13,15 +13,6 @@ class OrderTypeEnum(str, Enum):
     DESC = 'desc'
 
 
-class RequestSuccessCodeEnum(int, Enum):
-    SUCCESS = 200
-    CREATED = 201
-
-    @classmethod
-    def list(cls):
-        return [x.value for x in list(cls)]
-
-
 class LoggerTypeEnum(str, Enum):
     RUNTIME = 'runtime'
     LIFESPAN = 'lifespan'
@@ -31,6 +22,7 @@ class LoggerTypeEnum(str, Enum):
     REQUEST_START = 'request_start'
     REQUEST_FINISH = 'request_finish'
     TRANSACTION = 'transaction'
+    EXCEPTION = 'exception'
 
     @classmethod
     def get_running_types(cls):
@@ -38,7 +30,8 @@ class LoggerTypeEnum(str, Enum):
                 cls.POSTGRES.value,
                 cls.REDIS.value,
                 cls.MIDDLEWARE.value,
-                cls.TRANSACTION.value]
+                cls.TRANSACTION.value,
+                cls.EXCEPTION.value]
 
     @classmethod
     def get_request_types(cls):
