@@ -18,7 +18,7 @@ async def health():
     return OkResponse()
 
 
-@router.get(path='/log/request',
+@router.get(path='/log',
             summary='请求日志')
 async def log_request(
         refresh: bool = Query(default=False, description='刷新缓存'),
@@ -30,7 +30,7 @@ async def log_request(
     return HtmlResponse(content=data)
 
 
-@router.get(path='/log/request/{request_id}',
+@router.get(path='/log/{request_id}',
             summary='运行日志')
 def log_request_detail(
         request_id: UUID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905'),
@@ -38,13 +38,6 @@ def log_request_detail(
 
 ):
     data = LogService.runtime_log(request_id=request_id, refresh=refresh)
-    return HtmlResponse(content=data)
-
-
-@router.get(path='/log/lifespan',
-            summary='启停日志')
-async def log_lifespan():
-    data = LogService.life_log_records()
     return HtmlResponse(content=data)
 
 
