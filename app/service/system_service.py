@@ -5,6 +5,7 @@ from uuid import UUID
 
 import pandas as pd
 from pandas import DataFrame
+import numpy as np
 
 from app.config import log_conf, project_dir
 from app.schema.enum import LoggerTypeEnum
@@ -54,7 +55,7 @@ class LogService:
         return html
 
     @classmethod
-    def request_log(cls, refresh: bool, method: List[str], code: List[int], url_match: str):
+    def request_log(cls, refresh: bool, method: List[str], code: List[int], url_match: str, last: int):
         if refresh:
             cls.load_all_log.cache_clear()
 
@@ -63,13 +64,12 @@ class LogService:
 
         df_start = df_log.query(f'type == "{LoggerTypeEnum.REQUEST_START.value}"')[cols]
         df_finish = df_log.query(f'type == "{LoggerTypeEnum.REQUEST_FINISH.value}"')[cols]
-
         df_request = pd.merge(df_start, df_finish, on='request_id', suffixes=('_start', '_finish'), how='left')
-        # TODO 未完成的情况
+
         df_request['duration(s)'] = (df_request['datetime_finish'] - df_request['datetime_start']).dt.total_seconds()
-        df_request['code'] = df_request['message_finish'].apply(lambda x: int(x.removeprefix('status code: ')))
-        df_request['exception'] = df_request['exception_finish'].apply(lambda x: x['type'] if x is not None else '')
-        df_request['detail'] = df_request['exception_finish'].apply(lambda x: x['value'] if x is not None else '')
+        df_request['code'] = df_request['message_finish'].apply(
+            lambda x: int(x.removeprefix('status code: ') if x is not np.nan else 0)
+        )
         df_request[['method', 'url']] = df_request[['message_start']].apply(
             lambda x: x['message_start'].split(), axis=1, result_type='expand'
         )
@@ -86,9 +86,9 @@ class LogService:
         if url_match:
             df_request = df_request[df_request['url'].str.contains(url_match)]
 
-        out_cols = ['request_id', 'datetime_start', 'datetime_finish', 'duration(s)',
-                    'method', 'url', 'code', 'exception', 'detail']
+        out_cols = ['request_id', 'datetime_start', 'datetime_finish', 'duration(s)', 'method', 'url', 'code']
 
-        df_request.sort_values(by='datetime_start', ascending=False, inplace=True)
+        df_request = df_request.sort_values(by='datetime_start', ascending=False).reset_index(drop=True)
+        df_request = df_request.iloc[:last]
         html = df_request[out_cols].to_html(justify='left')
         return html

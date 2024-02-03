@@ -25,8 +25,9 @@ async def log_request(
         method: List[Literal['GET', 'POST', 'PUT', 'DELETE']] = Query(default=None, description='请求方法'),
         code: List[int] = Query(default=None, description='请求状态码'),
         url_match: str = Query(default=None, description='请求路径匹配'),
+        last: int = Query(default=20, description="查看最近n条记录"),
 ):
-    data = LogService.request_log(refresh=refresh, method=method, code=code, url_match=url_match)
+    data = LogService.request_log(refresh=refresh, method=method, code=code, url_match=url_match, last=last)
     return HtmlResponse(content=data)
 
 
