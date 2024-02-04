@@ -1,9 +1,13 @@
+import traceback
 import uuid
 
+from fastapi.responses import JSONResponse
 from starlette.requests import Request
 
+from app.schema.base import BaseResponse
 from .context import RequestCtx
-from .logger import middleware_log, request_start_log, request_finish_log
+from .exception import AppException, AppExceptionClass
+from .logger import exception_log, middleware_log, request_finish_log, request_start_log
 
 
 class MiddleWare:
@@ -19,8 +23,31 @@ class MiddleWare:
     async def log_request(request: Request, call_next):
         request_start_log.info(f'{request.method} {request.url}')
         middleware_log.debug(f'headers: {dict(request.headers)}')
-        response = await call_next(request)
+        # TODO 记录 query path body
+        # TODO 记录异常原因
+        try:
+            response = await call_next(request)
+
+        except AppExceptionClass as e:
+            res = BaseResponse(errcode=e.errcode,
+                               errmsg=e.errmsg,
+                               detail=e.detail,
+                               data='')
+            response = JSONResponse(status_code=e.status_code,
+                                    content=res.model_dump())
+            exception_log.error(traceback.format_exc())
+
+        except Exception as _:
+            res = BaseResponse(errcode=AppException.Unknown.value.errcode,
+                               errmsg=AppException.Unknown.value.errmsg,
+                               detail=AppException.Unknown.value.errmsg,
+                               data='')
+            response = JSONResponse(status_code=AppException.Unknown.value.status_code,
+                                    content=res.model_dump())
+            exception_log.error(traceback.format_exc())
+
         request_finish_log.info(f'status code: {response.status_code}')
+
         return response
 
     @classmethod

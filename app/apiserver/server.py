@@ -1,19 +1,15 @@
 import uuid
 from contextlib import asynccontextmanager
-import sys, traceback
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 
 from app.apiserver.context import RequestCtx
-from app.apiserver.exception import AppException, AppExceptionClass
-from app.apiserver.logger import exception_log, lifespan_log, request_finish_log
+from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
 from app.config import app_conf, project_dir
 from app.interface.cache.redis import redis_cache
 from app.interface.repo._base import close_all_connection, create_all_pg_tables
 from app.router import all_routers
-from app.schema.base import BaseResponse
 
 
 class HangServer:
@@ -25,7 +21,6 @@ class HangServer:
                       lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
-        cls.init_exception(app)
         return app
 
     @staticmethod
@@ -41,29 +36,6 @@ class HangServer:
     def init_routers(app: FastAPI) -> None:
         for r in all_routers:
             app.include_router(r, prefix=app_conf.prefix)
-
-    @staticmethod
-    def init_exception(app: FastAPI) -> None:
-        @app.exception_handler(AppExceptionClass)
-        async def server_exception_handler(request: Request, exc: AppExceptionClass):
-            exception_log.error(traceback.format_exc())
-            res = BaseResponse(errcode=exc.errcode,
-                               errmsg=exc.errmsg,
-                               detail=exc.detail,
-                               data='')
-            return JSONResponse(status_code=exc.status_code,
-                                content=res.model_dump())
-
-        @app.exception_handler(500)
-        async def unknown_exception_handler(request: Request, exc: Exception):
-            exception_log.error(traceback.format_exc())
-            res = BaseResponse(errcode=AppException.Unknown.value.errcode,
-                               errmsg=AppException.Unknown.value.errmsg,
-                               detail=AppException.Unknown.value.errmsg,
-                               data='')
-            request_finish_log.info('status code: 500')
-            return JSONResponse(status_code=AppException.Unknown.value.status_code,
-                                content=res.model_dump())
 
     @classmethod
     def lifespan(cls):

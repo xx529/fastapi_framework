@@ -48,7 +48,7 @@ async def error_demo():
     # num = random.random()
     # raise AppException.Random(detail='this is random')
     1 / 0
-    return StrResponse(data='ok')
+    # return StrResponse(data='ok')
 
 
 @router.get(path='/config',

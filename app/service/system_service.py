@@ -40,7 +40,7 @@ class LogService:
         df_log = cls.load_all_log()
 
         df_log = df_log[df_log['request_id'] == request_id.hex]
-        df_log['duration'] = df_log['datetime'].diff().dt.total_seconds().fillna(0.0)
+        df_log['duration'] = df_log['datetime'].diff(-1).dt.total_seconds().fillna(0.0).abs()
 
         total_duration = df_log['duration'].sum()
         df_log['proportion'] = df_log['duration'].apply(lambda x: f'{round(x / total_duration, 2) * 100}%')

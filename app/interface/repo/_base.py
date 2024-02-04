@@ -84,6 +84,7 @@ class ExecutorMixin(ABC):
     def exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
         pg_log.debug(self.stmt_to_sql(stmt))
         result = self.db.execute(stmt)
+        pg_log.debug('finish database')
         match output:
             case 'raw':
                 return result
@@ -99,6 +100,7 @@ class ExecutorMixin(ABC):
     async def async_exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
         pg_log.debug(self.stmt_to_sql(stmt))
         result = await self.db.execute(stmt)
+        pg_log.debug('finish database')
         match output:
             case 'raw':
                 return result.scalars()
