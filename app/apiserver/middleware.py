@@ -23,11 +23,10 @@ class MiddleWare:
     async def log_request(request: Request, call_next):
         request_start_log.info(f'{request.method} {request.url}')
         middleware_log.debug(f'headers: {dict(request.headers)}')
-        # TODO 记录 query path body
-        # TODO 记录异常原因
+
         try:
             response = await call_next(request)
-
+            request_finish_log.info(f'status code: {response.status_code}')
         except AppExceptionClass as e:
             res = BaseResponse(errcode=e.errcode,
                                errmsg=e.errmsg,
@@ -36,8 +35,10 @@ class MiddleWare:
             response = JSONResponse(status_code=e.status_code,
                                     content=res.model_dump())
             exception_log.error(traceback.format_exc())
+            request_finish_log.info(
+                f'status code: {response.status_code} error code: {e.errcode} error msg: {e.errmsg} detail: {e.detail}')
 
-        except Exception as _:
+        except Exception as e:
             res = BaseResponse(errcode=AppException.Unknown.value.errcode,
                                errmsg=AppException.Unknown.value.errmsg,
                                detail=AppException.Unknown.value.errmsg,
@@ -45,8 +46,8 @@ class MiddleWare:
             response = JSONResponse(status_code=AppException.Unknown.value.status_code,
                                     content=res.model_dump())
             exception_log.error(traceback.format_exc())
-
-        request_finish_log.info(f'status code: {response.status_code}')
+            request_finish_log.info(
+                f'status code: {response.status_code} error code: {AppException.Unknown.value.errcode} error msg: {type(e).__name__} detail: {str(e)}')
 
         return response
 

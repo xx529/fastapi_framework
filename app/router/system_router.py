@@ -23,11 +23,11 @@ async def health():
 async def log_request(
         refresh: bool = Query(default=False, description='刷新缓存'),
         method: List[Literal['GET', 'POST', 'PUT', 'DELETE']] = Query(default=None, description='请求方法'),
-        code: List[int] = Query(default=None, description='请求状态码'),
+        status_code: List[int] = Query(default=None, description='请求状态码'),
         url_match: str = Query(default=None, description='请求路径匹配'),
         last: int = Query(default=20, description="查看最近n条记录"),
 ):
-    data = LogService.request_log(refresh=refresh, method=method, code=code, url_match=url_match, last=last)
+    data = LogService.request_log(refresh=refresh, method=method, status_code=status_code, url_match=url_match, last=last)
     return HtmlResponse(content=data)
 
 

@@ -1,11 +1,12 @@
 import json
+import re
 from functools import lru_cache
 from typing import List
 from uuid import UUID
 
+import numpy as np
 import pandas as pd
 from pandas import DataFrame
-import numpy as np
 
 from app.config import log_conf, project_dir
 from app.schema.enum import LoggerTypeEnum
@@ -55,7 +56,7 @@ class LogService:
         return html
 
     @classmethod
-    def request_log(cls, refresh: bool, method: List[str], code: List[int], url_match: str, last: int):
+    def request_log(cls, refresh: bool, method: List[str], status_code: List[int], url_match: str, last: int):
         if refresh:
             cls.load_all_log.cache_clear()
 
@@ -67,9 +68,17 @@ class LogService:
         df_request = pd.merge(df_start, df_finish, on='request_id', suffixes=('_start', '_finish'), how='left')
 
         df_request['duration(s)'] = (df_request['datetime_finish'] - df_request['datetime_start']).dt.total_seconds()
-        df_request['code'] = df_request['message_finish'].apply(
-            lambda x: int(x.removeprefix('status code: ') if x is not np.nan else 0)
+
+        df_request['status_code'] = df_request['message_finish'].apply(
+            lambda x: int(re.findall('status code: (\d+)', x)[0]) if x is not np.nan else 0
         )
+
+        df_request['error_code'] = df_request['message_finish'].apply(
+            lambda x: re.findall('error code: (\d+) ', x) if x is not np.nan else [0])
+        df_request['msg'] = df_request['message_finish'].apply(
+            lambda x: re.findall('error msg: (.*?) ', x) if x is not np.nan else [''])
+        df_request['detail'] = df_request['message_finish'].apply(
+            lambda x: re.findall('detail: (.*)', x) if x is not np.nan else [''])
         df_request[['method', 'url']] = df_request[['message_start']].apply(
             lambda x: x['message_start'].split(), axis=1, result_type='expand'
         )
@@ -77,17 +86,20 @@ class LogService:
         default_filter_urls = ['/openapi.json', 'docs', '/system/log']
         df_request = df_request[~df_request['url'].str.contains('|'.join(default_filter_urls))]
 
+        for col in ['error_code', 'msg', 'detail']:
+            df_request[col] = df_request[col].apply(lambda x: x[0] if len(x) > 0 else '')
+
         if method:
             df_request = df_request[df_request['method'].isin(method)]
 
-        if code:
-            df_request = df_request[df_request['code'].isin(code)]
+        if status_code:
+            df_request = df_request[df_request['status_code'].isin(status_code)]
 
         if url_match:
             df_request = df_request[df_request['url'].str.contains(url_match)]
 
-        out_cols = ['request_id', 'datetime_start', 'datetime_finish', 'duration(s)', 'method', 'url', 'code']
-
+        out_cols = ['request_id', 'datetime_start', 'datetime_finish', 'duration(s)',
+                    'method', 'url', 'status_code', 'error_code', 'msg', 'detail']
         df_request = df_request.sort_values(by='datetime_start', ascending=False).reset_index(drop=True)
         df_request = df_request.iloc[:last]
         html = df_request[out_cols].to_html(justify='left')
