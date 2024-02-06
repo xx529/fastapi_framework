@@ -80,8 +80,7 @@ class LogService:
         df_request['detail'] = df_request['message_finish'].apply(
             lambda x: re.findall('detail: (.*)', x) if x is not np.nan else [''])
         df_request[['method', 'url']] = df_request[['message_start']].apply(
-            lambda x: x['message_start'].split(), axis=1, result_type='expand'
-        )
+            lambda x: x['message_start'].split(), axis=1, result_type='expand')
 
         default_filter_urls = ['/openapi.json', 'docs', '/system/log']
         df_request = df_request[~df_request['url'].str.contains('|'.join(default_filter_urls))]

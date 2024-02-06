@@ -27,7 +27,12 @@ async def log_request(
         url_match: str = Query(default=None, description='请求路径匹配'),
         last: int = Query(default=20, description="查看最近n条记录"),
 ):
-    data = LogService.request_log(refresh=refresh, method=method, status_code=status_code, url_match=url_match, last=last)
+    data = LogService.request_log(refresh=refresh,
+                                  method=method,
+                                  status_code=status_code,
+                                  url_match=url_match,
+                                  last=last)
+
     return HtmlResponse(content=data)
 
 

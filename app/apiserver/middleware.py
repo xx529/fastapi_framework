@@ -27,6 +27,7 @@ class MiddleWare:
         try:
             response = await call_next(request)
             request_finish_log.info(f'status code: {response.status_code}')
+
         except AppExceptionClass as e:
             res = BaseResponse(errcode=e.errcode,
                                errmsg=e.errmsg,

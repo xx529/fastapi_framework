@@ -23,14 +23,18 @@ class UserService:
 
     @staticmethod
     async def detail(user_id: int) -> UserInfo:
-        async with AsyncDataBaseTransaction() as db:
+        async with AsyncDataBaseTransaction(commit=False) as db:
             data = await UserInfoRepo(db).detail(user_id=user_id)
         return UserInfo(**data)
 
     @staticmethod
     def delete_user(user_id: int) -> None:
-        UserInfoRepo().delete(user_id=user_id)
+        # TODO 完成删除用户的业务逻辑
+        async with AsyncDataBaseTransaction() as db:
+            UserInfoRepo(db).delete(user_id=user_id)
 
     @staticmethod
     def update_user(user_id: int, name: str = None, age: int = None, gender: str = None) -> None:
-        UserInfoRepo().update(user_id=user_id, name=name, gender=gender, age=age)
+        # TODO 完成更新用户的业务逻辑
+        async with AsyncDataBaseTransaction() as db:
+            UserInfoRepo(db).update(user_id=user_id, name=name, gender=gender, age=age)
