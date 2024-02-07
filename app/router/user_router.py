@@ -31,10 +31,10 @@ async def user_create(
     description='删除用户通用接口，此接口是物理删除',
     response_model=OkResponse
 )
-def user_delete(
+async def user_delete(
         user_id: int = Body(description='用户ID', ge=0)
 ):
-    UserService.delete_user(user_id=user_id)
+    await UserService.delete_user(user_id=user_id)
     return OkResponse()
 
 
@@ -44,13 +44,13 @@ def user_delete(
     description='更新用户通用接口',
     response_model=BoolResponse
 )
-def user_update(
-        user_id: int = Body(description='用户ID', ge=0),
-        name: str = Body(None, description='用户名'),
-        age: int = Body(None, description='年龄', ge=0),
-        gender: Literal['男', '女'] = Body(None, description='性别'),
+async def user_update(
+        user_id: int = Body(description='用户ID', ge=0, examples=[2]),
+        name: str = Body(None, description='用户名', examples=['李四']),
+        age: int = Body(None, description='年龄', ge=0, examples=[18]),
+        gender: Literal['男', '女'] = Body(None, description='性别', examples=['男']),
 ):
-    UserService.update_user(user_id=user_id, name=name, age=age, gender=gender)
+    await UserService.update_user(user_id=user_id, name=name, age=age, gender=gender)
     return BoolResponse(data=True)
 
 

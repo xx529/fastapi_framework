@@ -31,7 +31,7 @@ class AppException(Enum):
     InvalidHeaderParameter = ErrorMsg(errcode=2002, errmsg='请求头参数错误')
     InvalidBodyParameter = ErrorMsg(errcode=2003, errmsg='请求体错误')
 
-    UserNotExist = ErrorMsg(errcode=3001, errmsg='用户不存在')
+    UserNotExist = ErrorMsg(errcode=3001, errmsg='用户不存在', status_code=400)
     Demo = ErrorMsg(errcode=3000, errmsg='demo问题')
     Random = ErrorMsg(errcode=3001, errmsg='随机报错')
 

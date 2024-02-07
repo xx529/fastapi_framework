@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
-from app.apiserver.exception import AppException
 from app.apiserver.logger import transaction_log
 from ..repo._base import AsyncSessionLocal, SessionLocal
 
@@ -21,7 +20,7 @@ class DataBaseTransaction:
             self.db.rollback()
             self.db.close()
             transaction_log.error(f'transaction error: {str(exc_val)}')
-            raise AppException.DatabaseError(detail=str(exc_val))
+            raise exc_val
         else:
             self.db.commit()
             self.db.close()
@@ -44,7 +43,7 @@ class AsyncDataBaseTransaction:
             await self.db.rollback()
             await self.db.close()
             transaction_log.error(f'transaction error: {str(exc_val)}')
-            raise AppException.DatabaseError(detail=str(exc_val))
+            raise exc_val
         else:
             if self.commit:
                 await self.db.commit()

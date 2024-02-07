@@ -3,7 +3,7 @@ from typing import Dict, List, Literal
 
 import pandas as pd
 from pydantic import BaseModel
-from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, String, text, select
+from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, select, String, text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
@@ -73,10 +73,6 @@ class BaseTable(Base):
     def is_exists(cls):
         return inspect(cls._engine).has_table(cls.__tablename__, schema=pg_connection.schema)
 
-    @classmethod
-    def total_count(cls):
-        return func.count(cls.id).over().label('total_count')
-
 
 class ExecutorMixin(ABC):
     db: AsyncSession | Session
@@ -85,22 +81,16 @@ class ExecutorMixin(ABC):
         pg_log.debug(self.stmt_to_sql(stmt))
         result = self.db.execute(stmt)
         pg_log.debug('finish database')
-        match output:
-            case 'raw':
-                return result
-            case 'pandas':
-                return pd.DataFrame(result)
-            case 'list':
-                return pd.DataFrame(result).to_dict(orient='records')
-            case BaseModel():
-                return output.model_validate(result)
-            case None:
-                return None
+        return self.format_result(result, output)
 
-    async def async_exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
+    async def aexec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
         pg_log.debug(self.stmt_to_sql(stmt))
         result = await self.db.execute(stmt)
         pg_log.debug('finish database')
+        return self.format_result(result, output)
+
+    @staticmethod
+    def format_result(result, output):
         match output:
             case 'raw':
                 return result.scalars()
@@ -137,6 +127,10 @@ class SqlExprMixin(ABC):
     def always_false():
         return text('1!=1')
 
+    @classmethod
+    def total_count(cls, name='total_count'):
+        return func.count().over().label(name)
+
 
 class UtilsMixin(ABC):
     @staticmethod
@@ -152,12 +146,19 @@ class CurdSqlMixin(ABC):
     db: AsyncSession | Session
     model: BaseTable
 
-    def get_by_primary_key(self, primary_key: str | int):
-        return select(self.model).filter(self.model.id == primary_key)
+    def get_by_primary_key(self, primary_key: str | int, columns: List = None):
+        if columns is None:
+            return select(self.model).filter(self.model.id == primary_key)
+        else:
+            return select(*columns).filter(self.model.id == primary_key)
 
-    def get_by_primary_keys(self, primary_keys: List[str | int]):
-        return select(self.model).filter(self.model.id.in_(primary_keys))
+    def get_by_primary_keys(self, primary_keys: List[str | int], columns: List = None):
+        return (select(self.model if columns is None else columns)
+                .filter(self.model.id.in_(primary_keys)))
 
 
 class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin, CurdSqlMixin):
+
+    # def __init__(self, db: AsyncSession | Session):
+    #     self.db = db
     ...
