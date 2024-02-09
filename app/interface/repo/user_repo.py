@@ -61,7 +61,7 @@ class UserInfoRepo(BaseRepo):
     @redis_cache.clear(key=del_user_list_key)
     async def delete(self, user_id: int, save_delete: bool = True):
         if save_delete is True:
-            stmt = (update(self.model).where(self.model.id == user_id).values(del_flag=True, update_by='admin'))
+            stmt = update(self.model).where(self.model.id == user_id).values(del_flag=True, update_by='admin')
         else:
             stmt = delete(self.model).where(self.model.id == user_id)
         await self.aexec(stmt, output=None)
