@@ -15,10 +15,10 @@ from app.schema.enum import OrderTypeEnum
 Base = declarative_base()
 
 engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
-SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine)
+SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine,)
 
-sync_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
-AsyncSessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=sync_engine, class_=AsyncSession)
+async_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
+AsyncSessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=async_engine, class_=AsyncSession)
 
 table_class_instance: Dict[str, Base] = {}
 
@@ -78,13 +78,13 @@ class ExecutorMixin(ABC):
     db: AsyncSession | Session
 
     def exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
-        pg_log.debug(self.stmt_to_sql(stmt))
+        pg_log.debug(self.sql_stmt_bind_params(stmt))
         result = self.db.execute(stmt)
         pg_log.debug('finish database')
         return self.format_result(result, output)
 
     async def aexec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
-        pg_log.debug(self.stmt_to_sql(stmt))
+        pg_log.debug(self.sql_stmt_bind_params(stmt))
         result = await self.db.execute(stmt)
         pg_log.debug('finish database')
         return self.format_result(result, output)
@@ -104,7 +104,7 @@ class ExecutorMixin(ABC):
                 return None
 
     @staticmethod
-    def stmt_to_sql(stmt):
+    def sql_stmt_bind_params(stmt):
         return str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', '')
 
 
@@ -142,7 +142,7 @@ class UtilsMixin(ABC):
         return df, total
 
 
-class CurdSqlMixin(ABC):
+class SingleTableSqlMixin(ABC):
     db: AsyncSession | Session
     model: BaseTable
 
@@ -157,7 +157,7 @@ class CurdSqlMixin(ABC):
                 .filter(self.model.id.in_(primary_keys)))
 
 
-class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin, CurdSqlMixin):
+class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin, SingleTableSqlMixin):
 
     # def __init__(self, db: AsyncSession | Session):
     #     self.db = db

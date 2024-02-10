@@ -19,13 +19,13 @@ class UserInfoRepo(BaseRepo):
         self.db = db
 
     async def create(self, name: str, age: int, gender: str):
-        stmt = (insert(self.model)
-                .values(name=name,
-                        age=age,
-                        gender=gender,
-                        del_flag=False)
-                .returning(self.model.user_id))
-        data = await self.aexec(stmt, output='raw')
+        sql = (insert(self.model)
+               .values(name=name,
+                       age=age,
+                       gender=gender,
+                       del_flag=False)
+               .returning(self.model.user_id))
+        data = await self.aexec(sql, output='raw')
         user_id = data.first()
         await redis_cache.adelete(user_detail_key(user_id))
         redis_cache.clear_batch(del_user_list_key())
@@ -33,25 +33,25 @@ class UserInfoRepo(BaseRepo):
 
     @redis_cache.cache(key=user_list_key, condition=user_list_condition)
     async def list(self, page: int, limit: int, order_by: str, order_type, search=None):
-        stmt = (select(*self.model.info_columns(),
-                       self.total_count())
-                .filter(self.model.name.like(f'%{search}%') if search else self.always_true())
-                .order_by(self.order_expr(order_by, order_type))
-                .limit(limit)
-                .offset((page - 1) * limit))
+        sql = (select(*self.model.info_columns(),
+                      self.total_count())
+               .filter(self.model.name.like(f'%{search}%') if search else self.always_true())
+               .order_by(self.order_expr(order_by, order_type))
+               .limit(limit)
+               .offset((page - 1) * limit))
 
-        df = await self.aexec(stmt)
+        df = await self.aexec(sql)
         return self.split_total_column(df)
 
     @redis_cache.cache(key=user_detail_key)
     async def detail(self, user_id: int):
-        stmt = (select(self.model.user_id,
-                       self.model.name,
-                       self.model.age,
-                       self.model.gender)
-                .where(self.model.user_id == user_id))
+        sql = (select(self.model.user_id,
+                      self.model.name,
+                      self.model.age,
+                      self.model.gender)
+               .where(self.model.user_id == user_id))
 
-        data = await self.aexec(stmt, output='list')
+        data = await self.aexec(sql, output='list')
         if len(data) == 0:
             return []
         else:
@@ -60,17 +60,17 @@ class UserInfoRepo(BaseRepo):
     @redis_cache.clear(key=del_user_list_key)
     async def delete(self, user_id: int, save_delete: bool = True):
         if save_delete is True:
-            stmt = update(self.model).where(self.model.id == user_id).values(del_flag=True, update_by='admin')
+            sql = update(self.model).where(self.model.id == user_id).values(del_flag=True, update_by='admin')
         else:
-            stmt = delete(self.model).where(self.model.id == user_id)
-        await self.aexec(stmt, output=None)
+            sql = delete(self.model).where(self.model.id == user_id)
+        await self.aexec(sql, output=None)
 
     @redis_cache.clear(key=user_detail_key)
     async def update(self, user_id: int, name: str = None, gender: str = None, age: int = None):
-        stmt = (update(self.model)
-                .where(self.model.id == user_id)
-                .values(name=name if name is not None else self.model.name,
-                        gender=gender if gender is not None else self.model.gender,
-                        age=age if age is not None else self.model.age,
-                        update_by='admin'))
-        await self.aexec(stmt, output=None)
+        sql = (update(self.model)
+               .where(self.model.id == user_id)
+               .values(name=name if name is not None else self.model.name,
+                       gender=gender if gender is not None else self.model.gender,
+                       age=age if age is not None else self.model.age,
+                       update_by='admin'))
+        await self.aexec(sql, output=None)
