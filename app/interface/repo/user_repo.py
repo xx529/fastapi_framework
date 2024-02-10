@@ -1,10 +1,9 @@
 from sqlalchemy import delete, select, update, insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm.session import Session
 
 from app.interface.cache.redis import redis_cache
 from app.schema.enum import RedisKeyEnum
-from ._base import BaseRepo, BaseTable
+from ._base import BaseRepo
 from ._tables import UserInfo
 
 user_detail_key = lambda user_id: f'{RedisKeyEnum.USER_REPO.value}:{user_id}-detail'
