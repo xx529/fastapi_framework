@@ -52,6 +52,6 @@ class TaskRecord(BaseTable):
     __tablename__ = 'task_record_{task_id}'
     __abstract__ = True
 
-    task_name = Column(String(255), nullable=False, comment='任务名称')
-    task_type = Column(String(255), nullable=False, comment='任务类型')
-    task_status = Column(Integer, nullable=False, comment='任务状态')
+    name = Column(String(255), nullable=False, comment='任务名称')
+    category = Column(String(255), nullable=False, comment='任务类型')
+    status = Column(Integer, nullable=False, comment='任务状态')

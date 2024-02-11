@@ -1,10 +1,13 @@
-from app.router import system_router
-from app.router import user_router
-from app.router import stream_router
-
+from app.router import (
+    stream_router,
+    system_router,
+    task_router,
+    user_router,
+)
 
 all_routers = [
-    system_router.router,
-    user_router.router,
     stream_router.router,
+    system_router.router,
+    task_router.router,
+    user_router.router,
 ]

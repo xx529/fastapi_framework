@@ -42,3 +42,14 @@ class LoggerTypeEnum(str, Enum):
 class RedisKeyEnum(str, Enum):
     USER_REPO = 'user_repo'
     ITEM_REPO = 'item_repo'
+    TASK_REPO = 'task_repo'
+
+
+class TaskStatus(str, Enum):
+    ON = 'on'
+    OFF = 'off'
+
+
+class TaskCategory(str, Enum):
+    NORMAL = 'normal'
+    URGENT = 'urgent'
