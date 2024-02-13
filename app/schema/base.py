@@ -14,7 +14,7 @@ class BaseResponse(BaseModel):
     errcode: int = Field(0, description='错误码')
     errmsg: str = Field('', description='错误信息')
     detail: str = Field('', description='错误详情')
-    data: Any = Field(..., description='返回数据')
+    data: Any = Field(..., description='返回的数据')
 
 
 class JsonResponse(BaseResponse):
