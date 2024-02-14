@@ -18,11 +18,11 @@ class BaseResponse(BaseModel):
 
 
 class JsonResponse(BaseResponse):
-    data: dict | list = Field(..., description='返回 json 数据')
+    data: dict | list = Field(..., description='返回 json 类型数据')
 
 
 class StrResponse(BaseResponse):
-    data: str = Field(..., description='返回 string 数据')
+    data: str = Field(..., description='返回 string 类型数据')
 
 
 class OkResponse(BaseResponse):
