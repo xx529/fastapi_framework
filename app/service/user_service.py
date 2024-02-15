@@ -2,12 +2,12 @@ from typing import List, Tuple
 
 from app.apiserver.exception import AppException
 from app.interface import UserInfoRepo, AsyncDataBaseTransaction
-from app.schema.user import UserId, UserInfo
+from app.schema.user import UserID, UserInfo
 
 
 class UserService:
     @staticmethod
-    async def create_user(name: str, age: int, gender: str) -> UserId:
+    async def create_user(name: str, age: int, gender: str) -> UserID:
         async with AsyncDataBaseTransaction() as db:
             user_id = await UserInfoRepo(db).create(name=name, age=age, gender=gender)
         return user_id

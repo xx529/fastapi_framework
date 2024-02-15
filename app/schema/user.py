@@ -4,14 +4,14 @@ from pydantic import BaseModel, Field
 
 from app.schema.base import JsonResponse
 
-UserId = Annotated[int, Field(description='用户ID', examples=[123])]
+UserID = Annotated[int, Field(description='用户ID', examples=[123])]
 UserName = Annotated[str, Field(description='用户名', examples=['张三'])]
 UserAge = Annotated[int, Field(description='用户年龄', examples=[18])]
 UserGender = Annotated[Literal['男', '女'], Field(description='用户性别', examples=['男'])]
 
 
 class UserInfo(BaseModel):
-    user_id: UserId
+    user_id: UserID
     name: UserName
     age: UserAge
     gender: UserGender
@@ -27,4 +27,4 @@ class UserDetailResponse(JsonResponse):
 
 
 class UserCreateResponse(JsonResponse):
-    data: UserId
+    data: UserID
