@@ -6,6 +6,7 @@ from app.schema.user import UserID, UserInfo
 
 
 class UserService:
+
     @staticmethod
     async def create_user(name: str, age: int, gender: str) -> UserID:
         async with AsyncDataBaseTransaction() as db:
