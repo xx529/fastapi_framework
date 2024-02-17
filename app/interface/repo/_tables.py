@@ -55,3 +55,13 @@ class TaskRecord(BaseTable):
     name = Column(String(255), nullable=False, comment='任务名称')
     category = Column(String(255), nullable=False, comment='任务类型')
     status = Column(Integer, nullable=False, comment='任务状态')
+
+
+class TaskInfo(BaseTable):
+    __tablename__ = 'task_info'
+    __abstract__ = False
+
+    name = Column(String(255), nullable=False, comment='任务名称')
+    category = Column(String(255), nullable=False, comment='任务类型')
+    status = Column(String(255), nullable=False, comment='任务状态')
+    user_id = Column(Integer, nullable=False, comment='用户ID')

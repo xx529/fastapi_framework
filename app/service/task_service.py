@@ -1,7 +1,7 @@
-from app.schema.task import TaskCategory, TaskID, TaskName
-from app.schema.user import UserID
-
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.interface import AsyncDataBaseTransaction
+from app.interface.repo.task_repo import TaskInfoRepo, TaskRecordRepo
 
 
 class TaskService:
@@ -9,6 +9,11 @@ class TaskService:
     def __init__(self, db: AsyncSession = None):
         self.db = db
 
-    def create_task(self, task_name: TaskName, category: TaskCategory, user_id: UserID) -> TaskID:
-        print(self)
-        return 1
+    @staticmethod
+    async def create_task(name, category, user_id) -> int:
+        async with AsyncDataBaseTransaction() as db:
+            task_id = await TaskInfoRepo(db=db).create(name=name,
+                                                       category=category,
+                                                       user_id=user_id)
+            TaskRecordRepo(db=db, task_id=task_id).create_table()
+        return task_id

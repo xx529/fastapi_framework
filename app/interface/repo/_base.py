@@ -15,7 +15,7 @@ from app.schema.enum import OrderTypeEnum
 Base = declarative_base()
 
 engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
-SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine,)
+SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine, )
 
 async_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
 AsyncSessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=async_engine, class_=AsyncSession)
@@ -157,8 +157,15 @@ class SingleTableSqlMixin(ABC):
                 .filter(self.model.id.in_(primary_keys)))
 
 
-class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin, SingleTableSqlMixin):
+class TableManageMixin:
+    model: BaseTable
 
-    # def __init__(self, db: AsyncSession | Session):
-    #     self.db = db
+    def create_table(self):
+        self.model.create()
+
+    def is_exist(self):
+        return self.model.is_exists()
+
+
+class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin, SingleTableSqlMixin, TableManageMixin):
     ...
