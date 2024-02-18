@@ -2,7 +2,7 @@ import os
 import platform
 import sys
 from pathlib import Path
-from typing import Any, Literal
+from typing import Literal
 
 from dynaconf import Dynaconf
 from pydantic import BaseModel, Field

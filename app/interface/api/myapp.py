@@ -2,7 +2,7 @@ import httpx
 
 from app.apiserver import slog
 from app.apiserver.exception import AppException
-from app.config import  api_conf
+from app.config import api_conf
 
 
 class UserInfoQuery:

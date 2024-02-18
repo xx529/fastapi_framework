@@ -14,8 +14,8 @@ from app.schema.enum import OrderTypeEnum
 
 Base = declarative_base()
 
-engine = create_engine(url=pg_connection.jdbcurl, connect_args={}, pool_pre_ping=True, pool_recycle=1200)
-SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine, )
+engine = create_engine(url=pg_connection.jdbcurl,  pool_pre_ping=True, pool_recycle=1200)
+SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine)
 
 async_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
 AsyncSessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=async_engine, class_=AsyncSession)
@@ -71,7 +71,7 @@ class BaseTable(Base):
 
     @classmethod
     def is_exists(cls):
-        return inspect(cls._engine).has_table(cls.__tablename__, schema=pg_connection.schema)
+        return inspect(cls._engine).has_table(cls.__tablename__, schema=pg_connection.db_schema)
 
 
 class ExecutorMixin(ABC):

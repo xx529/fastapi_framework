@@ -8,6 +8,14 @@ from pydantic import BaseModel, Field
 from app.apiserver.context import RequestCtx
 from app.schema.enum import OrderTypeEnum
 
+UserID = Annotated[int, Field(title='用户ID', description='用户ID', examples=[1])]
+UserName = Annotated[str, Field(title='用户名', description='用户名', examples=['张三'])]
+UserAge = Annotated[int, Field(title='用户年龄', description='用户年龄', examples=[18])]
+UserGender = Annotated[Literal['男', '女'], Field(title='用户性别', description='用户性别', examples=['男'])]
+
+TaskID = Annotated[int, Field(title='任务ID', description='任务ID', example=1)]
+TaskName = Annotated[str, Field(title='任务名称', description='任务名称', example='任务1', min_length=1)]
+
 
 class BaseResponse(BaseModel):
     request_id: UUID = Field(default_factory=RequestCtx.get_request_id, description='请求ID')

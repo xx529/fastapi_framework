@@ -1,13 +1,8 @@
-from typing import Annotated, List, Literal
+from typing import List
 
 from pydantic import BaseModel, Field
 
-from app.schema.base import JsonResponse
-
-UserID = Annotated[int, Field(description='用户ID', examples=[123])]
-UserName = Annotated[str, Field(description='用户名', examples=['张三'])]
-UserAge = Annotated[int, Field(description='用户年龄', examples=[18])]
-UserGender = Annotated[Literal['男', '女'], Field(description='用户性别', examples=['男'])]
+from app.schema.base import JsonResponse, UserAge, UserGender, UserID, UserName
 
 
 class UserInfo(BaseModel):

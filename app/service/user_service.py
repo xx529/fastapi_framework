@@ -2,7 +2,8 @@ from typing import List, Tuple
 
 from app.apiserver.exception import AppException
 from app.interface import UserInfoRepo, AsyncDataBaseTransaction
-from app.schema.user import UserID, UserInfo
+from app.schema.user import UserInfo
+from app.schema.base import UserID
 
 
 class UserService:
