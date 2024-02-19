@@ -3,7 +3,10 @@ from typing import Dict, List, Literal
 
 import pandas as pd
 from pydantic import BaseModel
-from sqlalchemy import asc, BIGINT, Boolean, Column, create_engine, DateTime, desc, func, inspect, select, String, text
+from sqlalchemy import (
+    asc, BIGINT, Boolean, Column, create_engine, DateTime, delete, desc, func, inspect, select,
+    String, text
+)
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
@@ -72,6 +75,14 @@ class BaseTable(Base):
     @classmethod
     def is_exists(cls):
         return inspect(cls._engine).has_table(cls.__tablename__, schema=pg_connection.db_schema)
+
+    @classmethod
+    def drop(cls):
+        if cls.is_exists():
+            pg_log.debug(f'drop table: {cls.__tablename__}')
+            cls.__table__.drop(bind=cls._engine)
+        else:
+            pg_log.debug(f'not exist table: {cls.__tablename__}')
 
 
 class ExecutorMixin(ABC):
@@ -157,15 +168,24 @@ class SingleTableSqlMixin(ABC):
                 .filter(self.model.id.in_(primary_keys)))
 
 
-class TableManageMixin:
+class TableManageMixin(ExecutorMixin):
     model: BaseTable
 
     def create_table(self):
         self.model.create()
 
+    def drop_table(self):
+        self.model.drop()
+
     def is_exist(self):
         return self.model.is_exists()
 
+    def truncate_table(self):
+        self.exec(delete(self.model), output=None)
 
-class BaseRepo(ExecutorMixin, SqlExprMixin, UtilsMixin, SingleTableSqlMixin, TableManageMixin):
+    async def atruncate_table(self):
+        await self.aexec(delete(self.model), output=None)
+
+
+class BaseRepo(SqlExprMixin, UtilsMixin, SingleTableSqlMixin, TableManageMixin):
     ...

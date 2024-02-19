@@ -11,10 +11,10 @@ class TaskService:
         self.db = db
 
     @staticmethod
-    async def create_task(param: TaskCreateRequestBody) -> int:
+    async def create_task(body: TaskCreateRequestBody) -> int:
         async with AsyncDataBaseTransaction() as db:
-            task_id = await TaskInfoRepo(db=db).create(name=param.name,
-                                                       category=param.category.value,
-                                                       user_id=param.user_id)
+            task_id = await TaskInfoRepo(db=db).create(name=body.name,
+                                                       category=body.category.value,
+                                                       user_id=body.user_id)
             TaskRecordRepo(db=db, task_id=task_id).create_table()
         return task_id

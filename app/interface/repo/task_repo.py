@@ -6,19 +6,6 @@ from ._tables import TaskInfo, TaskRecord
 from ...schema.enum import TaskStatus
 
 
-class TaskRecordRepo(BaseRepo):
-
-    def __init__(self, db: AsyncSession, task_id):
-        self.model: TaskRecord = TaskRecord.instance(task_id=task_id)
-        self.db = db
-
-    def select_by_id(self, row_id: int):
-        stmt = (select(self.model.task_name,
-                       self.model.catgory)
-                .where(self.model.id == row_id))
-        return self.exec(stmt, output='list')
-
-
 class TaskInfoRepo(BaseRepo):
 
     def __init__(self, db: AsyncSession):
@@ -36,3 +23,16 @@ class TaskInfoRepo(BaseRepo):
         data = await self.aexec(sql, output='raw')
         task_id = data.first()
         return task_id
+
+
+class TaskRecordRepo(BaseRepo):
+
+    def __init__(self, db: AsyncSession, task_id):
+        self.model: TaskRecord = TaskRecord.instance(task_id=task_id)
+        self.db = db
+
+    def select_by_id(self, row_id: int):
+        stmt = (select(self.model.task_name,
+                       self.model.catgory)
+                .where(self.model.id == row_id))
+        return self.exec(stmt, output='list')

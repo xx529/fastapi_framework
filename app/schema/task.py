@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.schema.base import JsonResponse, TaskID, TaskName, UserID
 from app.schema.enum import TaskCategory

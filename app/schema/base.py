@@ -50,9 +50,9 @@ class HtmlResponse(HTMLResponse):
 
 
 class CommonHeaders(BaseModel):
-    token: str
-    task_id: int
-    company_id: str
+    token: Annotated[str, Header(description='用户Token', example='test-token', alias='Token')]
+    task_id: Annotated[int, Header(description='任务ID', example=10, alias='TaskId')]
+    company_id: Annotated[str, Header(description='公司ID', example='10', alias='CompanyId')]
 
 
 class HeaderParams:
