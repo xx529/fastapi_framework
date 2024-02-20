@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.interface import AsyncDataBaseTransaction
 from app.interface.repo.task_repo import TaskInfoRepo, TaskRecordRepo
-from app.schema.task import TaskCreateRequestBody
+from app.schema.schemas.task import TaskCreateRequestBody
 
 
 class TaskService:

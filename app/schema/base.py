@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
@@ -15,6 +16,11 @@ UserGender = Annotated[Literal['男', '女'], Field(title='用户性别', descri
 
 TaskID = Annotated[int, Field(title='任务ID', description='任务ID', example=1)]
 TaskName = Annotated[str, Field(title='任务名称', description='任务名称', example='任务1', min_length=1)]
+
+Token = Annotated[UUID, Header(description='用户Token', example='a85753bc-7a9e-4ff0-b946-b5117352b12c', alias='Token')]
+CompanyID = Annotated[str, Header(description='公司ID', example='10', alias='CompanyId')]
+
+Test = Annotated[str, Query(description='test', example='abc', alias='Test')]
 
 
 class BaseResponse(BaseModel):
@@ -49,33 +55,17 @@ class HtmlResponse(HTMLResponse):
     status_code = 200
 
 
-class CommonHeaders(BaseModel):
+@dataclass
+class CommonHeaders:
     token: Annotated[str, Header(description='用户Token', example='test-token', alias='Token')]
     task_id: Annotated[int, Header(description='任务ID', example=10, alias='TaskId')]
     company_id: Annotated[str, Header(description='公司ID', example='10', alias='CompanyId')]
 
 
-class HeaderParams:
-    Token = Annotated[str, Header(description='用户Token', example='test-token', alias='Token')]
-    TaskID = Annotated[int, Header(description='任务ID', example=10, alias='TaskId')]
-    CompanyID = Annotated[str, Header(description='公司ID', example='10', alias='CompanyId')]
-
-    @staticmethod
-    def get_common_headers(token: Token,
-                           task_id: TaskID,
-                           company_id: CompanyID) -> CommonHeaders:
-        return CommonHeaders(token=token, task_id=task_id, company_id=company_id)
-
-
+@dataclass
 class PageQueryParams:
-    Page = Annotated[int, Query(description='页码', example=1, alias='page')]
-    Limit = Annotated[int, Query(description='每页数量', example=10, alias='limit')]
-    Search = Annotated[str, Query(description='搜索关键字', example='张三', alias='search')]
-    OrderBy = Annotated[str, Query(description='排序字段', example='id', alias='order_by')]
-    OrderType = Annotated[OrderTypeEnum, Query(description='排序方式', example='asc', alias='order_type')]
-
-    @staticmethod
-    def get_page_query_params(page: Page = None,
-                              limit: Limit = None,
-                              search: Search = None):
-        return {'page': page, 'limit': limit, 'search': search}
+    page: Annotated[int, Query(description='页码', example=1, alias='page')]
+    limit: Annotated[int, Query(description='每页数量', example=10, alias='limit')]
+    search: Annotated[str, Query(description='搜索关键字', example='张三', alias='search')]
+    order_by: Annotated[str, Query(description='排序字段', example='id', alias='order_by')]
+    order_type: Annotated[OrderTypeEnum, Query(description='排序方式', example='asc', alias='order_type')]

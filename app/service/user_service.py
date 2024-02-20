@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 from app.apiserver.exception import AppException
 from app.interface import UserInfoRepo, AsyncDataBaseTransaction
-from app.schema.user import UserInfo
+from app.schema.schemas.user import UserInfo
 from app.schema.base import UserID
 
 

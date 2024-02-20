@@ -1,11 +1,7 @@
-import random
-from typing import List, Literal
-from uuid import UUID
+from fastapi import APIRouter, Depends
 
-from fastapi import APIRouter, Path, Query
-
-from app.apiserver.exception import AppException
-from app.schema.base import HtmlResponse, OkResponse, StrResponse
+from app.schema.base import HtmlResponse, OkResponse
+from app.schema.schemas.system import LogDetailQuery, LogRequestQuery
 from app.service.system_service import LogService
 
 router = APIRouter(prefix='/system', tags=['系统信息模块'])
@@ -18,32 +14,20 @@ async def health():
     return OkResponse()
 
 
-@router.get(path='/log',
-            summary='请求日志')
-async def log_request(
-        refresh: bool = Query(default=False, description='刷新缓存'),
-        method: List[Literal['GET', 'POST', 'PUT', 'DELETE']] = Query(default=None, description='请求方法'),
-        status_code: List[int] = Query(default=None, description='请求状态码'),
-        url_match: str = Query(default=None, description='请求路径匹配'),
-        last: int = Query(default=20, description="查看最近n条记录"),
-):
-    data = LogService.request_log(refresh=refresh,
-                                  method=method,
-                                  status_code=status_code,
-                                  url_match=url_match,
-                                  last=last)
+@router.get(path='/log', summary='请求日志')
+async def log_request(query: LogRequestQuery = Depends()):
+    data = LogService.request_log(refresh=query.refresh,
+                                  method=query.method,
+                                  status_code=query.status_code,
+                                  url_match=query.url_match,
+                                  last=query.last)
 
     return HtmlResponse(content=data)
 
 
-@router.get(path='/log/{request_id}',
-            summary='运行日志')
-def log_request_detail(
-        request_id: UUID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905'),
-        refresh: bool = Query(default=False, description='刷新缓存'),
-
-):
-    data = LogService.runtime_log(request_id=request_id, refresh=refresh)
+@router.get(path='/log/{request_id}', summary='运行日志')
+def log_request_detail(query: LogDetailQuery = Depends()):
+    data = LogService.runtime_log(query=query)
     return HtmlResponse(content=data)
 
 

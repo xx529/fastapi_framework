@@ -1,6 +1,6 @@
 import asyncio
 
-from app.schema.stream import EndData, MiddleData, StartData
+from app.schema.schemas.stream import EndData, MiddleData, StartData
 
 
 class StreamService:

@@ -2,14 +2,14 @@ import json
 import re
 from functools import lru_cache
 from typing import List
-from uuid import UUID
 
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
 from app.config import log_conf, project_dir
-from app.schema.enum import LoggerTypeEnum
+from app.schema.enum import LoggerTypeEnum, RequestMethod
+from app.schema.schemas.system import LogDetailQuery
 
 
 class LogService:
@@ -34,13 +34,13 @@ class LogService:
         return df_log
 
     @classmethod
-    def runtime_log(cls, refresh: bool, request_id: UUID):
-        if refresh:
+    def runtime_log(cls, query: LogDetailQuery):
+        if query.refresh:
             cls.load_all_log.cache_clear()
 
         df_log = cls.load_all_log()
 
-        df_log = df_log[df_log['request_id'] == request_id.hex]
+        df_log = df_log[df_log['request_id'] == query.request_id.hex]
         df_log['duration'] = df_log['datetime'].diff(-1).dt.total_seconds().fillna(0.0).abs()
 
         total_duration = df_log['duration'].sum()
@@ -56,7 +56,7 @@ class LogService:
         return html
 
     @classmethod
-    def request_log(cls, refresh: bool, method: List[str], status_code: List[int], url_match: str, last: int):
+    def request_log(cls, refresh: bool, method: List[RequestMethod], status_code: List[int], url_match: str, last: int):
         if refresh:
             cls.load_all_log.cache_clear()
 
@@ -89,7 +89,7 @@ class LogService:
             df_request[col] = df_request[col].apply(lambda x: x[0] if len(x) > 0 else '')
 
         if method:
-            df_request = df_request[df_request['method'].isin(method)]
+            df_request = df_request[df_request['method'].isin([m.value for m in method])]
 
         if status_code:
             df_request = df_request[df_request['status_code'].isin(status_code)]

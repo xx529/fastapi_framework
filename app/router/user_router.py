@@ -2,12 +2,12 @@ from typing import Literal
 
 from fastapi import APIRouter, Body, Depends, Query
 
-from app.schema.base import BoolResponse, HeaderParams, OkResponse
+from app.schema.base import BoolResponse, CommonHeaders, OkResponse
 from app.schema.enum import OrderTypeEnum
-from app.schema.user import UserCreateResponse, UserDetailResponse, UserListResponse
+from app.schema.schemas.user import UserCreateResponse, UserDetailResponse, UserListResponse
 from app.service.user_service import UserService
 
-router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(HeaderParams.get_common_headers)])
+router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHeaders)])
 
 
 @router.post(

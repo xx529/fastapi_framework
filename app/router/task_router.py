@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from app.schema.base import HeaderParams
-from app.schema.task import TaskCreateRequestBody, TaskCreateResponse
+from app.schema.base import CommonHeaders
+from app.schema.schemas.task import TaskCreateRequestBody, TaskCreateResponse
 from app.service.task_service import TaskService
 
-router = APIRouter(tags=['任务管理模块'], dependencies=[Depends(HeaderParams.get_common_headers)])
+router = APIRouter(tags=['任务管理模块'], dependencies=[Depends(CommonHeaders)])
 
 
 @router.post(
@@ -14,5 +14,5 @@ router = APIRouter(tags=['任务管理模块'], dependencies=[Depends(HeaderPara
     response_model=TaskCreateResponse
 )
 async def task_create(body: TaskCreateRequestBody):
-    task_id = await TaskService.create_task(param=body)
+    task_id = await TaskService.create_task(body=body)
     return TaskCreateResponse(data=task_id)
