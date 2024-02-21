@@ -33,12 +33,11 @@ class LogService:
         df_log['exception'] = df_raw['exception']
         return df_log
 
-    @classmethod
-    def runtime_log(cls, query: LogDetailQuery):
+    def runtime_log(self, query: LogDetailQuery):
         if query.refresh:
-            cls.load_all_log.cache_clear()
+            self.load_all_log.cache_clear()
 
-        df_log = cls.load_all_log()
+        df_log = self.load_all_log()
 
         df_log = df_log[df_log['request_id'] == query.request_id.hex]
         df_log['duration'] = df_log['datetime'].diff(-1).dt.total_seconds().fillna(0.0).abs()
@@ -55,12 +54,11 @@ class LogService:
         html = df_log.to_html(justify='left').replace('\\n', '<br>').replace('###space###', '&nbsp;')
         return html
 
-    @classmethod
-    def request_log(cls, refresh: bool, method: List[RequestMethod], status_code: List[int], url_match: str, last: int):
+    def request_log(self, refresh: bool, method: List[RequestMethod], status_code: List[int], url_match: str, last: int):
         if refresh:
-            cls.load_all_log.cache_clear()
+            self.load_all_log.cache_clear()
 
-        df_log = cls.load_all_log()
+        df_log = self.load_all_log()
         cols = ['datetime', 'request_id', 'message', 'exception']
 
         df_start = df_log.query(f'type == "{LoggerTypeEnum.REQUEST_START.value}"')[cols]

@@ -16,18 +16,18 @@ async def health():
 
 @router.get(path='/log', summary='请求日志')
 async def log_request(query: LogRequestQuery = Depends()):
-    data = LogService.request_log(refresh=query.refresh,
-                                  method=query.method,
-                                  status_code=query.status_code,
-                                  url_match=query.url_match,
-                                  last=query.last)
+    data = LogService().request_log(refresh=query.refresh,
+                                    method=query.method,
+                                    status_code=query.status_code,
+                                    url_match=query.url_match,
+                                    last=query.last)
 
     return HtmlResponse(content=data)
 
 
 @router.get(path='/log/{request_id}', summary='运行日志')
 def log_request_detail(query: LogDetailQuery = Depends()):
-    data = LogService.runtime_log(query=query)
+    data = LogService().runtime_log(query=query)
     return HtmlResponse(content=data)
 
 

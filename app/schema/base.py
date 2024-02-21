@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from app.apiserver.context import RequestCtx
 from app.schema.enum import OrderTypeEnum
 
+
 UserID = Annotated[int, Field(title='用户ID', description='用户ID', examples=[1])]
 UserName = Annotated[str, Field(title='用户名', description='用户名', examples=['张三'])]
 UserAge = Annotated[int, Field(title='用户年龄', description='用户年龄', examples=[18])]
@@ -57,15 +58,15 @@ class HtmlResponse(HTMLResponse):
 
 @dataclass
 class CommonHeaders:
-    token: Annotated[str, Header(description='用户Token', example='test-token', alias='Token')]
-    task_id: Annotated[int, Header(description='任务ID', example=10, alias='TaskId')]
-    company_id: Annotated[str, Header(description='公司ID', example='10', alias='CompanyId')]
+    token: UUID = Header(description='用户Token', example='442221ef-38b2-489c-bc46-68d62825ec56', alias='Token')
+    task_id: int = Header(description='任务ID', example=10, alias='TaskId')
+    company_id: str = Header(description='公司ID', example='10', alias='CompanyId')
 
 
 @dataclass
 class PageQueryParams:
-    page: Annotated[int, Query(description='页码', example=1, alias='page')]
-    limit: Annotated[int, Query(description='每页数量', example=10, alias='limit')]
-    search: Annotated[str, Query(description='搜索关键字', example='张三', alias='search')]
-    order_by: Annotated[str, Query(description='排序字段', example='id', alias='order_by')]
-    order_type: Annotated[OrderTypeEnum, Query(description='排序方式', example='asc', alias='order_type')]
+    page: int = Query(default=1, description='页码', example=1, alias='page')
+    limit: int = Query(default=10, description='每页数量', example=10, alias='limit')
+    search: str = Query(default=None, description='搜索关键字', example='张三', alias='search')
+    order_by: str = Query(default='id', description='排序字段', example='id', alias='order_by')
+    order_type: OrderTypeEnum = Query(default='asc', description='排序方式', example='asc', alias='order_type')
