@@ -44,7 +44,8 @@ class UserCreateBody(BaseModel):
             "例子2": OpenApiExample(
                 summary='例子2',
                 description='一般例子2',
-                value=cls(name='张三', age=28, gender='女'))
+                value=cls(name='张三', age=28, gender='女')
+            )
         }
 
 
