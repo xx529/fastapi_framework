@@ -70,3 +70,9 @@ class PageQueryParams:
     search: str = Query(default=None, description='搜索关键字', example='张三', alias='search')
     order_by: str = Query(default='id', description='排序字段', example='id', alias='order_by')
     order_type: OrderTypeEnum = Query(default='asc', description='排序方式', example='asc', alias='order_type')
+
+
+class OpenApiExample(BaseModel):
+    summary: str
+    value: BaseModel
+    description: str

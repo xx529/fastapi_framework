@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, Query
+from typing import Annotated
+
+from fastapi import APIRouter, Body, Depends
 
 from app.schema.base import BoolResponse, CommonHeaders, OkResponse, PageQueryParams
 from app.schema.schemas.user import (
@@ -16,7 +18,9 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHead
     description='创建用户通用接口',
     response_model=UserCreateResponse
 )
-async def user_create(body: UserCreateBody):
+async def user_create(
+        body: Annotated[UserCreateBody, Body(openapi_examples=UserCreateBody.openapi_examples())]
+):
     user_id = await UserService.create_user(name=body.name, age=body.age, gender=body.gender)
     return UserCreateResponse(data=user_id)
 

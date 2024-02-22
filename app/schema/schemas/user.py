@@ -4,7 +4,7 @@ from typing import List
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from app.schema.base import JsonResponse, UserAge, UserGender, UserID, UserName
+from app.schema.base import JsonResponse, OpenApiExample, UserAge, UserGender, UserID, UserName
 
 
 class UserInfo(BaseModel):
@@ -32,6 +32,20 @@ class UserCreateBody(BaseModel):
     name: UserName
     age: UserAge
     gender: UserGender
+
+    @classmethod
+    def openapi_examples(cls):
+        return {
+            "例子1": OpenApiExample(
+                summary='例子1',
+                description='一般例子1',
+                value=cls(name='张三', age=30, gender='男')
+            ),
+            "例子2": OpenApiExample(
+                summary='例子2',
+                description='一般例子2',
+                value=cls(name='张三', age=28, gender='女'))
+        }
 
 
 class UserCreateResponse(JsonResponse):
