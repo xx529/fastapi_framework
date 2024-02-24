@@ -25,7 +25,7 @@ class UserDetailQuery:
 
 
 class UserDetailResponse(JsonResponse):
-    data: UserInfo = Field(description='用户详情')
+    data: UserInfo = Field(description='用户信息详情')
 
 
 class UserCreateBody(BaseModel):
