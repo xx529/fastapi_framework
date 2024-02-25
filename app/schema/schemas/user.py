@@ -37,7 +37,7 @@ class UserCreateBody(BaseModel):
     def openapi_examples(cls):
         return {
             "例子1": OpenApiExample(
-                summary='例子1',
+                summary='例子1（适用于开发环境）',
                 description='一般例子1',
                 value=cls(name='张三', age=30, gender='男')
             ),
