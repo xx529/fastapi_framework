@@ -171,6 +171,10 @@ class SingleTableSqlMixin(ABC):
 class TableManageMixin(ExecutorMixin):
     model: BaseTable
 
+    @property
+    def table_name(self):
+        return self.model.__tablename__
+
     def create_table(self):
         self.model.create()
 

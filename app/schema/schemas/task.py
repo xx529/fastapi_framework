@@ -10,6 +10,10 @@ class TaskCreateRequestBody(BaseModel):
     category: TaskCategory
 
 
+class TaskDeleteRequestBody(BaseModel):
+    task_id: TaskID
+
+
 class TaskCreateResponse(JsonResponse):
     data: TaskID
 

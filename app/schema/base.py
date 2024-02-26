@@ -59,7 +59,6 @@ class HtmlResponse(HTMLResponse):
 @dataclass
 class CommonHeaders:
     token: UUID = Header(description='用户Token', example='442221ef-38b2-489c-bc46-68d62825ec56', alias='Token')
-    task_id: int = Header(description='任务ID', example=10, alias='TaskId')
     company_id: str = Header(description='公司ID', example='10', alias='CompanyId')
 
 

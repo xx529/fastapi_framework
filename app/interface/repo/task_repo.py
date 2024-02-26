@@ -1,4 +1,4 @@
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ._base import BaseRepo
@@ -23,6 +23,12 @@ class TaskInfoRepo(BaseRepo):
         data = await self.aexec(sql, output='raw')
         task_id = data.first()
         return task_id
+
+    async def delete_task(self, task_id: int):
+        sql = (update(self.model)
+               .where(self.model.id == task_id)
+               .values(del_flag=True))
+        await self.aexec(sql, output=None)
 
 
 class TaskRecordRepo(BaseRepo):

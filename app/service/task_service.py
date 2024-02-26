@@ -2,7 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.interface import AsyncDataBaseTransaction
 from app.interface.repo.task_repo import TaskInfoRepo, TaskRecordRepo
-from app.schema.schemas.task import TaskCreateRequestBody
+from app.schema.schemas.task import TaskCreateRequestBody, TaskDeleteRequestBody
+from app.apiserver.logger import runtime_log
 
 
 class TaskService:
@@ -18,3 +19,13 @@ class TaskService:
                                                        user_id=body.user_id)
             TaskRecordRepo(db=db, task_id=task_id).create_table()
         return task_id
+
+    @staticmethod
+    async def delete_task(body: TaskDeleteRequestBody) -> None:
+        async with AsyncDataBaseTransaction() as db:
+            await TaskInfoRepo(db=db).delete_task(task_id=body.task_id)
+            t = TaskRecordRepo(db=db, task_id=body.task_id)
+            if t.is_exist():
+                t.drop_table()
+            else:
+                runtime_log.info(f'not exists table: {t.table_name}')
