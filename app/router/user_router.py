@@ -19,7 +19,7 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHead
     response_model=UserCreateResponse
 )
 async def user_create(
-        body: Annotated[UserCreateBody, Body(openapi_examples=UserCreateBody.openapi_examples())]
+        body: UserCreateBody = Body(openapi_examples=UserCreateBody.openapi_examples())
 ):
     user_id = await UserService.create_user(name=body.name, age=body.age, gender=body.gender)
     return UserCreateResponse(data=user_id)

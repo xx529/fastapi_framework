@@ -1,17 +1,22 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Literal, Annotated
 
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from app.schema.base import JsonResponse, OpenApiExample, UserAge, UserGender, UserID, UserName
+from app.schema.base import JsonResponse, OpenApiExample, UserID
+
+UserIdField = Annotated[UserID, Field(title='用户ID', description='用户ID', examples=[1])]
 
 
-class UserInfo(BaseModel):
-    user_id: UserID
-    name: UserName
-    age: UserAge
-    gender: UserGender
+class UserInfoBase(BaseModel):
+    name: str = Field(title='用户名', description='用户名', examples=['张三'])
+    age: int = Field(title='用户年龄', description='用户年龄', examples=[18])
+    gender: Literal['男', '女'] = Field(title='用户性别', description='用户性别', examples=['男'])
+
+
+class UserInfo(UserInfoBase):
+    user_id: UserIdField
 
 
 class UserListResponse(JsonResponse):
@@ -21,17 +26,15 @@ class UserListResponse(JsonResponse):
 
 @dataclass
 class UserDetailQuery:
-    user_id: int = Query(description='用户ID', ge=0, examples=[1])
+    user_id: UserID = Query(title='用户ID', description='用户ID', ge=0, examples=[1])
 
 
 class UserDetailResponse(JsonResponse):
     data: UserInfo = Field(description='用户信息详情')
 
 
-class UserCreateBody(BaseModel):
-    name: UserName
-    age: UserAge
-    gender: UserGender
+class UserCreateBody(UserInfoBase):
+    ...
 
     @classmethod
     def openapi_examples(cls):
@@ -39,26 +42,27 @@ class UserCreateBody(BaseModel):
             "例子1": OpenApiExample(
                 summary='例子1（适用于开发环境）',
                 description='一般例子1',
-                value=cls(name='张三', age=30, gender='男')
+                value=cls(name='张三', age=30, gender='男').model_dump(),
             ),
             "例子2": OpenApiExample(
                 summary='例子2',
                 description='一般例子2',
-                value=cls(name='张三', age=28, gender='女')
+                value=cls(name='张三', age=28, gender='女').model_dump(),
             )
         }
 
 
 class UserCreateResponse(JsonResponse):
-    data: UserID
+    data: UserIdField
 
 
 class UserDeleteBody(BaseModel):
-    user_id: UserID
+    user_id: UserIdField
 
 
-class UserUpdateBody(BaseModel):
-    user_id: UserID
-    name: UserName = None
-    age: UserAge = None
-    gender: UserGender = None
+class UserUpdateBody(UserInfo):
+    ...
+
+    @classmethod
+    def openapi_examples(cls):
+        ...

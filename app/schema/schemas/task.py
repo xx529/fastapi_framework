@@ -1,7 +1,11 @@
-from pydantic import BaseModel
+from typing import Annotated
 
-from app.schema.base import JsonResponse, TaskID, TaskName, UserID
+from pydantic import BaseModel, Field
+
+from app.schema.base import JsonResponse, TaskID, UserID
 from app.schema.enum import TaskCategory
+
+TaskName = Annotated[str, Field(title='任务名称', description='任务名称', example='任务1', min_length=1)]
 
 
 class TaskCreateRequestBody(BaseModel):
