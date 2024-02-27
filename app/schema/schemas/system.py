@@ -1,15 +1,14 @@
 from dataclasses import dataclass
-from pathlib import Path
 from typing import List
-from uuid import UUID
 
-from fastapi import Query
+from fastapi import Path, Query
 
+from app.schema.base import RequestID
 from app.schema.enum import RequestMethod
 
 
 @dataclass
-class LogRequestQuery:
+class LogRequestParam:
     refresh: bool = Query(default=False, description='刷新缓存', title='刷新缓存', example=False)
     method: List[RequestMethod] = Query(default=None, description='请求方法', title='请求方法', min_length=1)
     status_code: List[int] = Query(default=None, description='请求状态码', title='请求状态码', min_length=1)
@@ -18,6 +17,6 @@ class LogRequestQuery:
 
 
 @dataclass
-class LogDetailQuery:
+class LogDetailParam:
+    request_id: RequestID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905')
     refresh: bool = Query(default=False, description='刷新缓存', title='刷新缓存')
-    request_id: UUID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905')

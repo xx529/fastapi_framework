@@ -9,7 +9,7 @@ from pandas import DataFrame
 
 from app.config import log_conf, project_dir
 from app.schema.enum import LoggerTypeEnum, RequestMethod
-from app.schema.schemas.system import LogDetailQuery
+from app.schema.schemas.system import LogDetailParam
 
 
 class LogService:
@@ -33,13 +33,13 @@ class LogService:
         df_log['exception'] = df_raw['exception']
         return df_log
 
-    def runtime_log(self, query: LogDetailQuery):
-        if query.refresh:
+    def runtime_log(self, param: LogDetailParam):
+        if param.refresh:
             self.load_all_log.cache_clear()
 
         df_log = self.load_all_log()
 
-        df_log = df_log[df_log['request_id'] == query.request_id.hex]
+        df_log = df_log[df_log['request_id'] == param.request_id.hex]
         df_log['duration'] = df_log['datetime'].diff(-1).dt.total_seconds().fillna(0.0).abs()
 
         total_duration = df_log['duration'].sum()

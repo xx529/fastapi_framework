@@ -68,6 +68,6 @@ class PageQueryParams:
 
 
 class OpenApiExample(BaseModel):
-    value: BaseModel
     summary: str = None
     description: str = None
+    value: dict

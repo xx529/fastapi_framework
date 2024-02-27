@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends
 
 from app.schema.base import BoolResponse, CommonHeaders, OkResponse, PageQueryParams
 from app.schema.schemas.user import (
-    UserCreateBody, UserCreateResponse, UserDeleteBody, UserDetailQuery, UserDetailResponse,
+    UserCreateBody, UserCreateResponse, UserDeleteBody, UserDetailParam, UserDetailResponse,
     UserListResponse, UserUpdateBody,
 )
 from app.service.user_service import UserService
@@ -18,9 +18,7 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHead
     description='创建用户通用接口',
     response_model=UserCreateResponse
 )
-async def user_create(
-        body: UserCreateBody = Body(openapi_examples=UserCreateBody.openapi_examples())
-):
+async def user_create(body: UserCreateBody = Body(openapi_examples=UserCreateBody.openapi_examples())):
     user_id = await UserService.create_user(name=body.name, age=body.age, gender=body.gender)
     return UserCreateResponse(data=user_id)
 
@@ -52,14 +50,9 @@ async def user_update(body: UserUpdateBody):
     summary='查询用户',
     description='根据用户ID获取用户信息通用接口',
     response_model=UserDetailResponse
-
 )
-async def user_detail(
-        # user_id: int = Query(description='用户ID', ge=0, examples=['aaa'])
-        query: UserDetailQuery = Depends()
-):
-
-    data = await UserService.detail(user_id=query.user_id)
+async def user_detail(param: UserDetailParam = Depends()):
+    data = await UserService.detail(user_id=param.user_id)
     return UserDetailResponse(data=data)
 
 
@@ -69,11 +62,11 @@ async def user_detail(
     description='获取用户列表通用接口',
     response_model=UserListResponse
 )
-async def user_list(query: PageQueryParams = Depends()):
-    data, total = await UserService.list(page=query.page,
-                                         limit=query.limit,
-                                         search=query.search,
-                                         order_by=query.order_by,
-                                         order_type=query.order_type)
+async def user_list(param: PageQueryParams = Depends()):
+    data, total = await UserService.list(page=param.page,
+                                         limit=param.limit,
+                                         search=param.search,
+                                         order_by=param.order_by,
+                                         order_type=param.order_type)
 
     return UserListResponse(data=data, total=total)

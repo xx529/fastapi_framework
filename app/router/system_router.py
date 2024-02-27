@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.schema.base import HtmlResponse, OkResponse
-from app.schema.schemas.system import LogDetailQuery, LogRequestQuery
+from app.schema.schemas.system import LogDetailParam, LogRequestParam
 from app.service.system_service import LogService
 
 router = APIRouter(prefix='/system', tags=['系统信息模块'])
@@ -15,19 +15,19 @@ async def health():
 
 
 @router.get(path='/log', summary='请求日志')
-async def log_request(query: LogRequestQuery = Depends()):
-    data = LogService().request_log(refresh=query.refresh,
-                                    method=query.method,
-                                    status_code=query.status_code,
-                                    url_match=query.url_match,
-                                    last=query.last)
+async def log_request(param: LogRequestParam = Depends()):
+    data = LogService().request_log(refresh=param.refresh,
+                                    method=param.method,
+                                    status_code=param.status_code,
+                                    url_match=param.url_match,
+                                    last=param.last)
 
     return HtmlResponse(content=data)
 
 
 @router.get(path='/log/{request_id}', summary='运行日志')
-def log_request_detail(query: LogDetailQuery = Depends()):
-    data = LogService().runtime_log(query=query)
+def log_request_detail(param: LogDetailParam = Depends()):
+    data = LogService().runtime_log(param=param)
     return HtmlResponse(content=data)
 
 

@@ -60,3 +60,9 @@ class TaskStatus(str, Enum):
 class TaskCategory(str, Enum):
     NORMAL = 'normal'
     URGENT = 'urgent'
+
+
+class HumanGender(str, Enum):
+    FEMALE = '女'
+    MALE = '男'
+
