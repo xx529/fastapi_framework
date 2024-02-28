@@ -6,8 +6,8 @@ from app.router import (
 )
 
 all_routers = [
-    stream_router.router,
-    system_router.router,
     task_router.router,
     user_router.router,
+    stream_router.router,
+    system_router.router,
 ]
