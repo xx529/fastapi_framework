@@ -45,4 +45,7 @@ async def task_upload(
         meta_file: UploadFile = File(),
         data_files: List[UploadFile] = File(),
 ):
+    print(task_id)
+    print(meta_file.filename)
+    print(data_files[0].filename)
     return BoolResponse(data=True)

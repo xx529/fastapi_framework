@@ -17,7 +17,7 @@ from app.schema.enum import OrderTypeEnum
 
 Base = declarative_base()
 
-engine = create_engine(url=pg_connection.jdbcurl,  pool_pre_ping=True, pool_recycle=1200)
+engine = create_engine(url=pg_connection.jdbcurl,  pool_pre_ping=True, pool_recycle=1200, pool_size=10)
 SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine)
 
 async_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
