@@ -19,6 +19,11 @@ class OrderTypeEnum(str, Enum):
     ASC = 'asc'
     DESC = 'desc'
 
+    @classmethod
+    def note(cls):
+        return (f'升序（{cls.ASC.value})；'
+                f'降序（{cls.DESC.value})；')
+
 
 class LoggerTypeEnum(str, Enum):
     RUNTIME = 'runtime'

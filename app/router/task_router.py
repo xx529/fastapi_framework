@@ -1,9 +1,9 @@
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, File, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Form, UploadFile
 
 from app.schema.base import BoolResponse, CommonHeaders
-from app.schema.schemas.task import TaskCreateRequestBody, TaskCreateResponse, TaskDeleteRequestBody
+from app.schema.schemas.task import TaskCreateRequestBody, TaskCreateResponse, TaskDeleteRequestBody, TaskUploadBody
 from app.service.task_service import TaskService
 
 router = APIRouter(tags=['任务管理模块'], dependencies=[Depends(CommonHeaders)])
@@ -40,12 +40,8 @@ async def task_create(body: TaskDeleteRequestBody):
     response_model=BoolResponse,
     response_description='返回数据上传状态'
 )
-async def task_upload(
-        task_id: int = Body(),
-        meta_file: UploadFile = File(),
-        data_files: List[UploadFile] = File(),
-):
-    print(task_id)
-    print(meta_file.filename)
-    print(data_files[0].filename)
+async def task_upload(body=Depends(TaskUploadBody.from_form_body)):
+    # print(body.test)
+    print(body.meta_file.filename)
+    print(body.data_files[0].filename)
     return BoolResponse(data=True)
