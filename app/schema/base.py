@@ -20,7 +20,6 @@ OrderBy = NewType('OrderBy', str)
 Search = NewType('Search', str)
 
 
-
 class BaseResponse(BaseModel):
     request_id: RequestID = Field(default_factory=RequestCtx.get_request_id, description='请求ID')
     errcode: int = Field(0, description='错误码')
