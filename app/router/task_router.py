@@ -41,7 +41,6 @@ async def task_create(body: TaskDeleteRequestBody):
     response_description='返回数据上传状态'
 )
 async def task_upload(body=Depends(TaskUploadBody.from_form_body)):
-    # print(body.test)
     print(body.meta_file.filename)
     print(body.data_files[0].filename)
     return BoolResponse(data=True)
