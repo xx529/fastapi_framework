@@ -42,7 +42,7 @@ class HangServer:
 
         @asynccontextmanager
         async def __lifespan(app: FastAPI):
-            RequestCtx.set_request_id(uuid.uuid4())
+            RequestCtx.set_trace_id(uuid.uuid4())
             cls.on_start(app)
             yield
             await cls.on_shutdown(app)

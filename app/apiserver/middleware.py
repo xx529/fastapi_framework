@@ -4,6 +4,7 @@ import uuid
 from fastapi.responses import JSONResponse
 from starlette.requests import Request
 
+from loguru import logger
 from app.schema.base import BaseResponse
 from .context import RequestCtx
 from .exception import AppException, AppExceptionClass
@@ -14,10 +15,18 @@ class MiddleWare:
 
     @staticmethod
     async def set_ctx(request: Request, call_next):
-        RequestCtx.set_request_id(uuid.uuid4())
-        middleware_log.debug(f'set request id: {RequestCtx.get_request_id()}')
+        RequestCtx.set_trace_id(uuid.uuid4())
+        middleware_log.debug(f'set request id: {RequestCtx.get_trace_id()}')
         response = await call_next(request)
         return response
+
+    @staticmethod
+    async def set_logger_trace(request: Request, call_next):
+        trace_id = RequestCtx.get_trace_id()
+        with logger.contextualize(track_id=trace_id):
+            middleware_log.debug(f'set trace id: {trace_id}')
+            response = await call_next(request)
+            return response
 
     @staticmethod
     async def log_request(request: Request, call_next):

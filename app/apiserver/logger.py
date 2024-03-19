@@ -25,7 +25,7 @@ SHORT_FORMAT = ('<green>[{time:HH:mm:ss.SSS}]</green> '
 
 
 def patch_request_id(record):
-    record['extra'].update(request_id=RequestCtx.get_request_id())
+    record['extra'].update(trace_id=RequestCtx.get_trace_id())
 
 
 logger.remove()

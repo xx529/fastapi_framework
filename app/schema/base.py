@@ -13,7 +13,7 @@ UserID = NewType('UserID', int)
 TaskID = NewType('TaskID', int)
 CompanyID = NewType('CompanyID', int)
 Token = NewType('Token', UUID)
-RequestID = NewType('RequestID', UUID)
+TraceID = NewType('RequestID', UUID)
 Page = NewType('page', int)
 Limit = NewType('limit', int)
 OrderBy = NewType('OrderBy', str)
@@ -21,7 +21,7 @@ Search = NewType('Search', str)
 
 
 class BaseResponse(BaseModel):
-    request_id: RequestID = Field(default_factory=RequestCtx.get_request_id, description='请求ID')
+    trace_id: TraceID = Field(default_factory=RequestCtx.get_trace_id, description='请求ID')
     errcode: int = Field(0, description='错误码')
     errmsg: str = Field('', description='错误信息')
     detail: str = Field('', description='错误详情')
