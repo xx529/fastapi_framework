@@ -5,7 +5,6 @@ from uuid import UUID
 request_id = contextvars.ContextVar('request_id')
 
 
-
 class RequestCtx:
 
     @staticmethod

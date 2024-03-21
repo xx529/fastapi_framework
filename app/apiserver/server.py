@@ -2,8 +2,8 @@ import uuid
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from loguru import logger
 
-from app.apiserver.context import RequestCtx
 from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
 from app.config import app_conf, project_dir
@@ -42,10 +42,10 @@ class HangServer:
 
         @asynccontextmanager
         async def __lifespan(app: FastAPI):
-            RequestCtx.set_trace_id(uuid.uuid4())
-            cls.on_start(app)
-            yield
-            await cls.on_shutdown(app)
+            with logger.contextualize(trace_id=uuid.uuid4().hex):
+                cls.on_start(app)
+                yield
+                await cls.on_shutdown(app)
 
         return __lifespan
 
@@ -66,6 +66,7 @@ class HangServer:
 
         lifespan_log.info('startup redis')
         redis_cache.startup()
+        lifespan_log.info('startup complete')
 
     @staticmethod
     async def on_shutdown(app: FastAPI) -> None:
@@ -77,3 +78,5 @@ class HangServer:
 
         lifespan_log.info(f'shutdown api server version: {app.version}')
         # TODO 关闭异步任务
+
+        lifespan_log.info('shutdown complete')

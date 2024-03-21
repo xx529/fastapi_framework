@@ -2,9 +2,8 @@ import sys
 
 from loguru import logger
 
-from app.config import log_conf, app_conf
+from app.config import app_conf, log_conf
 from app.schema.enum import LoggerTypeEnum
-from .context import RequestCtx
 
 FULL_FORMAT = ('<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> '
                '<red>{extra[project_name]}</red> '
@@ -13,20 +12,15 @@ FULL_FORMAT = ('<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> '
                '<level>[{level}]</level> '
                '[{file.path}:{function}:{line}] '
                '- '
-               '<yellow>[RID:{extra[request_id]}]</yellow> '
+               '<yellow>[RID:{extra[trace_id]}]</yellow> '
                '<magenta>[{extra[type]}]</magenta> '
                '<WHITE>{message}</WHITE>')
 
 SHORT_FORMAT = ('<green>[{time:HH:mm:ss.SSS}]</green> '
                 '<level>[{level}]</level> '
-                '<yellow>[RID:{extra[request_id]}]</yellow> '
+                '<yellow>[TraceID:{extra[trace_id]}]</yellow> '
                 '<magenta>[{extra[type]}]</magenta> '
                 '{message}')
-
-
-def patch_request_id(record):
-    record['extra'].update(trace_id=RequestCtx.get_trace_id())
-
 
 logger.remove()
 
@@ -42,8 +36,7 @@ logger.add(sink=sys.stdout,
            level=log_conf.level,
            enqueue=True)
 
-_logger = logger.patch(patch_request_id).bind(project_name=app_conf.name)
-
+_logger = logger.bind(project_name=app_conf.name)
 
 runtime_log = _logger.bind(type=LoggerTypeEnum.RUNTIME.value)
 request_start_log = _logger.bind(type=LoggerTypeEnum.REQUEST_START.value)

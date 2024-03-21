@@ -2,11 +2,10 @@ import traceback
 import uuid
 
 from fastapi.responses import JSONResponse
+from loguru import logger
 from starlette.requests import Request
 
-from loguru import logger
 from app.schema.base import BaseResponse
-from .context import RequestCtx
 from .exception import AppException, AppExceptionClass
 from .logger import exception_log, middleware_log, request_finish_log, request_start_log
 
@@ -14,18 +13,13 @@ from .logger import exception_log, middleware_log, request_finish_log, request_s
 class MiddleWare:
 
     @staticmethod
-    async def set_ctx(request: Request, call_next):
-        RequestCtx.set_trace_id(uuid.uuid4())
-        middleware_log.debug(f'set request id: {RequestCtx.get_trace_id()}')
-        response = await call_next(request)
-        return response
+    async def set_logger_trace_id(request: Request, call_next):
 
-    @staticmethod
-    async def set_logger_trace(request: Request, call_next):
-        trace_id = RequestCtx.get_trace_id()
-        with logger.contextualize(track_id=trace_id):
+        trace_id = uuid.uuid4().hex
+        with logger.contextualize(trace_id=trace_id):
             middleware_log.debug(f'set trace id: {trace_id}')
             response = await call_next(request)
+            print(response.content)
             return response
 
     @staticmethod
@@ -63,5 +57,5 @@ class MiddleWare:
 
     @classmethod
     def get_all_middleware(cls):
-        mls = [cls.set_ctx, cls.log_request]
+        mls = [cls.set_logger_trace_id, cls.log_request]
         return mls[::-1]
