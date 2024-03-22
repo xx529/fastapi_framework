@@ -18,5 +18,5 @@ class LogRequestParam:
 
 @dataclass
 class LogDetailParam:
-    request_id: TraceID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905')
+    trace_id: TraceID = Path(description='请求ID', example='6fd471a0101f4dfbbe22f36bbaae2905')
     refresh: bool = Query(default=False, description='刷新缓存', title='刷新缓存')

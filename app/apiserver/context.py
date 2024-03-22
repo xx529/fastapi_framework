@@ -1,8 +1,7 @@
 import contextvars
 import uuid
-from uuid import UUID
 
-request_id = contextvars.ContextVar('request_id')
+trace_id_var = contextvars.ContextVar('trace_id')
 
 
 class RequestCtx:
@@ -10,14 +9,12 @@ class RequestCtx:
     @staticmethod
     def get_trace_id() -> str | None:
         try:
-            return request_id.get()
+            return trace_id_var.get()
         except Exception:
             return None
 
     @staticmethod
-    def set_trace_id(value: UUID):
-        request_id.set(value.hex)
-
-    @staticmethod
-    def create_trace_id() -> UUID:
-        return uuid.uuid4()
+    def create_trace_id() -> str:
+        trace_id = uuid.uuid4().hex
+        trace_id_var.set(trace_id)
+        return trace_id

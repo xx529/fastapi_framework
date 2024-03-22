@@ -25,7 +25,7 @@ async def log_request(param: LogRequestParam = Depends()):
     return HtmlResponse(content=data)
 
 
-@router.get(path='/log/{request_id}', summary='运行日志')
+@router.get(path='/log/{trace_id}', summary='追踪日志')
 def log_request_detail(param: LogDetailParam = Depends()):
     data = LogService().runtime_log(param=param)
     return HtmlResponse(content=data)
