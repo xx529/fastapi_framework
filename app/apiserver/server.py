@@ -1,3 +1,4 @@
+import datetime
 import uuid
 from contextlib import asynccontextmanager
 
@@ -17,8 +18,7 @@ class HangServer:
     @classmethod
     def create_app(cls) -> FastAPI:
         cls.init_kafka()
-        app = FastAPI(version=app_conf.version,
-                      lifespan=cls.lifespan())
+        app = FastAPI(version=app_conf.version, lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
         return app

@@ -20,7 +20,7 @@ Base = declarative_base()
 engine = create_engine(url=pg_connection.jdbcurl,  pool_pre_ping=True, pool_recycle=1200, pool_size=10)
 SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine)
 
-async_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True)
+async_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True, pool_size=10)
 AsyncSessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=async_engine, class_=AsyncSession)
 
 table_class_instance: Dict[str, Base] = {}
@@ -95,6 +95,7 @@ class ExecutorMixin(ABC):
         return self.format_result(result, output)
 
     async def aexec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
+        async_engine.pool
         pg_log.debug(self.sql_stmt_bind_params(stmt))
         result = await self.db.execute(stmt)
         pg_log.debug('finish database')
