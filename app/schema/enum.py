@@ -25,10 +25,10 @@ class OrderTypeEnum(str, Enum):
                 f'降序（{cls.DESC.value})；')
 
 
-class LoggerTypeEnum(str, Enum):
+class LoggerNameEnum(str, Enum):
     RUNTIME = 'runtime'
     LIFESPAN = 'lifespan'
-    POSTGRES = 'postgres'
+    SQL = 'sql'
     REDIS = 'redis'
     MIDDLEWARE = 'middleware'
     REQUEST_START = 'request_start'
@@ -39,7 +39,7 @@ class LoggerTypeEnum(str, Enum):
     @classmethod
     def get_running_types(cls):
         return [cls.RUNTIME.value,
-                cls.POSTGRES.value,
+                cls.SQL.value,
                 cls.REDIS.value,
                 cls.MIDDLEWARE.value,
                 cls.TRANSACTION.value,

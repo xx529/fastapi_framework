@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.apiserver.logger import pg_log
+from app.apiserver.logger import sql_log
 from app.config import pg_connection
 from app.schema.enum import OrderTypeEnum
 
@@ -54,12 +54,12 @@ class BaseTable(Base):
         if getattr(cls, '__abstract__') is True:
             table_name = cls.__tablename__.format(**kwargs)
             if table_name not in table_class_instance:
-                pg_log.debug(f'create multi table class: {table_name}')
+                sql_log.debug(f'create multi table class: {table_name}')
                 table_class_instance[table_name] = type(table_name,
                                                         (cls,),
                                                         {'__tablename__': table_name})
             else:
-                pg_log.debug(f'get multi table class: {table_name}')
+                sql_log.debug(f'get multi table class: {table_name}')
             return table_class_instance[table_name]
         else:
             return cls
@@ -67,10 +67,10 @@ class BaseTable(Base):
     @classmethod
     def create(cls):
         if not cls.is_exists():
-            pg_log.debug(f'create table: {cls.__tablename__}')
+            sql_log.debug(f'create table: {cls.__tablename__}')
             cls.__table__.create(bind=cls._engine)
         else:
-            pg_log.debug(f'exist table: {cls.__tablename__}')
+            sql_log.debug(f'exist table: {cls.__tablename__}')
 
     @classmethod
     def is_exists(cls):
@@ -79,26 +79,25 @@ class BaseTable(Base):
     @classmethod
     def drop(cls):
         if cls.is_exists():
-            pg_log.debug(f'drop table: {cls.__tablename__}')
+            sql_log.debug(f'drop table: {cls.__tablename__}')
             cls.__table__.drop(bind=cls._engine)
         else:
-            pg_log.debug(f'not exist table: {cls.__tablename__}')
+            sql_log.debug(f'not exist table: {cls.__tablename__}')
 
 
 class ExecutorMixin(ABC):
     db: AsyncSession | Session
 
     def exec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
-        pg_log.debug(self.sql_stmt_bind_params(stmt))
+        sql_log.debug(self.sql_stmt_bind_params(stmt))
         result = self.db.execute(stmt)
-        pg_log.debug('finish database')
+        sql_log.debug('finish database')
         return self.format_result(result, output)
 
     async def aexec(self, stmt, output: Literal['raw', 'pandas', 'list'] | BaseModel | None = 'pandas'):
-        async_engine.pool
-        pg_log.debug(self.sql_stmt_bind_params(stmt))
+        sql_log.debug(self.sql_stmt_bind_params(stmt))
         result = await self.db.execute(stmt)
-        pg_log.debug('finish database')
+        sql_log.debug('finish database')
         return self.format_result(result, output)
 
     @staticmethod

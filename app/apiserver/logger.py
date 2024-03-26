@@ -4,7 +4,7 @@ import sys
 from loguru import logger
 
 from app.config import app_conf, log_conf
-from app.schema.enum import LoggerTypeEnum
+from app.schema.enum import LoggerNameEnum
 
 
 class InterceptHandler(logging.Handler):
@@ -16,7 +16,6 @@ class InterceptHandler(logging.Handler):
         logger_opt.log(record.levelname, record.getMessage())
 
 
-# logger_name_list = [name for name in logging.root.manager.loggerDict]
 logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi']
 for logger_name in logger_name_list:
     log_obj = logging.getLogger(logger_name)
@@ -57,12 +56,12 @@ logger.add(sink=sys.stdout,
 
 _logger = logger.bind(project_name=app_conf.name)
 
-runtime_log = _logger.bind(log_name=LoggerTypeEnum.RUNTIME.value)
-request_start_log = _logger.bind(log_name=LoggerTypeEnum.REQUEST_START.value)
-request_finish_log = _logger.bind(log_name=LoggerTypeEnum.REQUEST_FINISH.value)
-exception_log = _logger.bind(log_name=LoggerTypeEnum.EXCEPTION.value)
-lifespan_log = _logger.bind(log_name=LoggerTypeEnum.LIFESPAN.value)
-pg_log = _logger.bind(log_name=LoggerTypeEnum.POSTGRES.value)
-redis_log = _logger.bind(log_name=LoggerTypeEnum.REDIS.value)
-middleware_log = _logger.bind(log_name=LoggerTypeEnum.MIDDLEWARE.value)
-transaction_log = _logger.bind(log_name=LoggerTypeEnum.TRANSACTION.value)
+runtime_log = _logger.bind(log_name=LoggerNameEnum.RUNTIME.value)
+request_start_log = _logger.bind(log_name=LoggerNameEnum.REQUEST_START.value)
+request_finish_log = _logger.bind(log_name=LoggerNameEnum.REQUEST_FINISH.value)
+exception_log = _logger.bind(log_name=LoggerNameEnum.EXCEPTION.value)
+lifespan_log = _logger.bind(log_name=LoggerNameEnum.LIFESPAN.value)
+sql_log = _logger.bind(log_name=LoggerNameEnum.SQL.value)
+redis_log = _logger.bind(log_name=LoggerNameEnum.REDIS.value)
+middleware_log = _logger.bind(log_name=LoggerNameEnum.MIDDLEWARE.value)
+transaction_log = _logger.bind(log_name=LoggerNameEnum.TRANSACTION.value)

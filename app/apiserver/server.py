@@ -61,7 +61,7 @@ class HangServer:
             else:
                 lifespan_log.info(f'exists {d}')
 
-        lifespan_log.info('startup database')
+        lifespan_log.info('auto create database table')
         create_all_pg_tables()
 
         lifespan_log.info('startup redis')

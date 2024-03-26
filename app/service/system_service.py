@@ -8,7 +8,7 @@ import pandas as pd
 from pandas import DataFrame
 
 from app.config import log_conf, project_dir
-from app.schema.enum import LoggerTypeEnum, RequestMethod
+from app.schema.enum import LoggerNameEnum, RequestMethod
 from app.schema.schemas.system import LogDetailParam
 
 
@@ -47,7 +47,7 @@ class LogService:
 
         df_log['message'] = df_log[['log_name', 'message']].apply(
             lambda x: x['message'].replace(' ', '###space###')
-            if x['log_name'] == LoggerTypeEnum.EXCEPTION
+            if x['log_name'] == LoggerNameEnum.EXCEPTION
             else x['message'], axis=1)
 
         df_log.drop(['exception', 'trace_id'], axis=1, inplace=True)
@@ -61,8 +61,8 @@ class LogService:
         df_log = self.load_all_log()
         cols = ['datetime', 'trace_id', 'message', 'exception']
 
-        df_start = df_log.query(f'log_name == "{LoggerTypeEnum.REQUEST_START.value}"')[cols]
-        df_finish = df_log.query(f'log_name == "{LoggerTypeEnum.REQUEST_FINISH.value}"')[cols]
+        df_start = df_log.query(f'log_name == "{LoggerNameEnum.REQUEST_START.value}"')[cols]
+        df_finish = df_log.query(f'log_name == "{LoggerNameEnum.REQUEST_FINISH.value}"')[cols]
         df_request = pd.merge(df_start, df_finish, on='trace_id', suffixes=('_start', '_finish'), how='left')
 
         df_request['duration(s)'] = (df_request['datetime_finish'] - df_request['datetime_start']).dt.total_seconds()
