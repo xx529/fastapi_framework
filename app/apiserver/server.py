@@ -2,6 +2,7 @@ import datetime
 import uuid
 from contextlib import asynccontextmanager
 
+import fastapi
 from fastapi import FastAPI
 from loguru import logger
 
@@ -17,15 +18,10 @@ class HangServer:
 
     @classmethod
     def create_app(cls) -> FastAPI:
-        cls.init_kafka()
         app = FastAPI(version=app_conf.version, lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
         return app
-
-    @staticmethod
-    def init_kafka() -> None:
-        ...
 
     @staticmethod
     def init_middlewares(app: FastAPI) -> None:
@@ -44,13 +40,18 @@ class HangServer:
         async def __lifespan(app: FastAPI):
             with logger.contextualize(trace_id=uuid.uuid4().hex):
                 cls.on_start(app)
+                lifespan_log.info('startup complete')
+
                 yield
-                await cls.on_shutdown(app)
+
+                await cls.on_shutdown()
+                lifespan_log.info('shutdown complete')
 
         return __lifespan
 
     @staticmethod
     def on_start(app: FastAPI) -> None:
+        lifespan_log.info(f'fastapi version {fastapi.__version__}')
         lifespan_log.info(f'startup api server version: {app.version}')
 
         lifespan_log.info('check dirs')
@@ -66,17 +67,16 @@ class HangServer:
 
         lifespan_log.info('startup redis')
         redis_cache.startup()
-        lifespan_log.info('startup complete')
+
+        lifespan_log.info('startup kafka')
+        ...
 
     @staticmethod
-    async def on_shutdown(app: FastAPI) -> None:
+    async def on_shutdown() -> None:
         lifespan_log.info('shutdown redis')
         await redis_cache.shutdown()
 
         lifespan_log.info('close all pg connections')
         close_all_connection()
 
-        lifespan_log.info(f'shutdown api server version: {app.version}')
-        # TODO 关闭异步任务
-
-        lifespan_log.info('shutdown complete')
+        lifespan_log.info('shutdown kafka')

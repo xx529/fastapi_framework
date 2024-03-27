@@ -36,20 +36,6 @@ class LoggerNameEnum(str, Enum):
     TRANSACTION = 'transaction'
     EXCEPTION = 'exception'
 
-    @classmethod
-    def get_running_types(cls):
-        return [cls.RUNTIME.value,
-                cls.SQL.value,
-                cls.REDIS.value,
-                cls.MIDDLEWARE.value,
-                cls.TRANSACTION.value,
-                cls.EXCEPTION.value]
-
-    @classmethod
-    def get_request_types(cls):
-        return [cls.REQUEST_START.value,
-                cls.REQUEST_FINISH.value]
-
 
 class RedisKeyEnum(str, Enum):
     USER_REPO = 'user_repo'
