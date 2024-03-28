@@ -29,6 +29,7 @@ class LoggerNameEnum(str, Enum):
     RUNTIME = 'runtime'
     LIFESPAN = 'lifespan'
     SQL = 'sql'
+    KAFKA = 'kafka'
     REDIS = 'redis'
     MIDDLEWARE = 'middleware'
     REQUEST_START = 'request_start'
