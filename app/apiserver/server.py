@@ -1,4 +1,3 @@
-import datetime
 import uuid
 from contextlib import asynccontextmanager
 
@@ -70,8 +69,8 @@ class HangServer:
         redis_cache.startup()
 
         lifespan_log.info('startup kafka')
-        KafkaProducerClient.startup()
-        KafkaConsumerClient.startup()
+        # KafkaProducerClient.startup()
+        # KafkaConsumerClient.startup()
 
     @staticmethod
     async def on_shutdown() -> None:

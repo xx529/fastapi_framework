@@ -1,4 +1,5 @@
 from enum import Enum
+from app.config import kafka_conf
 
 
 class RequestMethod(str, Enum):
@@ -58,3 +59,7 @@ class HumanGender(str, Enum):
     FEMALE = '女'
     MALE = '男'
 
+
+class KafkaTopic(str, Enum):
+    dev1 = kafka_conf.topics['chat_task'].topic_name
+    dev2 = kafka_conf.topics['log_task'].topic_name

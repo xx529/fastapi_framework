@@ -2,7 +2,7 @@ import os
 import platform
 import sys
 from pathlib import Path
-from typing import Literal
+from typing import Dict, Literal
 
 from dynaconf import Dynaconf
 from pydantic import BaseModel, Field
@@ -112,3 +112,15 @@ class ApiConfig(BaseModel):
 
     def url(self, path):
         return f'{self.protocol}://{self.host}:{self.port}{self.prefix}{path}'
+
+
+class TopicConfig(BaseModel):
+    topic_name: str = Field(description='topic名称')
+    num_consumers: int = Field(description='消费者数量')
+
+
+class KafkaConfig(BaseModel):
+    host: str = Field(description='地址')
+    port: int = Field(description='端口')
+    enable: bool = Field(description='是否启用')
+    topics: Dict[str, TopicConfig] = Field(description='topic配置')

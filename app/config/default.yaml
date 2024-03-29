@@ -10,7 +10,7 @@ pg:
   host: localhost
   port: 5432
   user: postgres
-  schema: myapp
+  db_schema: myapp
   password: "123456"
   database: postgres
 
@@ -29,12 +29,12 @@ kafka:
   port: 9092
   enable: true
   topics:
-    dev_a:
-      name: dev_a
-      num: 1
-    dev_b:
-      name: dev_b
-      num: 1
+    chat_task:
+      topic_name: dev_1_topic
+      num_consumers: 1
+    log_task:
+      topic_name: dev_2_topic
+      num_consumers: 1
 
 external_api:
   myapp:
