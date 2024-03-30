@@ -1,28 +1,57 @@
+import json
+import uuid
+from typing import Dict
+
 from kafka import KafkaConsumer, KafkaProducer
+from loguru import logger
 
 from app.apiserver.logger import kafka_log
+from app.config import kafka_conf
+from app.schema.enum import KafkaTopics
 
 
 class KafkaProducerClient:
     client: KafkaProducer
 
-    def __init__(self, topic):
-        self.topic = topic
+    def __init__(self, topic: KafkaTopics):
+        self.topic = topic.value
 
-    def produce(self, message):
-        self.client.send(self.topic, message)
+    def produce(self, message: dict):
+        json_message = json.dumps(message, indent=4)
+        kafka_log.info(f'produce message to `{self.topic}`: \n{json_message}')
+        self.client.send(self.topic, json_message.encode('utf-8'))
 
     @classmethod
     def startup(cls):
         kafka_log.info('startup kafka producer')
-        cls.client = KafkaProducer(bootstrap_servers='localhost:9092')
+        cls.client = KafkaProducer(bootstrap_servers=kafka_conf.bootstrap_servers)
+
+    @classmethod
+    def shutdown(cls):
+        kafka_log.info('shutdown kafka producer')
+        cls.client.close()
 
 
 class KafkaConsumerClient:
-    client: KafkaConsumer
+    clients: Dict[str, KafkaConsumer] = {}
+
+    def __init__(self, topic: KafkaTopics):
+        self.client = self.clients[topic.value]
+
+    def consume(self):
+        with logger.contextualize(trace_id=uuid.uuid4().hex):
+            ...
 
     @classmethod
     def startup(cls):
-        topics = ['topic1', 'topic2']
-        kafka_log.info(f'startup kafka consumer {topics}')
-        cls.client = KafkaConsumer(*topics, bootstrap_servers='localhost:9092')
+        enable_topics = [t for t in kafka_conf.topics.values() if t.enable is True]
+        for t in enable_topics:
+            kafka_log.info(f'startup kafka consumer `{t.topic_name}`')
+            cls.clients[t.topic_name] = KafkaConsumer(t.topic_name,
+                                                      bootstrap_servers=kafka_conf.bootstrap_servers)
+
+    @classmethod
+    def shutdown(cls):
+        for topic_name, consumer in cls.clients.items():
+            kafka_log.info(f'shutdown kafka consumer `{topic_name}`')
+            consumer.close()

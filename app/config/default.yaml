@@ -25,15 +25,16 @@ redis:
     expire_seconds: 60
 
 kafka:
-  host: localhost
-  port: 9092
+  bootstrap_servers: localhost:9092
   enable: true
   topics:
     chat_task:
-      topic_name: dev_1_topic
+      enable: true
+      topic_name: chat_task_topic
       num_consumers: 1
     log_task:
-      topic_name: dev_2_topic
+      enable: true
+      topic_name: log_task_topic
       num_consumers: 1
 
 external_api:

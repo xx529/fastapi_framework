@@ -18,7 +18,6 @@ class MiddleWare:
 
         trace_id = RequestCtx.create_trace_id()
         with logger.contextualize(trace_id=trace_id):
-            middleware_log.debug(f'set trace id: {trace_id}')
             response = await call_next(request)
             return response
 
@@ -38,7 +37,6 @@ class MiddleWare:
                                detail=e.detail,
                                data='')
             response = JSONResponse(status_code=e.status_code, content=res.model_dump())
-            exception_log.error(traceback.format_exc())
             finish_log_msg = (f'status code: {response.status_code} '
                               f'error code: {e.errcode} '
                               f'error msg: {e.errmsg} '

@@ -60,6 +60,6 @@ class HumanGender(str, Enum):
     MALE = '男'
 
 
-class KafkaTopic(str, Enum):
-    dev1 = kafka_conf.topics['chat_task'].topic_name
-    dev2 = kafka_conf.topics['log_task'].topic_name
+class KafkaTopics(str, Enum):
+    chat_task = kafka_conf.topics['chat_task'].topic_name
+    log_task = kafka_conf.topics['log_task'].topic_name

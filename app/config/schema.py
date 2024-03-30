@@ -115,12 +115,12 @@ class ApiConfig(BaseModel):
 
 
 class TopicConfig(BaseModel):
+    enable: bool = Field(description='是否该 topic 启用')
     topic_name: str = Field(description='topic名称')
     num_consumers: int = Field(description='消费者数量')
 
 
 class KafkaConfig(BaseModel):
-    host: str = Field(description='地址')
-    port: int = Field(description='端口')
+    bootstrap_servers: str = Field(description='kafka地址')
     enable: bool = Field(description='是否启用')
     topics: Dict[str, TopicConfig] = Field(description='topic配置')

@@ -69,8 +69,8 @@ class HangServer:
         redis_cache.startup()
 
         lifespan_log.info('startup kafka')
-        # KafkaProducerClient.startup()
-        # KafkaConsumerClient.startup()
+        KafkaProducerClient.startup()
+        KafkaConsumerClient.startup()
 
     @staticmethod
     async def on_shutdown() -> None:
@@ -81,3 +81,5 @@ class HangServer:
         close_all_connection()
 
         lifespan_log.info('shutdown kafka')
+        KafkaProducerClient.shutdown()
+        KafkaConsumerClient.shutdown()
