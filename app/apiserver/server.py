@@ -9,8 +9,8 @@ from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
 from app.config import app_conf, project_dir
 from app.interface.cache.redis import redis_cache
-from app.interface.repo._base import close_all_connection, create_all_pg_tables
 from app.interface.mq.kafka import KafkaConsumerClient, KafkaProducerClient
+from app.interface.repo._base import close_all_connection, create_all_pg_tables
 from app.router import all_routers
 
 

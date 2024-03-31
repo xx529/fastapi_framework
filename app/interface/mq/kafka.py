@@ -1,4 +1,3 @@
-import json
 import uuid
 from typing import Dict
 
@@ -7,6 +6,7 @@ from loguru import logger
 
 from app.apiserver.logger import kafka_log
 from app.config import kafka_conf
+from app.schema.base import KafkaMessage
 from app.schema.enum import KafkaTopics
 
 
@@ -16,8 +16,8 @@ class KafkaProducerClient:
     def __init__(self, topic: KafkaTopics):
         self.topic = topic.value
 
-    def produce(self, message: dict):
-        json_message = json.dumps(message, indent=4)
+    def produce(self, message: KafkaMessage):
+        json_message = message.model_dump_json(indent=4)
         kafka_log.info(f'produce message to `{self.topic}`: \n{json_message}')
         self.client.send(self.topic, json_message.encode('utf-8'))
 
@@ -48,7 +48,8 @@ class KafkaConsumerClient:
         for t in enable_topics:
             kafka_log.info(f'startup kafka consumer `{t.topic_name}`')
             cls.clients[t.topic_name] = KafkaConsumer(t.topic_name,
-                                                      bootstrap_servers=kafka_conf.bootstrap_servers)
+                                                      bootstrap_servers=kafka_conf.bootstrap_servers,
+                                                      enable_auto_commit=False)
 
     @classmethod
     def shutdown(cls):

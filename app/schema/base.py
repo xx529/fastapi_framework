@@ -71,3 +71,8 @@ class OpenApiExample(BaseModel):
     summary: str = None
     description: str = None
     value: dict
+
+
+class KafkaMessage(BaseModel):
+    trace_id: TraceID = Field(default_factory=RequestCtx.get_trace_id, description='来自的追踪ID')
+    message: Any = Field(description='消息内容')
