@@ -117,6 +117,7 @@ class ApiConfig(BaseModel):
 class TopicConfig(BaseModel):
     enable: bool = Field(description='是否该 topic 启用')
     topic_name: str = Field(description='topic名称')
+    group_id: str | None = Field(None, description='group id')
     num_consumers: int = Field(description='消费者数量')
 
 

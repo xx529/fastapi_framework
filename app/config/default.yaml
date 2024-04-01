@@ -31,10 +31,12 @@ kafka:
     chat_task:
       enable: true
       topic_name: chat_task_topic
+      group_id: chat_task_group
       num_consumers: 1
     log_task:
-      enable: true
+      enable: false
       topic_name: log_task_topic
+      group_id: log_task_group
       num_consumers: 1
 
 external_api:

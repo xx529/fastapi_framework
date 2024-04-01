@@ -9,7 +9,7 @@ from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
 from app.config import app_conf, project_dir
 from app.interface.cache.redis import redis_cache
-from app.interface.mq.kafka import KafkaConsumerClient, KafkaProducerClient
+from app.interface.mq.kafka import KafkaConsumerManager, KafkaProducerManager
 from app.interface.repo._base import close_all_connection, create_all_pg_tables
 from app.router import all_routers
 
@@ -69,8 +69,8 @@ class HangServer:
         redis_cache.startup()
 
         lifespan_log.info('startup kafka')
-        KafkaProducerClient.startup()
-        KafkaConsumerClient.startup()
+        KafkaProducerManager.startup()
+        KafkaConsumerManager.startup()
 
     @staticmethod
     async def on_shutdown() -> None:
@@ -81,5 +81,5 @@ class HangServer:
         close_all_connection()
 
         lifespan_log.info('shutdown kafka')
-        KafkaProducerClient.shutdown()
-        KafkaConsumerClient.shutdown()
+        KafkaProducerManager.shutdown()
+        KafkaConsumerManager.shutdown()

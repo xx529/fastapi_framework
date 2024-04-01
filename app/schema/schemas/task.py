@@ -3,7 +3,7 @@ from typing import List
 from fastapi import Body, Form, UploadFile
 from pydantic import BaseModel, Field
 
-from app.schema.base import JsonResponse, TaskID, UserID
+from app.schema.base import JsonResponse, TaskID, UserID, KafkaMessage
 from app.schema.enum import TaskCategory
 
 
@@ -25,6 +25,15 @@ class TaskInfo(BaseModel):
     task_id: TaskID = Field(title='任务ID', description='任务ID', example=1)
     name: str = Field(title='任务名称', description='任务名称', examples=['任务1'], min_length=1)
     category: TaskCategory
+
+
+class TaskExecuteInfo(BaseModel):
+    name: str
+    age: str
+
+
+class TaskExecuteDataMessage(KafkaMessage):
+    message: TaskExecuteInfo
 
 
 class Test(BaseModel):
