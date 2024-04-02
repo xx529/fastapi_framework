@@ -1,10 +1,10 @@
+from app.apiserver.logger import runtime_log
 from app.interface import AsyncDataBaseTransaction
-from app.interface import KafkaProducerManager, KafkaConsumerManager
+from app.interface import KafkaConsumerManager, KafkaProducerManager
 from app.interface.repo.task_repo import TaskInfoRepo, TaskRecordRepo
 from app.schema.base import TaskID
-from app.schema.enum import KafkaTopics
+from app.schema.enum import KafkaTopic
 from app.schema.schemas.task import TaskCreateRequestBody, TaskDeleteRequestBody, TaskExecuteDataMessage
-from app.apiserver.logger import runtime_log
 
 
 class TaskService:
@@ -29,12 +29,14 @@ class TaskService:
 
     @staticmethod
     async def execute_task() -> TaskExecuteDataMessage:
-        message = TaskExecuteDataMessage(message={'name': 'test', 'age': '18'})
-        KafkaProducerManager(topic=KafkaTopics.chat_task).produce(message)
+        message = TaskExecuteDataMessage(message={'name': 'test', 'age': '18'},
+                                         topic=KafkaTopic.chat_task)
+        KafkaProducerManager().produce(message)
         return message
 
     @staticmethod
-    @KafkaConsumerManager.topic_consumer(topic=KafkaTopics.chat_task)
+    @KafkaConsumerManager.consumer_func(topic=KafkaTopic.chat_task)
     def consume_task(message: TaskExecuteDataMessage):
-        runtime_log.info(message.model_dump_json(indent=4))
+        runtime_log.info('inside function')
+        runtime_log.info(f'this is info')
         return message

@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 from app.apiserver.context import RequestCtx
-from app.schema.enum import OrderTypeEnum
+from app.schema.enum import KafkaTopic, OrderTypeEnum
 
 UserID = NewType('UserID', int)
 TaskID = NewType('TaskID', int)
@@ -64,7 +64,8 @@ class PageQueryParams:
     limit: Limit = Query(default=10, description='每页数量', example=10, alias='limit')
     search: Search = Query(default=None, description='搜索关键字', example='张三', alias='search')
     order_by: OrderBy = Query(default='id', description='排序字段', example='id', alias='order_by')
-    order_type: OrderTypeEnum = Query(default='asc', title='排序方式', description=OrderTypeEnum.note(), example='asc', alias='order_type')
+    order_type: OrderTypeEnum = Query(default='asc', title='排序方式', description=OrderTypeEnum.note(), example='asc',
+                                      alias='order_type')
 
 
 class OpenApiExample(BaseModel):
@@ -74,5 +75,6 @@ class OpenApiExample(BaseModel):
 
 
 class KafkaMessage(BaseModel):
-    trace_id: TraceID = Field(default_factory=RequestCtx.get_trace_id, description='来自的追踪ID')
+    trace_id: str = Field(default_factory=RequestCtx.get_trace_id, description='来自的追踪ID')
+    topic: KafkaTopic = Field(description='消息主题')
     message: Any = Field(description='消息内容')
