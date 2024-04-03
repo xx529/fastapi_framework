@@ -35,7 +35,7 @@ class TaskService:
         return message
 
     @staticmethod
-    @KafkaConsumerManager.consumer_func(topic=KafkaTopic.chat_task)
+    @KafkaConsumerManager.register_consumer_func(topic=KafkaTopic.chat_task)
     def consume_task(message: TaskExecuteDataMessage):
         runtime_log.info('inside function')
         runtime_log.info(f'this is info')

@@ -32,7 +32,7 @@ kafka:
       enable: true
       topic_name: chat_task_topic
       group_id: chat_task_group
-      num_consumers: 1
+      num_consumers: 2
     log_task:
       enable: false
       topic_name: log_task_topic
