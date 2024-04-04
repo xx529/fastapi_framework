@@ -96,19 +96,26 @@ class ConsumerWorker(Thread):
         self.worker_name = worker_name
         self.worker_func = worker_func
         self.pydantic_model = pydantic_model
-        self.running = True
         self.topic_name = topic_name
         self.bootstrap_servers = bootstrap_servers
         self.group_id = group_id
-        self.consumer = None
+        self.running = True
 
     def run(self):
-        self.create_client()
+
+        # 创建kafka消费者
+        consumer = KafkaConsumer(self.topic_name,
+                                 bootstrap_servers=self.bootstrap_servers,
+                                 auto_offset_reset='earliest',
+                                 group_id=self.group_id,
+                                 enable_auto_commit=False)
 
         while True:
-            records = self.consumer.poll(timeout_ms=1000)
+            records = consumer.poll(timeout_ms=1000)
+
             for _, messages in records.items():
                 for msg in messages:
+
                     # 还原函数的参数
                     message: KafkaMessage = self.pydantic_model(**json.loads(msg.value.decode('utf-8')))
 
@@ -123,18 +130,12 @@ class ConsumerWorker(Thread):
                         self.consume_message(message)
 
                         # 提交偏移量
-                        self.consumer.commit()
+                        consumer.commit()
 
+            # 如果要关闭线程，则关闭消费者，并跳出循环
             if self.running is False:
-                self.consumer.close()
+                consumer.close()
                 break
-
-    def create_client(self):
-        self.consumer = KafkaConsumer(self.topic_name,
-                                      bootstrap_servers=self.bootstrap_servers,
-                                      auto_offset_reset='earliest',
-                                      group_id=self.group_id,
-                                      enable_auto_commit=False)
 
     def consume_message(self, message: KafkaMessage):
         try:
