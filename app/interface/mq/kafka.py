@@ -39,11 +39,11 @@ class KafkaConsumerManager:
 
     @classmethod
     def start_consumer_worker(cls, topic_name, bootstrap_servers: str, group_id: str, worker_number: int):
-        func, pydantic_model = cls.consume_func[topic_name]
+        worker_func, pydantic_model = cls.consume_func[topic_name]
         worker_name = f'{topic_name}_{worker_number}'
         worker = ConsumerWorker(worker_name=worker_name,
                                 pydantic_model=pydantic_model,
-                                func=func,
+                                worker_func=worker_func,
                                 topic_name=topic_name,
                                 bootstrap_servers=bootstrap_servers,
                                 group_id=group_id)
@@ -69,7 +69,10 @@ class KafkaConsumerManager:
 
             kafka_log.info(f'startup kafka consumer for topic `{t.topic_name}`')
             for num in range(1, t.num_consumers + 1):
-                cls.start_consumer_worker(t.topic_name, kafka_conf.bootstrap_servers, t.group_id, num)
+                cls.start_consumer_worker(topic_name=t.topic_name,
+                                          bootstrap_servers=kafka_conf.bootstrap_servers,
+                                          group_id=t.group_id,
+                                          worker_number=num)
 
     @classmethod
     def shutdown(cls):
@@ -86,12 +89,12 @@ class ConsumerWorker(Thread):
                  topic_name: str,
                  bootstrap_servers: str,
                  group_id: str,
-                 func: Callable,
+                 worker_func: Callable,
                  pydantic_model):
 
         Thread.__init__(self)
         self.worker_name = worker_name
-        self.func = func
+        self.worker_func = worker_func
         self.pydantic_model = pydantic_model
         self.running = True
         self.topic_name = topic_name
@@ -135,7 +138,7 @@ class ConsumerWorker(Thread):
 
     def consume_message(self, message: KafkaMessage):
         try:
-            self.func(message)
+            self.worker_func(message)
             kafka_log.info('finish consume message')
         except Exception as e:
             kafka_log.error(str(e))
