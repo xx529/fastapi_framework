@@ -32,8 +32,16 @@ class TaskExecuteInfo(BaseModel):
     age: str
 
 
+class TaskLogExecuteInfo(BaseModel):
+    num: int
+
+
 class TaskExecuteDataMessage(KafkaMessage):
     message: TaskExecuteInfo
+
+
+class TaskLogExecuteDataMessage(KafkaMessage):
+    message: TaskLogExecuteInfo
 
 
 class Test(BaseModel):
