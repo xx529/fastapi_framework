@@ -24,3 +24,16 @@ class BaseCache(ABC):
 
 class DiskCache:
     ...
+
+
+class MemCache:
+    ...
+
+    def get(self):
+        ...
+
+    def set(self):
+        ...
+
+    def clear(self):
+        ...
