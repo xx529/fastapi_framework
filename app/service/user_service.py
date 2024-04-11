@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from app.apiserver.exception import AppException
+from app.apiserver.exception import AppExceptionEnum
 from app.interface import UserInfoRepo, AsyncDataBaseTransaction
 from app.schema.schemas.user import UserInfo
 from app.schema.base import UserID
@@ -30,7 +30,7 @@ class UserService:
             data = await UserInfoRepo(db).detail(user_id=user_id)
 
         if len(data) == 0:
-            raise AppException.UserNotExist(detail=f'user_id {user_id} not exist')
+            raise AppExceptionEnum.UserNotExist(detail=f'user_id {user_id} not exist')
         else:
             return UserInfo(**data)
 

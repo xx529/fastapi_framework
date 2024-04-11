@@ -9,7 +9,7 @@ class ErrorMsg(BaseModel):
     status_code: int = 500
 
 
-class AppExceptionClass(Exception):
+class AppError(Exception):
 
     def __init__(self, detail: str, errmsg: str, errcode: int, status_code: int):
         self.detail = detail
@@ -18,7 +18,7 @@ class AppExceptionClass(Exception):
         self.status_code = status_code
 
 
-class AppException(Enum):
+class AppExceptionEnum(Enum):
     Unknown = ErrorMsg(errcode=9999, errmsg='未知错误')
 
     SystemError = ErrorMsg(errcode=1000, errmsg='系统错误')
@@ -35,8 +35,8 @@ class AppException(Enum):
     Demo = ErrorMsg(errcode=3000, errmsg='demo问题')
     Random = ErrorMsg(errcode=3001, errmsg='随机报错')
 
-    def __call__(self, detail='') -> AppExceptionClass:
-        return AppExceptionClass(detail=detail,
-                                 errmsg=self.value.errmsg,
-                                 errcode=self.value.errcode,
-                                 status_code=self.value.status_code)
+    def __call__(self, detail='') -> AppError:
+        return AppError(detail=detail,
+                        errmsg=self.value.errmsg,
+                        errcode=self.value.errcode,
+                        status_code=self.value.status_code)

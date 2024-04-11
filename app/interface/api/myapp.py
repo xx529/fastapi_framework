@@ -1,7 +1,7 @@
 import httpx
 
 from app.apiserver import slog
-from app.apiserver.exception import AppException
+from app.apiserver.exception import AppExceptionEnum
 from app.config import api_conf
 
 
@@ -15,6 +15,6 @@ class UserInfoQuery:
                                         params={'user_id': user_id})
             if response.status_code == 500:
                 slog.error(response.text)
-                raise AppException.RemoteCallError()
+                raise AppExceptionEnum.RemoteCallError()
             else:
                 return response
