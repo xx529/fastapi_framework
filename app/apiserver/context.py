@@ -29,12 +29,12 @@ class LoggerStep:
             LoggerStep.add()
             return step_num_var.get()
         except Exception:
-            return None
+            return 0
 
     @staticmethod
     def add():
-        num = step_num_var.get() + 1
-        step_num_var.set(num)
+        num = step_num_var.get()
+        step_num_var.set(num + 1)
 
     @staticmethod
     def reset_step_num():

@@ -7,6 +7,7 @@ from typing import Any, Callable, Dict, Tuple
 from kafka import KafkaConsumer, KafkaProducer
 from loguru import logger
 
+from app.apiserver.context import LoggerStep
 from app.apiserver.logger import kafka_log
 from app.config import kafka_conf
 from app.schema.base import KafkaMessage
@@ -121,6 +122,7 @@ class ConsumerWorker(Thread):
 
                     # 以 trace_id 为跟踪上下文
                     with logger.contextualize(trace_id=message.trace_id):
+                        LoggerStep.reset_step_num()
                         kafka_log.info(f'consume message '
                                        f'partition: {msg.partition} '
                                        f'offset: {msg.offset} '

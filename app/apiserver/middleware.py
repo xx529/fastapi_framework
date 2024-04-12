@@ -6,7 +6,7 @@ from loguru import logger
 from starlette.requests import Request
 
 from app.schema.base import BaseResponse
-from .context import RequestCtx
+from .context import LoggerStep, RequestCtx
 from .exception import AppExceptionEnum, AppError
 from .logger import exception_log, middleware_log, request_finish_log, request_start_log
 
@@ -17,6 +17,7 @@ class MiddleWare:
     async def set_logger_trace_id(request: Request, call_next):
 
         trace_id = RequestCtx.create_trace_id()
+        LoggerStep.reset_step_num()
         with logger.contextualize(trace_id=trace_id):
             response = await call_next(request)
             return response
