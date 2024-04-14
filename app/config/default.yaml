@@ -13,6 +13,7 @@ pg:
   db_schema: myapp
   password: "123456"
   database: postgres
+  debug: true
 
 redis:
     host: localhost

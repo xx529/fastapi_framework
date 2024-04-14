@@ -60,6 +60,7 @@ class GeneralDataBaseConnection(BaseModel):
     password: str = Field(description='密码')
     database: str = Field(description='数据库')
     db_schema: str = Field(description='schema')
+    debug: bool = Field(description='是否开启debug日志')
     jdbcurl: str = Field(None, description='jdbcurl')
     async_jdbcurl: str = Field(None, description='异步 jdbcurl')
 

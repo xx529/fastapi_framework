@@ -17,11 +17,25 @@ from app.schema.enum import OrderTypeEnum
 
 Base = declarative_base()
 
-engine = create_engine(url=pg_connection.jdbcurl,  pool_pre_ping=True, pool_recycle=1200, pool_size=10)
-SessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=engine)
+engine = create_engine(url=pg_connection.jdbcurl,
+                       pool_pre_ping=True,
+                       pool_recycle=1200,
+                       pool_size=10,
+                       echo=pg_connection.debug)
 
-async_engine = create_async_engine(url=pg_connection.async_jdbcurl, future=True, pool_size=10)
-AsyncSessionLocal = sessionmaker(autoflush=True, autocommit=False, bind=async_engine, class_=AsyncSession)
+SessionLocal = sessionmaker(autoflush=True,
+                            autocommit=False,
+                            bind=engine)
+
+async_engine = create_async_engine(url=pg_connection.async_jdbcurl,
+                                   future=True,
+                                   pool_size=10,
+                                   echo=pg_connection.debug)
+
+AsyncSessionLocal = sessionmaker(autoflush=True,
+                                 autocommit=False,
+                                 bind=async_engine,
+                                 class_=AsyncSession)
 
 table_class_instance: Dict[str, Base] = {}
 

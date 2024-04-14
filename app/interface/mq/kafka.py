@@ -121,7 +121,7 @@ class ConsumerWorker(Thread):
                     message: KafkaMessage = self.pydantic_model(**json.loads(msg.value.decode('utf-8')))
 
                     # 以 trace_id 为跟踪上下文
-                    with logger.contextualize(trace_id=message.trace_id):
+                    with logger.contextualize(trace_id=f'{message.trace_id}-{self.worker_name}'):
                         LoggerStep.reset_step_num()
                         kafka_log.info(f'consume message '
                                        f'partition: {msg.partition} '

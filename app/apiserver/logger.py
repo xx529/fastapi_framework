@@ -3,7 +3,7 @@ import sys
 
 from loguru import logger
 
-from app.apiserver.context import LoggerStep
+from app.apiserver.context import LoggerStep, RequestCtx
 from app.config import app_conf, log_conf
 from app.schema.enum import LoggerNameEnum
 
@@ -13,12 +13,12 @@ class InterceptHandler(logging.Handler):
         logger_opt = logger.opt(depth=6, exception=record.exc_info)
         logger_opt = logger_opt.bind(log_name=record.name,
                                      project_name=app_conf.name,
-                                     trace_id='',
-                                     count=0)
+                                     trace_id=RequestCtx.get_trace_id(),
+                                     count=LoggerStep.get_step_num())
         logger_opt.log(record.levelname, record.getMessage())
 
 
-logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi']
+logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi', 'sqlalchemy', 'redis']
 for logger_name in logger_name_list:
     log_obj = logging.getLogger(logger_name)
     log_obj.setLevel(logging.DEBUG)
