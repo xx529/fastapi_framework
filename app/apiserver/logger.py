@@ -3,7 +3,7 @@ import sys
 
 from loguru import logger
 
-from app.apiserver.context import LoggerStep, RequestCtx
+from app.apiserver.context import RequestCtx
 from app.config import app_conf, log_conf
 from app.schema.enum import LoggerNameEnum
 
@@ -11,10 +11,10 @@ from app.schema.enum import LoggerNameEnum
 class InterceptHandler(logging.Handler):
     def emit(self, record):
         logger_opt = logger.opt(depth=6, exception=record.exc_info)
-        logger_opt = logger_opt.bind(log_name=record.name,
+        logger_opt = logger_opt.bind(name=record.name,
+                                     custom_name=record.name,
                                      project_name=app_conf.name,
-                                     trace_id=RequestCtx.get_trace_id(),
-                                     count=LoggerStep.get_step_num())
+                                     trace_id=RequestCtx.get_trace_id())
         logger_opt.log(record.levelname, record.getMessage())
 
 
@@ -26,27 +26,22 @@ for logger_name in logger_name_list:
     log_obj.addHandler(InterceptHandler())
 
 
-def add_count_patch(record):
-    record['extra'].update(count=LoggerStep.get_step_num())
-    return record
-
-
 FULL_FORMAT = ('<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> '
-               '<red>{extra[project_name]}</red> '
+               f'<red>{app_conf.name}</red> '
                '[PID:{process}] '
                '[TID:{thread}] '
                '<level>[{level}]</level> '
                '[{file.path}:{function}:{line}] '
                '- '
                '<yellow>[RID:{extra[trace_id]}]</yellow> '
-               '<magenta>[{extra[log_name]}]</magenta> '
+               '<magenta>[{name}]</magenta> '
                '<WHITE>{message}</WHITE>')
 
 SHORT_FORMAT = ('<green>[{time:HH:mm:ss.SSS}]</green> '
                 '<level>[{level}]</level> '
-                '<yellow>[TraceID:{extra[trace_id]}]</yellow> '
-                '<magenta>[{extra[log_name]}]</magenta> '
-                '<blue>[{extra[count]}]</blue> '
+                '<yellow>[TraceID:{extra[trace_id]}]</yel'
+                'low> '
+                '<magenta>[{name}]</magenta> '
                 '{message}')
 
 logger.remove()
@@ -63,15 +58,15 @@ logger.add(sink=sys.stdout,
            level=log_conf.level,
            enqueue=True)
 
-_logger = logger.patch(add_count_patch).bind(project_name=app_conf.name).bind(count=0)
+_logger = logger
 
-runtime_log = _logger.bind(log_name=LoggerNameEnum.RUNTIME.value)
-request_start_log = _logger.bind(log_name=LoggerNameEnum.REQUEST_START.value)
-request_finish_log = _logger.bind(log_name=LoggerNameEnum.REQUEST_FINISH.value)
-exception_log = _logger.bind(log_name=LoggerNameEnum.EXCEPTION.value)
-lifespan_log = _logger.bind(log_name=LoggerNameEnum.LIFESPAN.value)
-sql_log = _logger.bind(log_name=LoggerNameEnum.SQL.value)
-redis_log = _logger.bind(log_name=LoggerNameEnum.REDIS.value)
-middleware_log = _logger.bind(log_name=LoggerNameEnum.MIDDLEWARE.value)
-transaction_log = _logger.bind(log_name=LoggerNameEnum.TRANSACTION.value)
-kafka_log = _logger.bind(log_name=LoggerNameEnum.KAFKA.value)
+runtime_log = _logger.bind(custom_name=LoggerNameEnum.RUNTIME.value)
+request_start_log = _logger.bind(custom_name=LoggerNameEnum.REQUEST_START.value)
+request_finish_log = _logger.bind(custom_name=LoggerNameEnum.REQUEST_FINISH.value)
+exception_log = _logger.bind(custom_name=LoggerNameEnum.EXCEPTION.value)
+lifespan_log = _logger.bind(custom_name=LoggerNameEnum.LIFESPAN.value)
+sql_log = _logger.bind(custom_name=LoggerNameEnum.SQL.value)
+redis_log = _logger.bind(custom_name=LoggerNameEnum.REDIS.value)
+middleware_log = _logger.bind(custom_name=LoggerNameEnum.MIDDLEWARE.value)
+transaction_log = _logger.bind(custom_name=LoggerNameEnum.TRANSACTION.value)
+kafka_log = _logger.bind(custom_name=LoggerNameEnum.KAFKA.value)

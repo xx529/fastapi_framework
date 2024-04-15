@@ -1,6 +1,5 @@
 import httpx
 
-from app.apiserver import slog
 from app.apiserver.exception import AppExceptionEnum
 from app.config import api_conf
 

@@ -7,7 +7,6 @@ from typing import Any, Callable, Dict, Tuple
 from kafka import KafkaConsumer, KafkaProducer
 from loguru import logger
 
-from app.apiserver.context import LoggerStep
 from app.apiserver.logger import kafka_log
 from app.config import kafka_conf
 from app.schema.base import KafkaMessage
@@ -116,7 +115,6 @@ class ConsumerWorker(Thread):
 
             for _, messages in records.items():
                 for msg in messages:
-
                     # 还原函数的参数
                     message: KafkaMessage = self.pydantic_model(**json.loads(msg.value.decode('utf-8')))
 

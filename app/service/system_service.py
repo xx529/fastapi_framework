@@ -24,7 +24,7 @@ class LogService:
         df_log['PID'] = df_raw['process'].apply(lambda x: f"{x['name']}({x['id']})")
         df_log['TID'] = df_raw['thread'].apply(lambda x: f"{x['name']}({x['id']})")
         df_log['level'] = df_raw['level'].apply(lambda x: x['name'])
-        df_log['log_name'] = df_raw['extra'].apply(lambda x: x['log_name'])
+        df_log['custom_name'] = df_raw['extra'].apply(lambda x: x.get('custom_name', 'loguru'))
         df_log['file'] = df_raw['file'].apply(lambda x: x['path'])
         df_log['file'] = df_log['file'].apply(lambda x: x.removeprefix(str(project_dir.root)))
         df_log['line'] = df_raw['line']
@@ -45,9 +45,9 @@ class LogService:
         total_duration = df_log['duration'].sum()
         df_log['proportion'] = df_log['duration'].apply(lambda x: f'{round(x / total_duration, 2) * 100}%')
 
-        df_log['message'] = df_log[['log_name', 'message']].apply(
+        df_log['message'] = df_log[['custom_name', 'message']].apply(
             lambda x: x['message'].replace(' ', '###space###')
-            if x['log_name'] in [LoggerNameEnum.EXCEPTION, LoggerNameEnum.MIDDLEWARE, LoggerNameEnum.KAFKA]
+            if x['custom_name'] in [LoggerNameEnum.EXCEPTION, LoggerNameEnum.MIDDLEWARE, LoggerNameEnum.KAFKA]
             else x['message'], axis=1
         )
 
@@ -60,10 +60,11 @@ class LogService:
             self.load_all_log.cache_clear()
 
         df_log = self.load_all_log()
+
         cols = ['datetime', 'trace_id', 'message', 'exception']
 
-        df_start = df_log.query(f'log_name == "{LoggerNameEnum.REQUEST_START.value}"')[cols]
-        df_finish = df_log.query(f'log_name == "{LoggerNameEnum.REQUEST_FINISH.value}"')[cols]
+        df_start = df_log.query(f'custom_name == "{LoggerNameEnum.REQUEST_START.value}"')[cols]
+        df_finish = df_log.query(f'custom_name == "{LoggerNameEnum.REQUEST_FINISH.value}"')[cols]
         df_request = pd.merge(df_start, df_finish, on='trace_id', suffixes=('_start', '_finish'), how='left')
 
         df_request['duration(s)'] = (df_request['datetime_finish'] - df_request['datetime_start']).dt.total_seconds()
