@@ -56,6 +56,7 @@ class HtmlResponse(HTMLResponse):
 class CommonHeaders:
     token: Token = Header(description='用户Token', example='442221ef-38b2-489c-bc46-68d62825ec56', alias='Token')
     company_id: CompanyID = Header(description='公司ID', example='10', alias='CompanyId')
+    trace_id: TraceID = Header(default=None, description='追踪 ID', example='442221ef-38b2-489c-bc46-68d62825ec56', alias='TraceId')
 
 
 @dataclass

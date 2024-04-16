@@ -1,5 +1,6 @@
 import json
 import traceback
+import uuid
 
 from fastapi.responses import JSONResponse
 from loguru import logger
@@ -16,7 +17,12 @@ class MiddleWare:
     @staticmethod
     async def set_logger_trace_id(request: Request, call_next):
 
-        trace_id = RequestCtx.create_trace_id()
+        if (_trace_id := request.headers.get('TraceId')) is not None:
+            trace_id = uuid.UUID(_trace_id).hex
+            RequestCtx.set_trace_id(trace_id)
+        else:
+            trace_id = RequestCtx.create_trace_id()
+
         with logger.contextualize(trace_id=trace_id):
             response = await call_next(request)
             return response

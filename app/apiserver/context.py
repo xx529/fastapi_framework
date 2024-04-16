@@ -19,3 +19,7 @@ class RequestCtx:
         trace_id = uuid.uuid4().hex
         trace_id_var.set(trace_id)
         return trace_id
+
+    @staticmethod
+    def set_trace_id(trace_id) -> None:
+        trace_id_var.set(trace_id)

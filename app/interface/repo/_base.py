@@ -10,6 +10,8 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
+import sqlparse
+
 
 from app.apiserver.logger import sql_log
 from app.config import pg_connection
@@ -130,7 +132,8 @@ class ExecutorMixin(ABC):
 
     @staticmethod
     def sql_stmt_bind_params(stmt):
-        return str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', '')
+        sql_str = str(stmt.compile(compile_kwargs={'literal_binds': True})).replace('\n', '')
+        return '\n' + sqlparse.format(sql_str, reindent=True, keyword_case='upper')
 
 
 class SqlExprMixin(ABC):

@@ -47,7 +47,10 @@ class LogService:
 
         df_log['message'] = df_log[['custom_name', 'message']].apply(
             lambda x: x['message'].replace(' ', '###space###')
-            if x['custom_name'] in [LoggerNameEnum.EXCEPTION, LoggerNameEnum.MIDDLEWARE, LoggerNameEnum.KAFKA]
+            if x['custom_name'] in [LoggerNameEnum.EXCEPTION,
+                                    LoggerNameEnum.MIDDLEWARE,
+                                    LoggerNameEnum.KAFKA,
+                                    LoggerNameEnum.SQL]
             else x['message'], axis=1
         )
 
