@@ -2,7 +2,6 @@ import contextvars
 import uuid
 
 trace_id_var = contextvars.ContextVar('trace_id')
-step_num_var = contextvars.ContextVar('step_num')
 
 
 class RequestCtx:

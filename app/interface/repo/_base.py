@@ -2,16 +2,15 @@ from abc import ABC
 from typing import Dict, List, Literal
 
 import pandas as pd
+import sqlparse
 from pydantic import BaseModel
 from sqlalchemy import (
     asc, BIGINT, Boolean, Column, create_engine, DateTime, delete, desc, func, inspect, select,
-    String, text
+    String, text,
 )
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
-import sqlparse
-
 
 from app.apiserver.logger import sql_log
 from app.config import pg_connection
@@ -22,8 +21,7 @@ Base = declarative_base()
 engine = create_engine(url=pg_connection.jdbcurl,
                        pool_pre_ping=True,
                        pool_recycle=1200,
-                       pool_size=10,
-                       echo=pg_connection.debug)
+                       pool_size=10)
 
 SessionLocal = sessionmaker(autoflush=True,
                             autocommit=False,
@@ -31,8 +29,7 @@ SessionLocal = sessionmaker(autoflush=True,
 
 async_engine = create_async_engine(url=pg_connection.async_jdbcurl,
                                    future=True,
-                                   pool_size=10,
-                                   echo=pg_connection.debug)
+                                   pool_size=10)
 
 AsyncSessionLocal = sessionmaker(autoflush=True,
                                  autocommit=False,

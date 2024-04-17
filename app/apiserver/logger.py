@@ -4,7 +4,7 @@ import sys
 from loguru import logger
 
 from app.apiserver.context import RequestCtx
-from app.config import app_conf, log_conf
+from app.config import app_conf, log_conf, pg_connection
 from app.schema.enum import LoggerNameEnum
 
 
@@ -18,7 +18,11 @@ class InterceptHandler(logging.Handler):
         logger_opt.log(record.levelname, record.getMessage())
 
 
-logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi', 'sqlalchemy', 'redis']
+logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi',  'redis']
+
+if pg_connection.debug is True:
+    logger_name_list.append('sqlalchemy')
+
 for logger_name in logger_name_list:
     log_obj = logging.getLogger(logger_name)
     log_obj.setLevel(logging.DEBUG)
