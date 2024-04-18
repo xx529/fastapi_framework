@@ -43,7 +43,7 @@ kafka:
 external_api:
   myapp:
     host: localhost
-    port: 8003
+    port: 8000
     prefix: ''
     protocol: http
 

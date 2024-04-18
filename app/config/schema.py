@@ -111,8 +111,9 @@ class ApiConfig(BaseModel):
     port: int = Field(description='端口')
     prefix: str = Field(description='url前缀')
 
-    def url(self, path):
-        return f'{self.protocol}://{self.host}:{self.port}{self.prefix}{path}'
+    @property
+    def url(self):
+        return f'{self.protocol}://{self.host}:{self.port}{self.prefix}'
 
 
 class TopicConfig(BaseModel):

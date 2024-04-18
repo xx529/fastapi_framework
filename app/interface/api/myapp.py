@@ -5,20 +5,26 @@ from app.apiserver.exception import AppExceptionEnum
 from app.config import myapp_service_api_conf
 
 
-class ExternalApi:
-    ...
+class ExternalServiceAPI:
 
+    BASE_URL: str
 
-class UserInfoQuery(ExternalApi):
+    def request(self):
+        ...
 
     @classmethod
-    async def query_user(cls, user_id: int):
-
+    async def async_request(cls, method: str, path: str, headers: dict = None, body: dict = None):
+        logger.info(f'request {method.upper()} {cls.BASE_URL}{path}')
         async with httpx.AsyncClient() as client:
-            response = await client.get(url=myapp_service_api_conf.url('/user'),
-                                        params={'user_id': user_id})
-            if response.status_code == 500:
-                logger.error(response.text)
-                raise AppExceptionEnum.RemoteCallError()
-            else:
-                return response
+            response = await client.request(method=method, url=f'{cls.BASE_URL}{path}', headers=headers,  data=body)
+            return response
+
+
+class UserInfoQuery(ExternalServiceAPI):
+
+    BASE_URL = myapp_service_api_conf.url
+
+    @classmethod
+    async def query_user(cls):
+        response = await cls.async_request(method='GET', path='/health/heartbeat')
+        return response
