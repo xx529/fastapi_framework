@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from app.interface.api.myapp import TestAPI
 from app.schema.base import HtmlResponse, OkResponse
 from app.schema.schemas.system import LogDetailParam, LogRequestParam
 from app.service.system_service import LogService
@@ -44,3 +45,14 @@ async def error_demo():
             summary='当前运行配置信息')
 async def config():
     return '1'
+
+
+@router.get(path='/test')
+async def test():
+    await TestAPI.test_api()
+    return OkResponse()
+
+
+@router.get(path='/test_get')
+async def test_get():
+    return OkResponse()
