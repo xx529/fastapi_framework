@@ -7,11 +7,21 @@ from app.config import myapp_service_api_conf
 
 
 class ExternalServiceAPI:
-
     BASE_URL: str
 
-    def request(self):
-        ...
+    @classmethod
+    def request(cls, method: str, path: str, headers: dict = None, body: dict = None):
+        endpoint = f'{method.upper()} {cls.BASE_URL}{path}'
+        logger.info(f'request {endpoint} \n'
+                    f'headers:\n'
+                    f'{json.dumps(headers, indent=4) if headers else ""}'
+                    f'\n'
+                    f'body:\n'
+                    f'{json.dumps(body, indent=4) if body else ""}')
+        with httpx.Client() as client:
+            response = client.request(method=method, url=f'{cls.BASE_URL}{path}', headers=headers, data=body)
+            logger.info(f'response {endpoint} {response.status_code}')
+            return response
 
     @classmethod
     async def async_request(cls, method: str, path: str, headers: dict = None, body: dict = None):
@@ -23,13 +33,12 @@ class ExternalServiceAPI:
                     f'body:\n'
                     f'{json.dumps(body, indent=4) if body else ""}')
         async with httpx.AsyncClient() as client:
-            response = await client.request(method=method, url=f'{cls.BASE_URL}{path}', headers=headers,  data=body)
+            response = await client.request(method=method, url=f'{cls.BASE_URL}{path}', headers=headers, data=body)
             logger.info(f'response {endpoint} {response.status_code}')
             return response
 
 
 class TestAPI(ExternalServiceAPI):
-
     BASE_URL = myapp_service_api_conf.url
 
     @classmethod
