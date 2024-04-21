@@ -38,7 +38,7 @@ class ExternalServiceAPI:
             return response
 
 
-class TestAPI(ExternalServiceAPI):
+class SelfServiceAPI(ExternalServiceAPI):
     BASE_URL = myapp_service_api_conf.url
 
     @classmethod

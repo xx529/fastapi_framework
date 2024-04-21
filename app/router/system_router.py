@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.interface.api.myapp import TestAPI
+from app.interface.api.myapp import SelfServiceAPI
 from app.schema.base import HtmlResponse, OkResponse
 from app.schema.schemas.system import LogDetailParam, LogRequestParam
 from app.service.system_service import LogService
@@ -49,7 +49,7 @@ async def config():
 
 @router.get(path='/test')
 async def test():
-    await TestAPI.test_api()
+    await SelfServiceAPI.test_api()
     return OkResponse()
 
 
