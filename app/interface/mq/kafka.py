@@ -14,7 +14,7 @@ from app.schema.enum import KafkaTopic
 
 
 class KafkaProducerManager:
-    client: KafkaProducer
+    client: KafkaProducer = None
 
     @classmethod
     def produce(cls, message: KafkaMessage):
@@ -29,8 +29,9 @@ class KafkaProducerManager:
 
     @classmethod
     def shutdown(cls):
-        kafka_log.info('shutdown kafka producer')
-        cls.client.close()
+        if cls.client is not None:
+            kafka_log.info('shutdown kafka producer')
+            cls.client.close()
 
 
 class KafkaConsumerManager:

@@ -29,7 +29,7 @@ class MiddleWare:
 
     @staticmethod
     async def log_request(request: Request, call_next):
-        request_start_log.info(f'{request.method} {request.url}')
+        request_start_log.info(f'path:` {request.method} {request.url.path}')
         middleware_log.debug(f'headers: \n{json.dumps(dict(request.headers), indent=4)}')
         middleware_log.debug(f'body: \n{(await request.body()).decode("utf-8")}')
 

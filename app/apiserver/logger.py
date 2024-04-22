@@ -18,7 +18,7 @@ class InterceptHandler(logging.Handler):
         logger_opt.log(record.levelname, record.getMessage())
 
 
-logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi',  'redis']
+logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi',  'redis', 'httpx']
 
 if pg_connection.debug is True:
     logger_name_list.append('sqlalchemy')
