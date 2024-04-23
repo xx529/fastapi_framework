@@ -17,6 +17,7 @@ class AppError(Exception):
         self.errcode = errcode
         self.status_code = status_code
 
+
 class AppExceptionEnum(Enum):
     Unknown = ErrorMsg(errcode=9999, errmsg='未知错误')
 
