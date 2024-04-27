@@ -58,7 +58,12 @@ class LogService:
         html = df_log.to_html(justify='left').replace('\\n', '<br>').replace('###space###', '&nbsp;')
         return html
 
-    def request_log(self, refresh: bool, method: List[RequestMethod], status_code: List[int], url_match: str, last: int):
+    def request_log(self,
+                    refresh: bool,
+                    method: List[RequestMethod],
+                    status_code: List[int],
+                    url_match: str,
+                    last: int):
         if refresh:
             self.load_all_log.cache_clear()
 
