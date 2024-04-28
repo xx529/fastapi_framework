@@ -1,10 +1,10 @@
-from dataclasses import dataclass
 from typing import Any, Literal, NewType
 from uuid import UUID
 
 from fastapi import Header, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
+from pydantic.dataclasses import dataclass
 
 from app.apiserver.context import RequestCtx
 from app.schema.enum import KafkaTopic, OrderTypeEnum
