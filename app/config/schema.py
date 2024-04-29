@@ -23,6 +23,18 @@ settings = Dynaconf(root_path=current_dir,
                     merge_enabled=True)
 
 
+class AppConfig(BaseModel):
+    system_info: "SystemInfo"
+    project_dir: "DirConfig"
+    resource_files: "ResourceFileConfig"
+    app_conf: "AppServerConfig"
+    log_conf: "LoggerConfig"
+    pg_connection: "GeneralDataBaseConnection"
+    redis_conf: "RedisConnection"
+    myapp_service_api_conf: "ApiConfig"
+    kafka_conf: "KafkaConfig"
+
+
 class DirConfig(BaseModel):
     root: Path = Field(project_dir, description='项目根目录')
     app: Path = Field(None, description='程序源码目录')
