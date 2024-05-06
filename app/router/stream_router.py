@@ -1,4 +1,4 @@
-import asyncio, time
+import asyncio
 
 from fastapi import APIRouter, BackgroundTasks
 from fastapi.responses import StreamingResponse
@@ -12,7 +12,6 @@ data = []
 
 
 async def add_data():
-
     async def func():
         n = 0
         while True:
@@ -24,7 +23,7 @@ async def add_data():
                 print(len(data), n)
                 data.append(n)
 
-    asyncio.create_task(func())
+    await asyncio.create_task(func())
 
 
 def get():

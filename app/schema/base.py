@@ -21,7 +21,7 @@ Search = NewType('Search', str)
 
 
 class BaseResponse(BaseModel):
-    trace_id: TraceID = Field(default_factory=RequestCtx.get_trace_id, description='追踪ID')
+    trace_id: TraceID | None = Field(default_factory=RequestCtx.get_trace_id, description='追踪ID')
     errcode: int = Field(0, description='错误码')
     errmsg: str = Field('', description='错误信息')
     detail: str = Field('', description='错误详情')

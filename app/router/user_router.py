@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from fastapi import APIRouter, Body, Depends
 
 from app.schema.base import BoolResponse, CommonHeaders, OkResponse, PageQueryParams

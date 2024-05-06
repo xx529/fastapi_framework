@@ -1,13 +1,15 @@
 import contextvars
 import uuid
 
+# from app.schema.base import TraceID
+
 trace_id_var = contextvars.ContextVar('trace_id')
 
 
 class RequestCtx:
 
     @staticmethod
-    def get_trace_id() -> str | None:
+    def get_trace_id() -> None:
         try:
             return trace_id_var.get()
         except Exception:

@@ -1,9 +1,9 @@
 from typing import List
 
-from fastapi import Body, Form, UploadFile
+from fastapi import Form, UploadFile
 from pydantic import BaseModel, Field
 
-from app.schema.base import JsonResponse, TaskID, UserID, KafkaMessage
+from app.schema.base import JsonResponse, KafkaMessage, TaskID, UserID
 from app.schema.enum import TaskCategory
 
 
@@ -59,6 +59,7 @@ class TaskUploadBody(BaseModel):
     def from_form_body(
             task_id: int = Form(media_type='multipart/form-data', title='任务ID', description='任务ID'),
             meta_file: UploadFile = Form(title='描述文件', description='描述文件', media_type='multipart/form-data'),
-            data_files: List[UploadFile] = Form(title='数据文件', description='数据文件', media_type='multipart/form-data')
+            data_files: List[UploadFile] = Form(title='数据文件', description='数据文件',
+                                                media_type='multipart/form-data')
     ):
         return TaskUploadBody(meta_file=meta_file, data_files=data_files, task_id=task_id)

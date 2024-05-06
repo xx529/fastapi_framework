@@ -9,7 +9,7 @@ import redis
 import redis.asyncio as aredis
 
 from app.apiserver.logger import redis_log
-from app.config import redis_conf
+from app.config import config
 
 
 class RedisCache:
@@ -83,7 +83,7 @@ class RedisCache:
 
         return layer
 
-    def clear(self, key: Callable[..., str]) -> None:
+    def clear(self, key: Callable[..., str]):
 
         def layer(func=None):
 
@@ -205,9 +205,10 @@ class RedisCache:
         is_satisfied = self.exec_lambda_func(lambda_func, decorator_func, *args, **kwargs)
         if is_satisfied:
             redis_log.debug(f'cache condition is satisfied')
+            return True
         else:
             redis_log.debug(f'cache condition is not satisfied')
-        return is_satisfied
+            return False
 
     def startup(self) -> "RedisCache":
         if not self.apools:
@@ -242,8 +243,8 @@ class RedisCache:
                          apool: aredis.BlockingConnectionPool | aredis.ConnectionPool = None,
                          **kwargs
                          ) -> "RedisCache":
-        return cls(client=redis.BlockingConnectionPool(connection_pool=pool),
-                   aclient=aredis.BlockingConnectionPool(connection_poll=apool),
+        return cls(pools=redis.BlockingConnectionPool(connection_pool=pool),
+                   apools=aredis.BlockingConnectionPool(connection_poll=apool),
                    **kwargs)
 
     @classmethod
@@ -270,8 +271,8 @@ class RedisCache:
         return instance
 
 
-redis_cache = RedisCache(host=redis_conf.host,
-                         port=redis_conf.port,
-                         db=redis_conf.db,
-                         password=redis_conf.password,
-                         max_connections=redis_conf.max_connections)
+redis_cache = RedisCache(host=config.redis_conf.host,
+                         port=config.redis_conf.port,
+                         db=config.redis_conf.db,
+                         password=config.redis_conf.password,
+                         max_connections=config.redis_conf.max_connections)

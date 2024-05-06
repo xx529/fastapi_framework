@@ -4,7 +4,7 @@ import sys
 from loguru import logger
 
 from app.apiserver.context import RequestCtx
-from app.config import app_conf, log_conf, pg_connection
+from app.config import config
 from app.schema.enum import LoggerNameEnum
 
 
@@ -13,14 +13,14 @@ class InterceptHandler(logging.Handler):
         logger_opt = logger.opt(depth=6, exception=record.exc_info)
         logger_opt = logger_opt.bind(name=record.name,
                                      custom_name=record.name,
-                                     project_name=app_conf.name,
+                                     project_name=config.app_conf.name,
                                      trace_id=RequestCtx.get_trace_id())
         logger_opt.log(record.levelname, record.getMessage())
 
 
 logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi',  'redis', 'httpx']
 
-if pg_connection.debug is True:
+if config.pg_connection.debug is True:
     logger_name_list.append('sqlalchemy')
 
 for logger_name in logger_name_list:
@@ -31,7 +31,7 @@ for logger_name in logger_name_list:
 
 
 FULL_FORMAT = ('<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> '
-               f'<red>{app_conf.name}</red> '
+               f'<red>{config.app_conf.name}</red> '
                '[PID:{process}] '
                '[TID:{thread}] '
                '<level>[{level}]</level> '
@@ -50,16 +50,16 @@ SHORT_FORMAT = ('<green>[{time:HH:mm:ss.SSS}]</green> '
 
 logger.remove()
 
-logger.add(sink=log_conf.file,
+logger.add(sink=config.log_conf.file,
            format=FULL_FORMAT,
-           level=log_conf.level,
+           level=config.log_conf.level,
            serialize=True,
            enqueue=True)
 
 logger.add(sink=sys.stdout,
-           format=SHORT_FORMAT if app_conf.debug else FULL_FORMAT,
+           format=SHORT_FORMAT if config.app_conf.debug else FULL_FORMAT,
            colorize=True,
-           level=log_conf.level,
+           level=config.log_conf.level,
            enqueue=True)
 
 _logger = logger

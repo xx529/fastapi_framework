@@ -13,12 +13,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.apiserver.logger import sql_log
-from app.config import pg_connection
+from app.config import config
 from app.schema.enum import OrderTypeEnum
 
 Base = declarative_base()
 
-engine = create_engine(url=pg_connection.jdbcurl,
+engine = create_engine(url=config.pg_connection.jdbcurl,
                        pool_pre_ping=True,
                        pool_recycle=1200,
                        pool_size=10)
@@ -27,7 +27,7 @@ SessionLocal = sessionmaker(autoflush=True,
                             autocommit=False,
                             bind=engine)
 
-async_engine = create_async_engine(url=pg_connection.async_jdbcurl,
+async_engine = create_async_engine(url=config.pg_connection.async_jdbcurl,
                                    future=True,
                                    pool_size=10)
 
@@ -52,7 +52,7 @@ class BaseTable(Base):
     __tablename__: str
     __abstract__ = True
     __allow_unmapped__ = True
-    __table_args__ = {'schema': pg_connection.db_schema}
+    __table_args__ = {'schema': config.pg_connection.db_schema}
     _engine = engine
 
     id = Column(BIGINT, primary_key=True, autoincrement=True, comment='唯一ID值')
@@ -87,7 +87,7 @@ class BaseTable(Base):
 
     @classmethod
     def is_exists(cls):
-        return inspect(cls._engine).has_table(cls.__tablename__, schema=pg_connection.db_schema)
+        return inspect(cls._engine).has_table(cls.__tablename__, schema=config.pg_connection.db_schema)
 
     @classmethod
     def drop(cls):

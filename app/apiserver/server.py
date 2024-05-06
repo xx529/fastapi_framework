@@ -7,7 +7,7 @@ from loguru import logger
 
 from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
-from app.config import app_conf, project_dir
+from app.config import config
 from app.interface.cache.redis import redis_cache
 from app.interface.mq.kafka import KafkaConsumerManager, KafkaProducerManager
 from app.interface.repo._base import close_all_connection, create_all_pg_tables
@@ -18,7 +18,7 @@ class HangServer:
 
     @classmethod
     def create_app(cls) -> FastAPI:
-        app = FastAPI(version=app_conf.version, lifespan=cls.lifespan())
+        app = FastAPI(version=config.app_conf.version, lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
         return app
@@ -31,7 +31,7 @@ class HangServer:
     @staticmethod
     def init_routers(app: FastAPI) -> None:
         for r in all_routers:
-            app.include_router(r, prefix=app_conf.prefix)
+            app.include_router(r, prefix=config.app_conf.prefix)
 
     @classmethod
     def lifespan(cls):
@@ -55,7 +55,7 @@ class HangServer:
         lifespan_log.info(f'startup api server version: {app.version}')
 
         lifespan_log.info('check dirs')
-        for d in project_dir.check_create_ls():
+        for d in config.project_dir.check_create_ls():
             if not d.exists():
                 lifespan_log.info(f'create {d}')
                 d.mkdir(parents=True)

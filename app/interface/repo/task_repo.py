@@ -38,7 +38,7 @@ class TaskRecordRepo(BaseRepo):
         self.db = db
 
     def select_by_id(self, row_id: int):
-        stmt = (select(self.model.task_name,
-                       self.model.catgory)
+        stmt = (select(self.model.name,
+                       self.model.category)
                 .where(self.model.id == row_id))
         return self.exec(stmt, output='list')

@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
-from app.config import log_conf, project_dir
+from app.config import config
 from app.schema.enum import LoggerNameEnum, RequestMethod
 from app.schema.schemas.system import LogDetailParam
 
@@ -17,7 +17,7 @@ class LogService:
     @staticmethod
     @lru_cache
     def load_all_log() -> DataFrame:
-        with open(log_conf.file) as f:
+        with open(config.log_conf.file) as f:
             df_raw = pd.DataFrame([json.loads(x)['record'] for x in f.readlines()])
         df_log = pd.DataFrame()
         df_log['datetime'] = pd.to_datetime(df_raw['time'].apply(lambda x: x['repr']))
@@ -26,7 +26,7 @@ class LogService:
         df_log['level'] = df_raw['level'].apply(lambda x: x['name'])
         df_log['custom_name'] = df_raw['extra'].apply(lambda x: x.get('custom_name', 'loguru'))
         df_log['file'] = df_raw['file'].apply(lambda x: x['path'])
-        df_log['file'] = df_log['file'].apply(lambda x: x.removeprefix(str(project_dir.root)))
+        df_log['file'] = df_log['file'].apply(lambda x: x.removeprefix(str(config.project_dir.root)))
         df_log['line'] = df_raw['line']
         df_log['trace_id'] = df_raw['extra'].apply(lambda x: x['trace_id'])
         df_log['message'] = df_raw['message']

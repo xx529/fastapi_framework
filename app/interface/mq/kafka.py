@@ -8,7 +8,7 @@ from kafka import KafkaConsumer, KafkaProducer
 from loguru import logger
 
 from app.apiserver.logger import kafka_log
-from app.config import kafka_conf
+from app.config import config
 from app.schema.base import KafkaMessage
 from app.schema.enum import KafkaTopic
 
@@ -25,7 +25,7 @@ class KafkaProducerManager:
     @classmethod
     def startup(cls):
         kafka_log.info('startup kafka producer')
-        cls.client = KafkaProducer(bootstrap_servers=kafka_conf.bootstrap_servers)
+        cls.client = KafkaProducer(bootstrap_servers=config.kafka_conf.bootstrap_servers)
 
     @classmethod
     def shutdown(cls):
@@ -64,14 +64,14 @@ class KafkaConsumerManager:
 
     @classmethod
     def startup(cls):
-        for t in kafka_conf.topics.values():
+        for t in config.kafka_conf.topics.values():
             if t.enable is False:
                 continue
 
             kafka_log.info(f'startup kafka consumer for topic `{t.topic_name}`')
             for num in range(1, t.num_consumers + 1):
                 cls.start_consumer_worker(topic_name=t.topic_name,
-                                          bootstrap_servers=kafka_conf.bootstrap_servers,
+                                          bootstrap_servers=config.kafka_conf.bootstrap_servers,
                                           group_id=t.group_id,
                                           worker_number=num)
 
@@ -121,7 +121,6 @@ class ConsumerWorker(Thread):
 
                     # 以 trace_id 为跟踪上下文
                     with logger.contextualize(trace_id=f'{message.trace_id}-{self.worker_name}'):
-                        LoggerStep.reset_step_num()
                         kafka_log.info(f'consume message '
                                        f'partition: {msg.partition} '
                                        f'offset: {msg.offset} '

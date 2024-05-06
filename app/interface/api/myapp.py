@@ -3,7 +3,7 @@ import json
 import httpx
 from loguru import logger
 
-from app.config import myapp_service_api_conf
+from app.config import config
 
 
 class ExternalServiceAPI:
@@ -39,7 +39,7 @@ class ExternalServiceAPI:
 
 
 class SelfServiceAPI(ExternalServiceAPI):
-    BASE_URL = myapp_service_api_conf.url
+    BASE_URL = config.myapp_service_api_conf.url
 
     @classmethod
     async def test_api(cls):

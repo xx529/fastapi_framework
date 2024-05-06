@@ -1,6 +1,6 @@
 from enum import Enum
 
-from app.config import kafka_conf
+from app.config import config
 
 
 class RequestMethod(str, Enum):
@@ -62,5 +62,5 @@ class HumanGender(str, Enum):
 
 
 class KafkaTopic(str, Enum):
-    chat_task = kafka_conf.topics['chat_task'].topic_name
-    log_task = kafka_conf.topics['log_task'].topic_name
+    chat_task = config.kafka_conf.topics['chat_task'].topic_name
+    log_task = config.kafka_conf.topics['log_task'].topic_name
