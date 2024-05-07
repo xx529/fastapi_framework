@@ -2,13 +2,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app.apiserver.logger import transaction_log
-from ..repo._base import AsyncSessionLocal, SessionLocal
+from ..repo import SessionLocal, AsyncSessionLocal
 
 
 class DataBaseTransaction:
 
     def __init__(self):
-        self.db: Session = None
+        self.db: Session | None = None
 
     def __enter__(self):
         transaction_log.debug('create transaction')
@@ -30,7 +30,7 @@ class DataBaseTransaction:
 class AsyncDataBaseTransaction:
 
     def __init__(self, commit=True):
-        self.db: AsyncSession = None
+        self.db: AsyncSession | None = None
         self.commit = commit
 
     async def __aenter__(self):
