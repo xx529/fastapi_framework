@@ -59,6 +59,7 @@ class LoggerConfig(BaseModel):
     level: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] = Field(description='日志级别')
     path: Path = Field(description='日志文件路径')
     file: Path = Field(default=None, description='日志文件')
+    is_json_format: bool = Field(description='是否使用json格式')
 
     def model_post_init(self, __context):
         if self.file is None:

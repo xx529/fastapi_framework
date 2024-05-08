@@ -49,3 +49,4 @@ external_api:
 
 log:
   level: DEBUG
+  is_json_format: false
