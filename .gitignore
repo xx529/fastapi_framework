@@ -1,6 +1,6 @@
 .idea
 __pycache__
-.data/
+.data
 .ipynb_checkpoints/
 *.ipynb
 ./test.*
