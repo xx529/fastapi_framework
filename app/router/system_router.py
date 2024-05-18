@@ -37,8 +37,9 @@ def log_request_detail(param: LogDetailParam = Depends()):
 async def error_demo():
     # num = random.random()
     # raise AppException.Random(detail='this is random')
-    1 / 0
+    # 1 / 0
     # return StrResponse(data='ok')
+    ...
 
 
 @router.get(path='/config',
