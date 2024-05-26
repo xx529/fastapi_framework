@@ -3,7 +3,7 @@ appserver:
   version: 0.0.1
   host: localhost
   port: 8003
-  workers: 5
+  workers: 1
   debug: true
 
 pg:
