@@ -14,7 +14,8 @@ class InterceptHandler(logging.Handler):
         logger_opt = logger_opt.bind(name=record.name,
                                      custom_name=record.name,
                                      project_name=config.app_conf.name,
-                                     trace_id=RequestCtx.get_trace_id())
+                                     trace_id=RequestCtx.get_trace_id(),
+                                     logging_extra=record.__dict__.get(config.log_conf.extra_key, None))
         logger_opt.log(record.levelname, record.getMessage())
 
 

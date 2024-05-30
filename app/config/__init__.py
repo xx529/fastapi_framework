@@ -11,7 +11,7 @@ config = AppConfig(
     resource_files=ResourceFileConfig(path=__project_dir.resource),
     app_conf=AppServerConfig(**settings.appserver, prefix='/api/v1'),
     log_conf=LoggerConfig(name='log', level=settings.log.level, path=__project_dir.general_log,
-                          is_json_format=settings.log.is_json_format),
+                          is_json_format=settings.log.is_json_format, extra_key=settings.log.extra_key),
     pg_connection=GeneralDataBaseConnection(**settings.pg),
     redis_conf=RedisConnection(**settings.redis),
     myapp_service_api_conf=ApiConfig(**settings.external_api.myapp),

@@ -60,6 +60,7 @@ class LoggerConfig(BaseModel):
     path: Path = Field(description='日志文件路径')
     file: Path = Field(default=None, description='日志文件')
     is_json_format: bool = Field(description='是否使用json格式')
+    extra_key: str = Field(description='额外信息的key')
 
     def model_post_init(self, __context):
         if self.file is None:
