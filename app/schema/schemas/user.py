@@ -65,7 +65,3 @@ class UserDeleteBody(BaseModel):
 
 class UserUpdateBody(UserInfo):
     ...
-
-    @classmethod
-    def openapi_examples(cls):
-        ...
