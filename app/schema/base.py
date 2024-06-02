@@ -1,4 +1,4 @@
-from typing import Any, Literal, NewType
+from typing import Any, List, Literal, NewType
 from uuid import UUID
 
 from fastapi import Header, Query
@@ -70,9 +70,16 @@ class PageQueryParams:
 
 
 class OpenApiExample(BaseModel):
-    summary: str = None
-    description: str = None
-    value: dict
+    summary: str = Field(description='摘要')
+    description: str = Field(description='描述')
+    value: dict = Field(description='值')
+
+
+class ExampleSet(BaseModel):
+    examples: List[OpenApiExample] = Field(description='OpenAPI示例')
+
+    def to_openapi_examples(self):
+        return {example.summary: example for example in self.examples}
 
 
 class KafkaMessage(BaseModel):
