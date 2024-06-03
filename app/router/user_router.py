@@ -14,9 +14,8 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHead
     path='/user',
     summary='创建用户',
     description='创建用户通用接口',
-    response_model=UserCreateResponse
 )
-async def user_create(body: UserCreateBody = Body(openapi_examples=UserCreateBody.openapi_examples())):
+async def user_create(body: UserCreateBody = Body(openapi_examples=UserCreateBody.openapi_examples())) -> UserCreateResponse:
     user_id = await UserService.create_user(name=body.name, age=body.age, gender=body.gender)
     return UserCreateResponse(data=user_id)
 
@@ -25,9 +24,8 @@ async def user_create(body: UserCreateBody = Body(openapi_examples=UserCreateBod
     path='/user',
     summary='删除用户',
     description='删除用户通用接口，此接口是物理删除',
-    response_model=OkResponse
 )
-async def user_delete(body: UserDeleteBody):
+async def user_delete(body: UserDeleteBody) -> OkResponse:
     await UserService.delete_user(user_id=body.user_id)
     return OkResponse()
 
@@ -36,9 +34,8 @@ async def user_delete(body: UserDeleteBody):
     path='/user',
     summary='更新用户',
     description='更新用户通用接口',
-    response_model=BoolResponse
 )
-async def user_update(body: UserUpdateBody):
+async def user_update(body: UserUpdateBody) -> BoolResponse:
     await UserService.update_user(user_id=body.user_id, name=body.name, age=body.age, gender=body.gender)
     return BoolResponse(data=True)
 
@@ -47,9 +44,8 @@ async def user_update(body: UserUpdateBody):
     path='/user',
     summary='查询用户',
     description='根据用户ID获取用户信息通用接口',
-    response_model=UserDetailResponse
 )
-async def user_detail(param: UserDetailParam = Depends()):
+async def user_detail(param: UserDetailParam = Depends()) -> UserDetailResponse:
     data = await UserService.detail(user_id=param.user_id)
     return UserDetailResponse(data=data)
 
@@ -58,9 +54,8 @@ async def user_detail(param: UserDetailParam = Depends()):
     path='/user/list',
     summary='获取用户列表',
     description='获取用户列表通用接口',
-    response_model=UserListResponse
 )
-async def user_list(param: PageQueryParams = Depends()):
+async def user_list(param: PageQueryParams = Depends()) -> UserListResponse:
     data, total = await UserService.list(page=param.page,
                                          limit=param.limit,
                                          search=param.search,
