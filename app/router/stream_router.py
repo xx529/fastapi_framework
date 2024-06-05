@@ -52,12 +52,12 @@ def queue_stream():
     return StreamingResponse(generator, media_type="text/event-stream")
 
 
-@router.post(path='/queue', response_model=OkResponse)
-async def queue_post(background_tasks: BackgroundTasks):
+@router.post(path='/queue')
+async def queue_post(background_tasks: BackgroundTasks) -> OkResponse:
     background_tasks.add_task(add_data)
     return OkResponse(data='ok')
 
 
-@router.get(path='/queue', response_model=StrResponse)
-async def queue_get():
+@router.get(path='/queue')
+async def queue_get() -> StrResponse:
     return StrResponse(data=str(len(data)))

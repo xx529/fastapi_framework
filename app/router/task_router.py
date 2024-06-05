@@ -11,10 +11,9 @@ router = APIRouter(tags=['任务管理模块'], dependencies=[Depends(CommonHead
     path='/task',
     summary='创建任务',
     description='创建任务通用接口',
-    response_model=TaskCreateResponse,
     response_description='返回任务ID'
 )
-async def task_create(body: TaskCreateRequestBody):
+async def task_create(body: TaskCreateRequestBody) -> TaskCreateResponse:
     task_id = await TaskService().create_task(body=body)
     return TaskCreateResponse(data=task_id)
 
@@ -23,10 +22,9 @@ async def task_create(body: TaskCreateRequestBody):
     path='/task',
     summary='删除任务',
     description='删除任务通用接口',
-    response_model=BoolResponse,
     response_description='返回删除状态'
 )
-async def task_create(body: TaskDeleteRequestBody):
+async def task_create(body: TaskDeleteRequestBody) -> BoolResponse:
     await TaskService().delete_task(body=body)
     return BoolResponse(data=True)
 
@@ -35,10 +33,9 @@ async def task_create(body: TaskDeleteRequestBody):
     path='/task/upload',
     summary='数据上传',
     description='数据上传通用接口',
-    response_model=BoolResponse,
     response_description='返回数据上传状态'
 )
-async def task_upload(body=Depends(TaskUploadBody.from_form_body)):
+async def task_upload(body=Depends(TaskUploadBody.from_form_body)) -> BoolResponse:
     print(body.meta_file.filename)
     print(body.data_files[0].filename)
     return BoolResponse(data=True)
@@ -48,9 +45,8 @@ async def task_upload(body=Depends(TaskUploadBody.from_form_body)):
     path='task/execute',
     summary='任务执行',
     description='任务执行通用接口',
-    response_model=BoolResponse,
     response_description='返回任务执行ID'
 )
-async def task_execute():
+async def task_execute() -> BoolResponse:
     await TaskService().execute_task()
     return BoolResponse(data=True)
