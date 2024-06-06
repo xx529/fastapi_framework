@@ -2,7 +2,7 @@ import os
 import platform
 import sys
 from pathlib import Path
-from typing import Dict, Literal
+from typing import Dict, List, Literal
 
 from dynaconf import Dynaconf
 from pydantic import BaseModel, Field
@@ -61,6 +61,7 @@ class LoggerConfig(BaseModel):
     file: Path = Field(default=None, description='日志文件')
     is_json_format: bool = Field(description='是否使用json格式')
     extra_key: str = Field(description='额外信息的key')
+    catch: List[str] = Field(description='捕获的日志名称')
 
     def model_post_init(self, __context):
         if self.file is None:

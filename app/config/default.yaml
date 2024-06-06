@@ -51,3 +51,10 @@ log:
   level: DEBUG
   is_json_format: false
   extra_key: extra
+  catch:
+    - "uvicorn.access"
+    - "uvicorn.error"
+    - "fastapi"  
+    - "redis"
+    - "httpx"
+    - "sqlalchemy"
