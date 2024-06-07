@@ -4,7 +4,7 @@ from typing import Annotated, List
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from app.schema.base import JsonResponse, OpenApiExample, UserID
+from app.schema.base import ExampleSet, JsonResponse, Example, UserID
 from app.schema.enum import HumanGender
 
 UserIdField = Annotated[UserID, Field(title='用户ID', description='用户ID', examples=[1])]
@@ -38,21 +38,6 @@ class UserCreateBody(BaseModel):
     name: UserNameField
     age: UserAgeField
     gender: UserGenderField
-
-    @classmethod
-    def openapi_examples(cls):
-        return {
-            "例子1": OpenApiExample(
-                summary='例子1（适用于开发环境）',
-                description='一般例子1',
-                value=cls(name='张三', age=30, gender='男').model_dump()
-            ),
-            "例子2": OpenApiExample(
-                summary='例子2',
-                description='一般例子2',
-                value=cls(name='张三', age=28, gender='女').model_dump()
-            ),
-        }
 
 
 class UserCreateResponse(JsonResponse):

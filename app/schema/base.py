@@ -69,17 +69,17 @@ class PageQueryParams:
                                       alias='order_type')
 
 
-class OpenApiExample(BaseModel):
+class Example(BaseModel):
     summary: str = Field(description='摘要')
     description: str = Field(description='描述')
-    value: dict = Field(description='值')
+    value: BaseModel = Field(description='值')
 
 
 class ExampleSet(BaseModel):
-    examples: List[OpenApiExample] = Field(description='OpenAPI示例')
+    examples: List[Example] = Field(description='OpenAPI示例')
 
     def to_openapi_examples(self):
-        return {example.summary: example for example in self.examples}
+        return {example.summary: example.model_dump() for example in self.examples}
 
 
 class KafkaMessage(BaseModel):

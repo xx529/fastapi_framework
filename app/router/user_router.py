@@ -6,6 +6,7 @@ from app.schema.schemas.user import (
     UserListResponse, UserUpdateBody,
 )
 from app.service.user_service import UserService
+from app.utils.example import user_create_examples
 
 router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHeaders)])
 
@@ -15,7 +16,7 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHead
     summary='创建用户',
     description='创建用户通用接口',
 )
-async def user_create(body: UserCreateBody = Body(openapi_examples=UserCreateBody.openapi_examples())) -> UserCreateResponse:
+async def user_create(body: UserCreateBody = Body(openapi_examples=user_create_examples)) -> UserCreateResponse:
     user_id = await UserService.create_user(name=body.name, age=body.age, gender=body.gender)
     return UserCreateResponse(data=user_id)
 
