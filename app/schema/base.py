@@ -56,7 +56,8 @@ class HtmlResponse(HTMLResponse):
 class CommonHeaders:
     token: Token = Header(description='用户Token', example='442221ef-38b2-489c-bc46-68d62825ec56', alias='Token')
     company_id: CompanyID = Header(description='公司ID', example='10', alias='CompanyId')
-    trace_id: TraceID = Header(default=None, description='追踪 ID', example='442221ef-38b2-489c-bc46-68d62825ec56', alias='TraceId')
+    trace_id: TraceID = Header(default=None, description='追踪 ID', example='442221ef-38b2-489c-bc46-68d62825ec56',
+                               alias='TraceId')
 
 
 @dataclass
@@ -72,14 +73,17 @@ class PageQueryParams:
 class Example(BaseModel):
     summary: str = Field(description='摘要')
     description: str = Field(description='描述')
-    value: BaseModel = Field(description='值')
+    data: BaseModel = Field(description='值')
+
+    def to_openapi(self):
+        return {'summary': self.summary, 'description': self.description, 'value': self.data.model_dump()}
 
 
 class ExampleSet(BaseModel):
     examples: List[Example] = Field(description='OpenAPI示例')
 
     def to_openapi_examples(self):
-        return {example.summary: example.model_dump() for example in self.examples}
+        return {example.summary: example.to_openapi() for example in self.examples}
 
 
 class KafkaMessage(BaseModel):
