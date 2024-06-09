@@ -52,12 +52,33 @@ class HtmlResponse(HTMLResponse):
     status_code = 200
 
 
-@dataclass
-class CommonHeaders:
-    token: Token = Header(description='用户Token', example='442221ef-38b2-489c-bc46-68d62825ec56', alias='Token')
-    company_id: CompanyID = Header(description='公司ID', example='10', alias='CompanyId')
-    trace_id: TraceID = Header(default=None, description='追踪 ID', example='442221ef-38b2-489c-bc46-68d62825ec56',
-                               alias='TraceId')
+class CommonHeaders(BaseModel):
+    token: Token
+    company_id: CompanyID
+    trace_id: TraceID
+
+    @classmethod
+    def get_from_header(cls,
+                        token: Token = Header(description='用户Token', example='442221ef-38b2-489c-bc46-68d62825ec56',
+                                              alias='Token'),
+                        company_id: CompanyID = Header(description='公司ID', example='10', alias='CompanyId'),
+                        trace_id: TraceID = Header(default=None, description='追踪 ID',
+                                                   example='442221ef-38b2-489c-bc46-68d62825ec56')):
+        return cls(token=token, company_id=company_id, trace_id=trace_id)
+
+
+class WithAuthHeaders(CommonHeaders):
+    auth: str = Header(description='用户认证信息', example='Bearer token', alias='Authorization')
+
+    @classmethod
+    def get_from_header(cls,
+                        token: Token = Header(description='用户Token', example='442221ef-38b2-489c-bc46-68d62825ec56',
+                                              alias='Token'),
+                        company_id: CompanyID = Header(description='公司ID', example='10', alias='CompanyId'),
+                        trace_id: TraceID = Header(default=None, description='追踪 ID',
+                                                   example='442221ef-38b2-489c-bc46-68d62825ec56'),
+                        auth: str = Header(description='用户认证信息', example='Bearer token', alias='Authorization')):
+        return cls(token=token, company_id=company_id, trace_id=trace_id, auth=auth)
 
 
 @dataclass

@@ -4,7 +4,7 @@ from typing import Annotated, List
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from app.schema.base import ExampleSet, JsonResponse, Example, UserID
+from app.schema.base import JsonResponse, UserID
 from app.schema.enum import HumanGender
 
 UserIdField = Annotated[UserID, Field(title='用户ID', description='用户ID', examples=[1])]

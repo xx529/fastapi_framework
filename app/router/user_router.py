@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Depends
 
-from app.schema.base import BoolResponse, CommonHeaders, OkResponse, PageQueryParams
+from app.schema.base import BoolResponse, CommonHeaders, OkResponse, PageQueryParams, WithAuthHeaders
 from app.schema.schemas.user import (
     UserCreateBody, UserCreateResponse, UserDeleteBody, UserDetailParam, UserDetailResponse,
     UserListResponse, UserUpdateBody,
@@ -8,7 +8,7 @@ from app.schema.schemas.user import (
 from app.service.user_service import UserService
 from app.utils.example import user_create_examples
 
-router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHeaders)])
+router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHeaders.get_from_header)])
 
 
 @router.post(
@@ -16,8 +16,12 @@ router = APIRouter(tags=['用户管理模块'], dependencies=[Depends(CommonHead
     summary='创建用户',
     description='创建用户通用接口',
 )
-async def user_create(body: UserCreateBody = Body(openapi_examples=user_create_examples)) -> UserCreateResponse:
+async def user_create(
+        headers: WithAuthHeaders = Depends(WithAuthHeaders.get_from_header),
+        body: UserCreateBody = Body(openapi_examples=user_create_examples)
+) -> UserCreateResponse:
     user_id = await UserService.create_user(name=body.name, age=body.age, gender=body.gender)
+    print(headers)
     return UserCreateResponse(data=user_id)
 
 
