@@ -58,3 +58,4 @@ log:
     - "redis"
     - "httpx"
     - "sqlalchemy"
+    - "kafka"
