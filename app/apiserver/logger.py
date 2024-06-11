@@ -10,16 +10,17 @@ from app.schema.enum import LoggerNameEnum
 
 class InterceptHandler(logging.Handler):
     def emit(self, record):
-        logger_opt = logger.opt(depth=6, exception=record.exc_info)
-        logger_opt = logger_opt.bind(name=record.name,
-                                     custom_name=record.name,
-                                     project_name=config.app_conf.name,
-                                     trace_id=RequestCtx.get_trace_id(),
-                                     logging_extra=record.__dict__.get(config.log_conf.extra_key, None))
-        logger_opt.log(record.levelname, record.getMessage())
+        (logger
+         .opt(depth=6, exception=record.exc_info)
+         .bind(name=record.name,
+               custom_name=record.name,
+               project_name=config.app_conf.name,
+               trace_id=RequestCtx.get_trace_id(),
+               logging_extra=record.__dict__.get(config.log_conf.extra_key, None))
+         .log(record.levelname, record.getMessage()))
 
 
-logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi',  'redis', 'httpx', 'sqlalchemy']
+logger_name_list = ['uvicorn.access', 'uvicorn.error', 'fastapi', 'redis', 'httpx', 'sqlalchemy']
 
 if config.pg_connection.debug is True:
     logger_name_list.append('sqlalchemy')
@@ -27,9 +28,7 @@ if config.pg_connection.debug is True:
 for logger_name in logger_name_list:
     log_obj = logging.getLogger(logger_name)
     log_obj.setLevel(logging.DEBUG)
-    log_obj.handlers = []
-    log_obj.addHandler(InterceptHandler())
-
+    log_obj.handlers = [InterceptHandler()]
 
 FULL_FORMAT = ('<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> '
                f'<red>{config.app_conf.name}</red> '
