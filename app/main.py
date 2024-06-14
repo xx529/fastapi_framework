@@ -1,4 +1,5 @@
 from app.apiserver import myapp
+from app.config import config
 
 myapp = myapp
 
@@ -6,8 +7,8 @@ if __name__ == '__main__':
     import uvicorn
 
     uvicorn.run(app='main:myapp',
-                host='0.0.0.0',
-                port=8000,
-                reload=True,
+                host=config.app_conf.host,
+                port=config.app_conf.port,
+                reload=config.app_conf.reload,
                 app_dir='app',
-                workers=5)
+                workers=config.app_conf.workers)

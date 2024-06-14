@@ -109,6 +109,7 @@ class AppServerConfig(BaseModel):
     port: int = Field(description='服务端口')
     prefix: str = Field(description='url前缀')
     debug: bool = Field(description='是否开启debug模式')
+    reload: bool = Field(description='是否开启reload模式')
 
 
 class ResourceFileConfig(BaseModel):

@@ -9,7 +9,7 @@ config = AppConfig(
     system_info=SystemInfo(),
     project_dir=__project_dir,
     resource_files=ResourceFileConfig(path=__project_dir.resource),
-    app_conf=AppServerConfig(**settings.appserver, prefix='/api/v1'),
+    app_conf=AppServerConfig(**settings.appserver),
     log_conf=LoggerConfig(name='log', level=settings.log.level, path=__project_dir.general_log,
                           is_json_format=settings.log.is_json_format, extra_key=settings.log.extra_key,
                           catch=settings.log.catch),
