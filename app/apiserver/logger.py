@@ -20,7 +20,7 @@ class InterceptHandler(logging.Handler):
          .log(record.levelname, record.getMessage()))
 
 
-logger_name_list = config.log_conf.catch
+logger_name_list = config.log_conf.catch.copy()
 
 if config.pg_connection.debug is True:
     logger_name_list.append('sqlalchemy')
