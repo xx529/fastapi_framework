@@ -1,5 +1,5 @@
 from app.apiserver.logger import runtime_log
-from app.interface import AsyncDataBaseTransaction, KafkaConsumerManager
+from app.interface import DataBaseTransaction, KafkaConsumerManager
 from app.interface.repo.task_repo import TaskInfoRepo, TaskRecordRepo
 from app.schema.base import TaskID
 from app.schema.enum import KafkaTopic
@@ -19,7 +19,7 @@ class TaskService:
 
     @staticmethod
     async def create_task(body: TaskCreateRequestBody) -> TaskID:
-        async with AsyncDataBaseTransaction() as db:
+        async with DataBaseTransaction() as db:
             task_id = await TaskInfoRepo(db=db).create(name=body.name,
                                                        category=body.category.value,
                                                        user_id=body.user_id)
@@ -28,7 +28,7 @@ class TaskService:
 
     @staticmethod
     async def delete_task(body: TaskDeleteRequestBody) -> None:
-        async with AsyncDataBaseTransaction() as db:
+        async with DataBaseTransaction() as db:
             await TaskInfoRepo(db=db).delete_task(task_id=body.task_id)
             TaskRecordRepo(db=db, task_id=body.task_id).drop_table()
 
