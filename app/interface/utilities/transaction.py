@@ -8,7 +8,7 @@ from ..repo import AsyncSessionLocal, SessionLocal
 class DataBaseTransaction:
 
     def __init__(self, commit: bool = True):
-        self.commit = commit
+        self.commit: bool = commit
         self.db: Session | None = None
         self.adb: AsyncSession | None = None
 
