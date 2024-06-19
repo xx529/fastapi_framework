@@ -1,16 +1,27 @@
-class BaseMarkdownParser:
+import io
+from pathlib import Path
+
+
+class MarkdownParser:
+
+    def __init__(self, filepath_or_buffer: Path | io.BytesIO | bytes):
+        self.file_or_buffer = filepath_or_buffer
 
     def load(self) -> str:
         raise NotImplementedError
 
 
-class WORD2MarkdownLoader(BaseMarkdownParser):
+class Word2MarkdownLoader(MarkdownParser):
     ...
 
 
-class PPT2MarkdownLoader(BaseMarkdownParser):
+class Ppt2MarkdownLoader(MarkdownParser):
     ...
 
 
-class EXCELLoader:
+class Pdf2MarkdownLoader(MarkdownParser):
+    ...
+
+
+class ExcelLoader:
     ...
