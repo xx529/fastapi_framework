@@ -86,8 +86,3 @@ class ObsFileManager(WorkingDir):
         for bytes_data in self.file_data.values():
             with open(self.working_dir / bytes_data.name, 'wb') as f:
                 f.write(bytes_data)
-
-
-with ObsFileManager([ObsFile(name='test1', url='https://www.test.com/test1'),
-                     ObsFile(name='test2', url='https://www.test.com/test2')]) as obs_file_manager:
-    ...
