@@ -6,4 +6,4 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple poetry && \
 
 COPY app /app
 
-CMD ["python3", "main.py"]
+CMD ["poetry", "run", "uvicorn", "app.main:myapp"]
