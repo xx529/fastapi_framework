@@ -97,7 +97,7 @@ class Example(BaseModel):
     data: BaseModel = Field(description='值')
 
     def to_openapi(self):
-        return {'summary': self.summary, 'description': self.description, 'value': self.data.model_dump()}
+        return {'summary': self.summary, 'description': self.description, 'value': self.data.model_dump(mode='json')}
 
 
 class ExampleSet(BaseModel):
