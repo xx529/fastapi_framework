@@ -17,3 +17,5 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple poetry && \
 COPY app /app
 
 CMD ["poetry", "run", "uvicorn", "app.main:myapp", "--port"]
+
+
