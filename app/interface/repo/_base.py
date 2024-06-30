@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.apiserver.logger import sql_log
 from app.config import config
-from app.schema.enum import OrderTypeEnum
+from app.schema.const import OrderTypeEnum
 
 Base = declarative_base()
 

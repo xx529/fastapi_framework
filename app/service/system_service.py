@@ -8,7 +8,7 @@ import pandas as pd
 from pandas import DataFrame
 
 from app.config import config
-from app.schema.enum import LoggerNameEnum, RequestMethod
+from app.schema.const import LoggerNameEnum, RequestMethod
 from app.schema.schemas.system import LogDetailParam
 
 

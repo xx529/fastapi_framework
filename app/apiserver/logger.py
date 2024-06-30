@@ -5,7 +5,7 @@ from loguru import logger
 
 from app.apiserver.context import RequestCtx
 from app.config import config
-from app.schema.enum import LoggerNameEnum
+from app.schema.const import LoggerNameEnum
 
 
 class InterceptHandler(logging.Handler):

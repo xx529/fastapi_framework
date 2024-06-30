@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass
 
 from app.apiserver.context import RequestCtx
-from app.schema.enum import KafkaTopic, OrderTypeEnum
+from app.schema.const import KafkaTopic, OrderTypeEnum
 
 UserID = NewType('UserID', int)
 TaskID = NewType('TaskID', int)

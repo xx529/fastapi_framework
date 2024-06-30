@@ -2,7 +2,7 @@ from sqlalchemy import delete, select, update, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.interface.cache.redis import redis_cache
-from app.schema.enum import RedisKeyEnum
+from app.schema.const import RedisKeyEnum
 from ._base import BaseRepo
 from ._tables import UserInfo
 

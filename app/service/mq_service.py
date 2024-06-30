@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from app.interface import KafkaProducerManager
 from app.schema.base import KafkaMessage
-from app.schema.enum import KafkaTopic
+from app.schema.const import KafkaTopic
 from app.schema.schemas.task import (
     TaskExecuteDataMessage, TaskExecuteInfo, TaskLogExecuteDataMessage,
     TaskLogExecuteInfo,

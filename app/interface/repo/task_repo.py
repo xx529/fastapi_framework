@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ._base import BaseRepo
 from ._tables import TaskInfo, TaskRecord
-from ...schema.enum import TaskStatus
+from ...schema.const import TaskStatus
 
 
 class TaskInfoRepo(BaseRepo):

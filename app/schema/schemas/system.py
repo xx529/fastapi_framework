@@ -4,7 +4,7 @@ from typing import List
 from fastapi import Path, Query
 
 from app.schema.base import TraceID
-from app.schema.enum import RequestMethod
+from app.schema.const import RequestMethod
 
 
 @dataclass
