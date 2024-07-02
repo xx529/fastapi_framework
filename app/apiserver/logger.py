@@ -74,3 +74,7 @@ redis_log = _logger.bind(custom_name=LoggerNameEnum.REDIS.value)
 middleware_log = _logger.bind(custom_name=LoggerNameEnum.MIDDLEWARE.value)
 transaction_log = _logger.bind(custom_name=LoggerNameEnum.TRANSACTION.value)
 kafka_log = _logger.bind(custom_name=LoggerNameEnum.KAFKA.value)
+
+
+def init_log():
+    ...
