@@ -1,4 +1,4 @@
-from app.schema.base import Example, ExampleSet
+from app.schema.common import Example, ExampleSet
 from app.schema.schemas.user import UserCreateBody
 
 user_create_examples = ExampleSet(examples=[

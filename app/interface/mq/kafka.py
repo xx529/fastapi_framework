@@ -9,7 +9,7 @@ from loguru import logger
 
 from app.apiserver.logger import kafka_log
 from app.config import config
-from app.schema.base import KafkaMessage
+from app.schema.common import KafkaMessage
 from app.schema.const import KafkaTopic
 
 

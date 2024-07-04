@@ -1,7 +1,7 @@
 from app.apiserver.logger import runtime_log
 from app.interface import DataBaseTransaction, KafkaConsumerManager
 from app.interface.repo.task_repo import TaskInfoRepo, TaskRecordRepo
-from app.schema.base import TaskID
+from app.schema.common import TaskID
 from app.schema.const import KafkaTopic
 from app.schema.schemas.task import (
     TaskCreateRequestBody,

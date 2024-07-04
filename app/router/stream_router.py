@@ -3,7 +3,7 @@ import asyncio
 from fastapi import APIRouter, BackgroundTasks
 from fastapi.responses import StreamingResponse
 
-from app.schema.base import OkResponse, StrResponse
+from app.schema.response.base import OkResponse, StrResponse
 from app.service.stream_service import StreamService
 
 router = APIRouter(prefix='/stream', tags=['流式接口模块'])

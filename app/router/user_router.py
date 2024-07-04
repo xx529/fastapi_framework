@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body, Depends
 
-from app.schema.base import BoolResponse, CommonHeaders, OkResponse, PageQueryParams, WithAuthHeaders
+from app.schema.request.base import CommonHeaders, PageQueryParams, WithAuthHeaders
+from app.schema.response.base import BoolResponse, OkResponse
 from app.schema.schemas.user import (
     UserCreateBody, UserCreateResponse, UserDeleteBody, UserDetailParam, UserDetailResponse,
     UserListResponse, UserUpdateBody,

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.schema.base import BoolResponse, CommonHeaders
+from app.schema.request.base import CommonHeaders
+from app.schema.response.base import BoolResponse
 from app.schema.schemas.task import TaskCreateRequestBody, TaskCreateResponse, TaskDeleteRequestBody, TaskUploadBody
 from app.service.task_service import TaskService
 

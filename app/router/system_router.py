@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.interface.api.myapp import SelfServiceAPI
-from app.schema.base import HtmlResponse, OkResponse
+from app.schema.response.base import HtmlResponse, OkResponse
 from app.schema.schemas.system import LogDetailParam, LogRequestParam
 from app.service.system_service import LogService
 

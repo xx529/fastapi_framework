@@ -3,13 +3,12 @@ import traceback
 import uuid
 
 from fastapi.responses import JSONResponse
-from loguru import logger
 from starlette.requests import Request
 
-from app.schema.base import BaseResponse
-from .context import RequestCtx
-from .exception import AppExceptionEnum, AppError
+from .context import ContextInfo, RunContext
+from .exception import AppError, AppExceptionEnum
 from .logger import exception_log, middleware_log, request_finish_log, request_start_log
+from ..schema.response.base import BaseResponse
 
 
 class MiddleWare:
@@ -17,13 +16,10 @@ class MiddleWare:
     @staticmethod
     async def set_logger_trace_id(request: Request, call_next):
 
-        if (_trace_id := request.headers.get('TraceId')) is not None:
-            trace_id = uuid.UUID(_trace_id).hex
-            RequestCtx.set_trace_id(trace_id)
-        else:
-            trace_id = RequestCtx.create_trace_id()
+        _trace_id = request.headers.get('TraceId')
+        trace_id = _trace_id if _trace_id is not None else uuid.uuid4(_trace_id).hex
 
-        with logger.contextualize(trace_id=trace_id):
+        with RunContext(ctx=ContextInfo(trace_id=trace_id)):
             response = await call_next(request)
             return response
 

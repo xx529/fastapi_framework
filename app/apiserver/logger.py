@@ -3,7 +3,7 @@ import sys
 
 from loguru import logger
 
-from app.apiserver.context import RequestCtx
+from app.apiserver.context import RunContext
 from app.config import config
 from app.schema.const import LoggerNameEnum
 
@@ -15,7 +15,7 @@ class InterceptHandler(logging.Handler):
          .bind(name=record.name,
                custom_name=record.name,
                project_name=config.app_conf.name,
-               trace_id=RequestCtx.get_trace_id(),
+               trace_id=RunContext.current().trace_id,
                logging_extra=record.__dict__.get(config.log_conf.extra_key, None))
          .log(record.levelname, record.getMessage()))
 

@@ -4,7 +4,8 @@ from fastapi import Form, UploadFile
 from fastapi.params import Body, File
 from pydantic import BaseModel, Field
 
-from app.schema.base import JsonResponse, KafkaMessage, TaskID, UserID
+from app.schema.common import KafkaMessage, TaskID, UserID
+from app.schema.response.base import JsonResponse
 from app.schema.const import TaskCategory
 
 
