@@ -28,6 +28,11 @@ class RunContext:
             raise exc_val
 
     @classmethod
+    def update(cls, **kwargs):
+        new_ctx = cls.current().copy(update=kwargs)
+        return cls(ctx=new_ctx)
+
+    @classmethod
     def current(cls) -> ContextInfo | None:
         try:
             return ctx_var.get()
@@ -59,18 +64,17 @@ if __name__ == '__main__':
     t1 = ContextInfo(trace_id='a', user_id=1)
     print(RunContext.current())
 
-    with RunContext(ctx=t1) as c:
+    with RunContext(ctx=t1):
         print(RunContext.current())
-        t2 = RunContext.current().copy(update={'user_id': 2})
 
-        with RunContext(ctx=t2):
+        with RunContext.update(trace_id='bbb'):
             print(RunContext.current())
 
-            t3 = RunContext.current().copy(update={'trace_id': '999'})
-            with RunContext(ctx=t3):
+            with RunContext.update(user_id=999):
                 print(RunContext.current())
 
             print(RunContext.current())
 
         print(RunContext.current())
+
     print(RunContext.current())
