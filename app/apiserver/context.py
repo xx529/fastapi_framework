@@ -11,8 +11,8 @@ class ContextInfo(BaseModel):
 class RunContext:
     CTX_VAR = contextvars.ContextVar('ctx')
 
-    def __init__(self, ctx: ContextInfo):
-        self.ctx = ctx
+    def __init__(self, ctx: ContextInfo = None):
+        self.ctx = ctx or ContextInfo()
         self.token = None
 
     def __enter__(self):
