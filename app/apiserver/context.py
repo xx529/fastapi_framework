@@ -36,6 +36,9 @@ class RunContext:
         except Exception as _:
             return ContextInfo()
 
+class DbSessionContext:
+    ...
+
 
 if __name__ == '__main__':
     t1 = ContextInfo(trace_id='a', user_id=1)
