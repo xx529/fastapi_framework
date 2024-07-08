@@ -36,8 +36,18 @@ class RunContext:
         except Exception as _:
             return ContextInfo()
 
+
 class DbSessionContext:
-    ...
+    SESSION_VAR = contextvars.ContextVar('db_session')
+
+    def __init__(self):
+        ...
+
+    def __enter__(self):
+        ...
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        ...
 
 
 if __name__ == '__main__':
