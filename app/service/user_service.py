@@ -2,8 +2,8 @@ from typing import List, Tuple
 
 from app.apiserver.exception import AppExceptionEnum
 from app.interface import UserInfoRepo, DataBaseTransaction
+from app.schema.request.base import UserID
 from app.schema.schemas.user import UserInfo
-from app.schema.common import UserID
 
 
 class UserService:

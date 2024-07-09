@@ -40,14 +40,18 @@ class RunContext:
 class DbSessionContext:
     SESSION_VAR = contextvars.ContextVar('db_session')
 
-    def __init__(self):
+    def __init__(self, db_session):
+        self.db_session = db_session
         ...
 
-    def __enter__(self):
+    async def __aenter__(self):
         ...
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        ...
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is None:
+            self.db_session.commit()
+        else:
+            self.db_session.rollback()
 
 
 if __name__ == '__main__':
