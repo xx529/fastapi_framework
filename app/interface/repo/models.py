@@ -3,6 +3,14 @@ from datetime import datetime
 from sqlmodel import Field, SQLModel
 
 
+class StrId(SQLModel):
+    id: str = Field(primary_key=True)
+
+
+class IntId(SQLModel):
+    id: int = Field(primary_key=True)
+
+
 class BaseModel(SQLModel):
     id: int = Field(primary_key=True)
     create_at: datetime = Field(max_length=100)
@@ -13,8 +21,7 @@ class BaseModel(SQLModel):
     deleted_by: int = Field(default=False)
 
 
-class User(BaseModel, table=True):
-    id: int = Field(primary_key=True)
+class User(IntId, BaseModel, table=True):
     name: str = Field(max_length=100)
 
 
