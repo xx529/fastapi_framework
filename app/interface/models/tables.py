@@ -3,7 +3,7 @@ import warnings
 from sqlalchemy import Column, Float, Integer, String, TIMESTAMP
 from sqlalchemy.ext.declarative import declared_attr
 
-from app.interface.repo._base import BaseTable
+from app.interface.models.base import BaseTable
 
 warnings.filterwarnings('ignore')
 

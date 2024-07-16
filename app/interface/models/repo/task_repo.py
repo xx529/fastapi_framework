@@ -1,9 +1,9 @@
 from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ._base import BaseRepo
-from ._tables import TaskInfo, TaskRecord
-from ...schema.const import TaskStatus
+from app.interface.models.base import BaseRepo
+from app.interface.models.tables import TaskInfo, TaskRecord
+from app.schema.const import TaskStatus
 
 
 class TaskInfoRepo(BaseRepo):

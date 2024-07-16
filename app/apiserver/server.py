@@ -10,7 +10,7 @@ from app.apiserver.middleware import MiddleWare
 from app.config import config
 from app.interface.cache.redis import redis_cache
 from app.interface.mq.kafka import KafkaConsumerManager, KafkaProducerManager
-from app.interface.repo import close_all_connection, create_all_pg_tables
+from app.interface.models import close_all_connection, create_all_pg_tables
 from app.router import all_routers
 
 

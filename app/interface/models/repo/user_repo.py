@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.interface.cache.redis import redis_cache
 from app.schema.const import RedisKeyEnum
-from ._base import BaseRepo
-from ._tables import UserInfo
+from app.interface.models.base import BaseRepo
+from app.interface.models.tables import UserInfo
 
 user_detail_key = lambda user_id: f'{RedisKeyEnum.USER_REPO.value}:{user_id}-detail'
 user_list_key = lambda page, limit, order_type, order_by: f'{RedisKeyEnum.USER_REPO.value}:{page}-{limit}-{order_by}-{order_type}-list'

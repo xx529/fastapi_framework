@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app.apiserver.logger import transaction_log
-from ..repo import AsyncSessionLocal, SessionLocal
+from ..models import AsyncSessionLocal, SessionLocal
 
 
 class DataBaseTransaction:
