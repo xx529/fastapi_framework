@@ -48,7 +48,6 @@ async def stream():
 @router.get(path='/stream/queue')
 def queue_stream():
     generator = get()
-    print(type(generator))
     return StreamingResponse(generator, media_type="text/event-stream")
 
 
