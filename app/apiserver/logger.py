@@ -19,6 +19,9 @@ class InterceptHandler(logging.Handler):
                logging_extra=record.__dict__.get(config.log_conf.extra_key, None))
          .log(record.levelname, record.getMessage()))
 
+def patcher(record):
+    ...
+
 
 logger_name_list = config.log_conf.catch.copy()
 
