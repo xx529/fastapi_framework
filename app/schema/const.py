@@ -22,7 +22,7 @@ class OrderTypeEnum(str, Enum):
     DESC = 'desc'
 
     @classmethod
-    def note(cls):
+    def comment(cls):
         return (f'升序（{cls.ASC.value})；'
                 f'降序（{cls.DESC.value})；')
 

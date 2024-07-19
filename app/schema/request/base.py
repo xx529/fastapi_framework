@@ -53,5 +53,5 @@ class PageQueryParams:
     limit: Limit = Query(default=10, description='每页数量', example=10, alias='limit')
     search: Search = Query(default=None, description='搜索关键字', example='张三', alias='search')
     order_by: OrderBy = Query(default='id', description='排序字段', example='id', alias='order_by')
-    order_type: OrderTypeEnum = Query(default='asc', title='排序方式', description=OrderTypeEnum.note(), example='asc',
+    order_type: OrderTypeEnum = Query(default='asc', title='排序方式', description=OrderTypeEnum.comment(), example='asc',
                                       alias='order_type')
