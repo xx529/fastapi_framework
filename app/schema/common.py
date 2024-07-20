@@ -23,6 +23,6 @@ class ExampleSet(BaseModel):
 
 
 class KafkaMessage(BaseModel):
-    trace_id: str | None = Field(RunContext.current().trace_id, description='来自的追踪ID')
+    trace_id: str | None = Field(default_factory=lambda x: RunContext.current().trace_id, description='来自的追踪ID')
     topic: KafkaTopic = Field(description='消息主题')
     data: Any = Field(description='消息内容')
