@@ -21,7 +21,7 @@ class InterceptHandler(logging.Handler):
 
 
 def patcher(record):
-    ...
+    record['trace_id'] = RunContext.current().trace_id
 
 
 logger_name_list = config.log_conf.catch.copy()
