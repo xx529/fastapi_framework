@@ -54,6 +54,9 @@ SHORT_FORMAT = ('<green>[{time:HH:mm:ss.SSS}]</green> '
 
 logger.remove()
 
+if config.log_conf.is_json_format:
+    ...
+
 logger.add(sink=config.log_conf.file,
            format=FULL_FORMAT,
            level=config.log_conf.level,
