@@ -1,3 +1,4 @@
+import json
 import uuid
 from contextlib import asynccontextmanager
 
@@ -21,7 +22,13 @@ class HangServer:
         app = FastAPI(version=config.app_conf.version, lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
+        cls.openapi(app)
         return app
+
+    @staticmethod
+    def openapi(app: FastAPI):
+        with open('openapi.json', 'w') as f:
+            json.dump(app.openapi(), f, indent=4)
 
     @staticmethod
     def init_middlewares(app: FastAPI) -> None:
