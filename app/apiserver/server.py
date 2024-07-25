@@ -22,13 +22,15 @@ class HangServer:
         app = FastAPI(version=config.app_conf.version, lifespan=cls.lifespan())
         cls.init_middlewares(app)
         cls.init_routers(app)
-        cls.openapi(app)
+        cls.config_openapi(app)
         return app
 
     @staticmethod
-    def openapi(app: FastAPI):
+    def config_openapi(app: FastAPI):
+        openapi_schema = app.openapi()
+        openapi_schema['servers'] = [{'url': f'http://127.0.0.1:{config.app_conf.port}', 'description': 'local'}]
         with open('openapi.json', 'w') as f:
-            json.dump(app.openapi(), f, indent=4)
+            json.dump(openapi_schema, f, indent=4)
 
     @staticmethod
     def init_middlewares(app: FastAPI) -> None:
