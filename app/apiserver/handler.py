@@ -1,2 +1,6 @@
 class ExceptionHandler:
     ...
+    
+    @staticmethod
+    def handle_exception():
+        ...
