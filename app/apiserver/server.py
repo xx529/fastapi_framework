@@ -4,8 +4,10 @@ from contextlib import asynccontextmanager
 
 import fastapi
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from loguru import logger
 
+from app.apiserver.handler import ExceptionHandler
 from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
 from app.config import config
@@ -23,6 +25,7 @@ class HangServer:
         cls.init_middlewares(app)
         cls.init_routers(app)
         cls.config_openapi(app)
+        cls.init_handlers(app)
         return app
 
     @staticmethod
@@ -92,3 +95,7 @@ class HangServer:
         lifespan_log.info('shutdown kafka')
         KafkaProducerManager.shutdown()
         KafkaConsumerManager.shutdown()
+
+    @classmethod
+    def init_handlers(cls, app: FastAPI):
+        app.add_exception_handler(RequestValidationError, ExceptionHandler.request_exception_handler)
