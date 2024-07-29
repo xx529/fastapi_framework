@@ -6,6 +6,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from app.apiserver import AppExceptionEnum
+from app.apiserver.exception import AppError
 from app.schema.response.base import BaseResponse
 
 
@@ -18,4 +19,11 @@ class ExceptionHandler:
         detail = ''.join([f"{str(err.get('loc'))}:{err.get('msg')};" for err in e.errors()])
         err = AppExceptionEnum.InvalidError(detail=detail)
         resp = BaseResponse(errcode=err.errcode, errmsg=err.errmsg, detail=detail, data={}).model_dump()
+        return JSONResponse(status_code=200, content=resp)
+
+    @staticmethod
+    async def app_exception_handler(r: Request, e: AppError):
+        logger.error(r)
+        logger.error('\n' + json.dumps(e.to_dict(), indent=4))
+        resp = BaseResponse(errcode=e.errcode, errmsg=e.errmsg, detail=e.detail, data={}).model_dump()
         return JSONResponse(status_code=200, content=resp)

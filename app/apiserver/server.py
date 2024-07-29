@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from loguru import logger
 
+from app.apiserver.exception import AppError
 from app.apiserver.handler import ExceptionHandler
 from app.apiserver.logger import lifespan_log
 from app.apiserver.middleware import MiddleWare
@@ -99,3 +100,4 @@ class HangServer:
     @classmethod
     def init_handlers(cls, app: FastAPI):
         app.add_exception_handler(RequestValidationError, ExceptionHandler.request_exception_handler)
+        app.add_exception_handler(AppError, ExceptionHandler.app_exception_handler)
